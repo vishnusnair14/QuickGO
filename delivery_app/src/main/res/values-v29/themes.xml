@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.QuickGO" parent="Theme.AppCompat">
+
+        <!--        &lt;!&ndash; Primary brand color. &ndash;&gt;-->
+        <!--        <item name="colorPrimary">#1A237E</item>-->
+        <!--        <item name="colorPrimaryVariant">#2D0191</item>-->
+        <!--        <item name="colorOnPrimary">@color/white</item>-->
+
+        <!--        &lt;!&ndash; Secondary brand color. &ndash;&gt;-->
+        <!--        <item name="colorSecondary">#872405</item>-->
+        <!--        <item name="colorSecondaryVariant">@color/checking</item>-->
+        <!--        <item name="colorOnSecondary">@color/black</item>-->
+
+        <!-- Status bar color. -->
+        <!--        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>-->
+
+        <!-- Customize your theme here. -->
+
+        <item name="android:forceDarkAllowed">false</item>
+        <item name="android:navigationBarColor">#D6D3D3</item>
+    </style>
+
+    <style name="Theme.QuickGO.NoActionBar" parent="Theme.Material3.Light.NoActionBar">
+        <item name="android:navigationBarColor">#D6D3D3</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:forceDarkAllowed">false</item>
+    </style>
+
+    <style name="Theme.QuickGO.AppBarOverlay" parent="ThemeOverlay.Material3.Dark.ActionBar">
+        <item name="android:navigationBarColor">#D6D3D3</item>
+    </style>
+
+    <style name="Theme.QuickGO.PopupOverlay" parent="ThemeOverlay.Material3.Light">
+        <item name="android:navigationBarColor">#D6D3D3</item>
+
+    </style>
+
+    <!-- Base application theme. -->
+    <style name="Base.Theme.IntelliCart" parent="Theme.Material3.Light.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:navigationBarColor">#D6D3D3</item>
+    </style>
+
+
+</resources>

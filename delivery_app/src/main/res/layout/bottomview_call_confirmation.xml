@@ -1,0 +1,80 @@
+<!-- menu_layout.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout2"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/extView989"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:fontFamily="@font/archivo_black"
+        android:text="Confirm Call"
+        android:textAllCaps="true"
+        android:textSize="18sp"
+        android:typeface="normal" />
+
+    <TextView
+        android:id="@+id/btmViewSubTitleCallConfirm_textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="@font/montserrat"
+        android:gravity="center|start"
+        android:text="Are you sure you want to call [PhoneNumber]? This action will use your phone's call functionality, applies standard charges"
+        android:textAlignment="viewStart"
+        android:textColor="#686767"
+        android:textStyle="bold" />
+
+    <ProgressBar
+        android:id="@+id/btmViewCallConfirm_progressBar"
+        android:layout_width="21dp"
+        android:layout_height="21dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="5dp"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btmViewCallConfirmCancelBtn_textView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:backgroundTint="#810E06"
+            android:fontFamily="@font/montserrat"
+            android:gravity="center"
+            android:stateListAnimator="@android:anim/fade_in"
+            android:text="@string/cancel"
+            android:textAllCaps="true"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btmViewCallConfirmProceedBtn_textView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_weight="1"
+            android:backgroundTint="#064E10"
+            android:fontFamily="@font/montserrat"
+            android:gravity="center"
+            android:text="@string/proceed"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</LinearLayout>

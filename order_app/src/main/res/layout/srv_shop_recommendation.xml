@@ -1,0 +1,117 @@
+<!-- item_card_view.xml -->
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/shopRecommendationInfo_cardView"
+    style="@style/Widget.Material3.CardView.Filled"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:layout_marginStart="2dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="2dp"
+    android:layout_marginBottom="8dp"
+    android:autofillHints="75415"
+    app:cardCornerRadius="15dp"
+    app:cardElevation="8dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:backgroundTintMode="add"
+        android:hapticFeedbackEnabled="true"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/shopNameShopRecommendationView_textView"
+            android:layout_width="230dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:fontFamily="@font/montserrat"
+            android:text="@string/shopname"
+            android:textAlignment="center"
+            android:textColor="#523798"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/shopPlaceLocShopRecommendationView_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:fontFamily="@font/montserrat"
+            android:text="@string/shortloc"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="#523798"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="@+id/shopNameShopRecommendationView_textView"
+            app:layout_constraintHorizontal_bias="0.493"
+            app:layout_constraintStart_toStartOf="@+id/shopNameShopRecommendationView_textView"
+            app:layout_constraintTop_toBottomOf="@+id/shopNameShopRecommendationView_textView" />
+
+        <TextView
+            android:id="@+id/shopCoordinatesShopRecommendation_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/anonymous_pro"
+            android:gravity="end"
+            android:text="@string/_00_000_n_00_00_e"
+            android:textColor="#245726"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:background="#ECECEC">
+
+        <ImageView
+            android:id="@+id/shopImageShopRecommendationView_imageView"
+            android:layout_width="75dp"
+            android:layout_height="100dp"
+            android:adjustViewBounds="false"
+            android:contentDescription="TODO"
+            android:cropToPadding="true"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@drawable/baseline_image_24" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/shopDistShopRecommendationView_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="6dp"
+            android:fontFamily="courier new"
+            android:gravity="end"
+            android:text="@string/_0_00_km"
+            android:textColor="#523798"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>
+
+
+
+
+
+
+
+

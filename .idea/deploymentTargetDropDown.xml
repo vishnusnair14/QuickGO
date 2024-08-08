@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="deploymentTargetDropDown">
+    <value>
+      <entry key="delivery_app">
+        <State />
+      </entry>
+      <entry key="order_app">
+        <State>
+          <targetSelectedWithDropDown>
+            <Target>
+              <type value="QUICK_BOOT_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="VIRTUAL_DEVICE_PATH" />
+                  <value value="C:\Users\Vishnu\.android\avd\Xiaomi-Redmi-Note-9-Pro-Max_API_29.avd" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </targetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-07-09T11:50:13.104208700Z" />
+        </State>
+      </entry>
+      <entry key="vendoradmindashboard">
+        <State />
+      </entry>
+    </value>
+  </component>
+</project>

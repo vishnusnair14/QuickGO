@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/voice_data_nav_menu"
+        android:icon="@drawable/outline_record_voice_over_24"
+        android:title="@string/voice_order" />
+    <item
+        android:id="@+id/order_info_nav_menu"
+        android:icon="@drawable/baseline_info_outline_24"
+        android:title="@string/order_info_obs" />
+    <item
+        android:id="@+id/others_nav_menu"
+        android:icon="@drawable/outline_filter_list_24"
+        android:title="@string/others" />
+</menu>

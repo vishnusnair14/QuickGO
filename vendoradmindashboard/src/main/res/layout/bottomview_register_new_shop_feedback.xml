@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="15dp"
+        app:cardCornerRadius="15dp"
+        app:cardElevation="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/btmViewShopRegistrationBanner_textView"
+                android:layout_width="320dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:fontFamily="@font/anonymous_pro_bold"
+                android:gravity="center"
+                android:text="@string/please_wait_while_we_reg"
+                android:textColor="#555353"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/btmViewShopRegistrationStatusView_textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="15dp"
+                android:fontFamily="@font/anonymous_pro"
+                android:text="@string/registration_in_progress"
+                android:textColor="#555353"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btmViewShopRegistrationBanner_textView" />
+
+            <ProgressBar
+                android:id="@+id/btmViewProgressBar_progressBar"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="21dp"
+                android:layout_height="21dp"
+                android:layout_marginEnd="5dp"
+                android:indeterminateTint="#555353"
+                app:layout_constraintBottom_toBottomOf="@+id/btmViewShopRegistrationStatusView_textView"
+                app:layout_constraintEnd_toStartOf="@+id/btmViewShopRegistrationStatusView_textView"
+                app:layout_constraintTop_toTopOf="@+id/btmViewShopRegistrationStatusView_textView" />
+
+            <TextView
+                android:id="@+id/btmViewShopRegistrationRegID_textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="courier new"
+                android:textColor="#949594"
+                android:textSize="11sp"
+                app:layout_constraintEnd_toEndOf="@+id/btmViewShopRegistrationBanner_textView"
+                app:layout_constraintTop_toBottomOf="@+id/btmViewShopRegistrationBanner_textView" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

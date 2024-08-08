@@ -1,0 +1,117 @@
+<!-- item_card_view.xml -->
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mcartItemInfo_cardView"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:autofillHints="75415"
+    android:background="#FAECEC"
+    card_view:cardCornerRadius="15dp"
+    card_view:cardElevation="8dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#298CCA"
+        android:backgroundTint="#F1EAEA"
+        android:backgroundTintMode="add"
+        android:hapticFeedbackEnabled="true"
+        android:padding="16dp">
+
+
+        <ImageView
+            android:id="@+id/itemImageMcartView_imageView"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:scaleType="centerCrop"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/itemDescriptionMcartView_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:fontFamily="@font/archivo"
+            android:gravity="center"
+            android:text="$(itemName)"
+            android:textStyle="bold"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintStart_toEndOf="@+id/itemImageMcartView_imageView"
+            card_view:layout_constraintTop_toTopOf="@+id/itemImageMcartView_imageView" />
+
+        <TextView
+            android:id="@+id/itemQuantityMcartView_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat"
+            android:gravity="center"
+            android:text="$(qty)"
+            android:textColor="#434242"
+            android:textStyle="bold"
+            card_view:layout_constraintBottom_toBottomOf="@+id/itemQtyIncreaseMcart_button"
+            card_view:layout_constraintEnd_toStartOf="@+id/itemQtyIncreaseMcart_button"
+            card_view:layout_constraintStart_toEndOf="@+id/itemQtyDecreaseMcart_button"
+            card_view:layout_constraintTop_toTopOf="@+id/itemQtyDecreaseMcart_button" />
+
+        <TextView
+            android:id="@+id/itemPriceMcartView_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/montserrat"
+            android:text="$(price)"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            card_view:layout_constraintEnd_toEndOf="@+id/itemDescriptionMcartView_textView"
+            card_view:layout_constraintStart_toStartOf="@+id/itemDescriptionMcartView_textView"
+            card_view:layout_constraintTop_toBottomOf="@+id/itemDescriptionMcartView_textView" />
+
+        <ImageButton
+            android:id="@+id/itemQtyIncreaseMcart_button"
+            android:layout_width="45dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="45dp"
+            android:backgroundTint="#009688"
+            card_view:layout_constraintBottom_toBottomOf="parent"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintTop_toBottomOf="@+id/itemImageMcartView_imageView"
+            card_view:srcCompat="@drawable/baseline_arrow_drop_up_24" />
+
+        <ImageButton
+            android:id="@+id/itemQtyDecreaseMcart_button"
+            android:layout_width="45dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="45dp"
+            android:backgroundTint="#009688"
+            card_view:layout_constraintBottom_toBottomOf="parent"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintTop_toBottomOf="@+id/itemImageMcartView_imageView"
+            card_view:srcCompat="@drawable/baseline_arrow_drop_down_24" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/textView18"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:background="#136387"
+            android:fontFamily="@font/montserrat"
+            android:gravity="center"
+            android:text="REMOVE"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            card_view:layout_constraintBottom_toBottomOf="parent"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.cardview.widget.CardView>

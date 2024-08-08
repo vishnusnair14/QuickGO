@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@id/nav_orderbyvoice">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="com.vishnu.quickgoorder.ui.home.recommendation.items.ItemFragment"
+        android:label="@string/menu_home"
+        tools:layout="@layout/fragment_items">
+        <action
+            android:id="@+id/action_nav_home_to_nav_mcart"
+            app:destination="@id/nav_mcart"
+            app:popUpToInclusive="false" />
+        <argument
+            android:name="shopName"
+            android:defaultValue="Welcome"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_store_pref_choose_address"
+        android:name="com.vishnu.quickgoorder.ui.settings.storepreference.address.ChooseAddressFragment"
+        android:label="@string/menu_settings"
+        tools:layout="@layout/fragment_store_preference_choose_address">
+
+        <action
+            android:id="@+id/action_nav_store_pref_address_to_nav_store_pref_store"
+            app:destination="@id/nav_store_pref_set_store" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_store_pref_set_store"
+        android:name="com.vishnu.quickgoorder.ui.settings.storepreference.store.SetStorePrefFragment"
+        android:label="@string/menu_settings"
+        tools:layout="@layout/fragment_store_preference_set_store">
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_settings"
+        android:name="com.vishnu.quickgoorder.ui.settings.SettingsFragment"
+        android:label="Settings">
+        <argument
+            android:name="highlightOption"
+            android:defaultValue=""
+            app:argType="string" />
+        <action
+            android:id="@+id/action_nav_settings_to_nav_addAddress"
+            app:destination="@id/nav_addAddress"
+            app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_nav_settings_to_savedAddressFragment3"
+            app:destination="@id/savedAddressFragment"
+            app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_nav_settings_to_nav_test"
+            app:destination="@id/nav_test" />
+        <action
+            android:id="@+id/action_nav_settings_to_nav_store_pref"
+            app:destination="@id/nav_store_pref_choose_address" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_addAddress"
+        android:name="com.vishnu.quickgoorder.ui.settings.address.add_address.AddAddressFragment"
+        android:label="Add Address"
+        tools:layout="@layout/fragment_add_address" />
+
+    <fragment
+        android:id="@+id/savedAddressFragment"
+        android:name="com.vishnu.quickgoorder.ui.settings.address.manage_address.ManageAddressFragment"
+        android:label="Address"
+        tools:layout="@layout/fragment_saved_delivery_address" />
+
+    <fragment
+        android:id="@+id/nav_mcart"
+        android:name="com.vishnu.quickgoorder.ui.cart.voice.VoiceCartFragment"
+        android:label="Cart"
+        tools:layout="@layout/fragment_voice_order_cart">
+        <action
+            android:id="@+id/action_nav_mcart_to_checkoutSummaryFragment"
+            app:destination="@id/checkoutSummaryFragment"
+            app:popUpToInclusive="false" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/checkoutSummaryFragment"
+        android:name="com.vishnu.quickgoorder.ui.checkout.CheckoutSummaryFragment"
+        android:label="Checkout"
+        tools:layout="@layout/fragment_checkout_summary">
+        <action
+            android:id="@+id/action_checkoutSummaryFragment_to_savedAddressFragment"
+            app:destination="@id/savedAddressFragment"
+            app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_checkoutSummaryFragment_to_nav_store_pref_choose_address"
+            app:destination="@id/nav_store_pref_choose_address" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_orderbyvoice"
+        android:name="com.vishnu.quickgoorder.ui.home.voice.HomeOrderByVoiceFragment"
+        android:label="@string/home"
+        tools:layout="@layout/fragment_home_order_by_voice">
+
+        <action
+            android:id="@+id/action_nav_orderbyvoice_to_nav_mcart"
+            app:destination="@id/nav_mcart" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_recommendation"
+        android:name="com.vishnu.quickgoorder.ui.home.recommendation.HomeRecommendationFragment"
+        android:label="@string/home"
+        tools:layout="@layout/fragment_home_recommendation">
+        <action
+            android:id="@+id/action_shopInfoFragment_to_nav_home"
+            app:destination="@id/nav_home" />
+        <action
+            android:id="@+id/action_nav_shop_to_nav_settings"
+            app:destination="@id/nav_settings" />
+        <action
+            android:id="@+id/action_nav_shop_to_nav_mcart"
+            app:destination="@id/nav_mcart" />
+    </fragment>
+
+    <activity
+        android:id="@+id/paymentActivity"
+        android:name="com.vishnu.quickgoorder.ui.payment.PaymentActivity"
+        android:label="activity_payment"
+        tools:layout="@layout/activity_payment">
+        <argument
+            android:name="shopID"
+            android:defaultValue="none"
+            app:argType="string" />
+    </activity>
+
+    <fragment
+        android:id="@+id/nav_test"
+        android:name="com/vishnu/intellicart/ui/settings/SettingsFragment.java"
+        android:label="fragment_test"
+        tools:layout="@layout/fragment_test" />
+</navigation>

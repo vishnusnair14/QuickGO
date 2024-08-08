@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/v_search_option"
+        android:icon="@drawable/baseline_keyboard_voice_24"
+        android:title="@string/voice" />
+    <item
+        android:id="@+id/ai_search_option"
+        android:icon="@drawable/baseline_photo_camera_back_24"
+        android:title="@string/image" />
+</menu>

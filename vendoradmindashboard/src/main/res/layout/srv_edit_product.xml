@@ -1,0 +1,197 @@
+<!-- item_card_view.xml -->
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:autofillHints="75415"
+    card_view:cardCornerRadius="15dp"
+    card_view:cardElevation="10dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="#298CCA"
+        android:backgroundTint="#F1EAEA"
+        android:backgroundTintMode="add"
+        android:hapticFeedbackEnabled="true"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/srvItemImageEditProduct_imageView"
+            android:layout_width="130dp"
+            android:layout_height="115dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:adjustViewBounds="true"
+            android:cropToPadding="true"
+            android:scaleType="centerCrop"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintHorizontal_bias="0.0"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/srvItemNameEditProductView_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:fontFamily="@font/aldrich"
+            android:gravity="center"
+            android:text="$(itemName)"
+            android:textColor="@android:color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            card_view:layout_constraintBottom_toBottomOf="parent"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintStart_toEndOf="@+id/srvItemImageEditProduct_imageView"
+            card_view:layout_constraintTop_toTopOf="parent"
+            card_view:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:id="@+id/srvItemCurrentPriceEditProduct_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:fontFamily="courier new"
+            android:text="$(price)"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            card_view:layout_constraintEnd_toEndOf="@+id/srvItemNameEditProductView_textView"
+            card_view:layout_constraintStart_toStartOf="@+id/srvItemNameEditProductView_textView"
+            card_view:layout_constraintTop_toBottomOf="@+id/srvItemNameEditProductView_textView" />
+
+        <TextView
+            android:id="@+id/showEditOptions_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="45dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:drawableEnd="@drawable/baseline_arrow_drop_down_24"
+            android:fontFamily="@font/average_sans"
+            android:gravity="center"
+            android:text="@string/show_edit_options"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            card_view:layout_constraintBottom_toTopOf="@+id/editOptionsContainer_linearLayout"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintTop_toBottomOf="@+id/srvItemCurrentPriceEditProduct_textView" />
+
+        <LinearLayout
+            android:id="@+id/editOptionsContainer_linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="20dp"
+            android:background="#79EFECEC"
+            android:gravity="center|start"
+            android:orientation="vertical"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintTop_toBottomOf="@+id/srvItemImageEditProduct_imageView">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/arvo"
+                android:text="set new item name:" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/edit_text_style1"
+                android:ems="10"
+                android:fontFamily="@font/anonymous_pro_bold"
+                android:inputType="text"
+                android:padding="5dp"
+                android:paddingStart="5dp"
+                android:paddingLeft="5dp"
+                android:paddingTop="5dp"
+                android:paddingEnd="5dp"
+                android:paddingRight="5dp"
+                android:paddingBottom="5dp"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/arvo"
+                android:text="set new item price:" />
+
+            <EditText
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/edit_text_style1"
+                android:ems="10"
+                android:fontFamily="@font/anonymous_pro_bold"
+                android:inputType="numberDecimal"
+                android:padding="5dp"
+                android:paddingStart="5dp"
+                android:paddingLeft="5dp"
+                android:paddingTop="5dp"
+                android:paddingEnd="5dp"
+                android:paddingRight="5dp"
+                android:paddingBottom="5dp"
+                android:textSize="18sp" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/srvDeleteEditProduct_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="#881B1B"
+            android:fontFamily="@font/anonymous_pro_bold"
+            android:text="Delete Product"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            card_view:layout_constraintBottom_toBottomOf="parent"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintTop_toBottomOf="@+id/editOptionsContainer_linearLayout"
+            card_view:layout_constraintVertical_bias="0.0" />
+
+        <ImageButton
+            android:id="@+id/srvOkEditProduct_imageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#4CAF50"
+            card_view:layout_constraintBottom_toBottomOf="@+id/srvDeleteEditProduct_button"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintTop_toTopOf="@+id/srvDeleteEditProduct_button"
+            card_view:srcCompat="@drawable/baseline_done_24" />
+
+        <ImageButton
+            android:id="@+id/srvEditEditProduct_imageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="15dp"
+            android:backgroundTint="#FF9800"
+            card_view:layout_constraintBottom_toBottomOf="@+id/srvOkEditProduct_imageButton"
+            card_view:layout_constraintEnd_toStartOf="@+id/srvOkEditProduct_imageButton"
+            card_view:layout_constraintTop_toTopOf="@+id/srvOkEditProduct_imageButton"
+            card_view:layout_constraintVertical_bias="1.0"
+            card_view:srcCompat="@drawable/baseline_mode_edit_24" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:fontFamily="@font/anonymous_pro_bold"
+            android:textSize="11sp"
+            card_view:layout_constraintBottom_toBottomOf="parent"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintTop_toBottomOf="@+id/srvEditEditProduct_imageButton" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.cardview.widget.CardView>

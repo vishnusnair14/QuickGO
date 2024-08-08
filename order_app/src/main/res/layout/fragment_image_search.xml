@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frameLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.search.ImageSearchFragment">
+
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:fontFamily="courier new"
+        android:text="ORDER BY IMAGE"
+        android:textSize="35sp"
+        app:layout_constraintBottom_toTopOf="@+id/orderByImage_imageView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+    <ImageView
+        android:id="@+id/orderByImage_imageView"
+        android:layout_width="388dp"
+        android:layout_height="450dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.31"
+        app:srcCompat="@drawable/baseline_image_24" />
+
+    <!-- Create an ImageView to contain the scanning line -->
+
+    <!-- Create a View for the red scanning line -->
+
+    <ImageView
+        android:id="@+id/scanLinescope_imageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="38dp"
+        tools:layout_editor_absoluteY="0dp" />
+
+    <View
+        android:id="@+id/scanningLine"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_marginTop="25dp"
+        android:background="#D10505"
+        android:foregroundGravity="top"
+        app:layout_constraintTop_toBottomOf="@+id/textView5"
+        tools:layout_editor_absoluteX="0dp" />
+
+    <Button
+        android:id="@+id/scanImage_button"
+        android:layout_width="150dp"
+        android:layout_height="53dp"
+        android:layout_marginStart="25dp"
+        android:text="Scan Image"
+        app:icon="@drawable/baseline_document_scanner_24"
+        app:layout_constraintBottom_toBottomOf="@+id/orderByImage_button"
+        app:layout_constraintEnd_toStartOf="@+id/orderByImage_button"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/orderByImage_button"
+        app:layout_constraintVertical_bias="0.366" />
+
+    <Button
+        android:id="@+id/orderByImage_button"
+        android:layout_width="150dp"
+        android:layout_height="53dp"
+        android:layout_marginEnd="25dp"
+        android:text="Take a shot"
+        app:icon="@drawable/baseline_camera_alt_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/orderByImage_imageView" />
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:text="if debug.enable.IsTrue:"
+        android:textColor="#B6B2B2"
+        app:layout_constraintBottom_toTopOf="@+id/scanImage_button"
+        app:layout_constraintEnd_toEndOf="@+id/scanImage_button"
+        app:layout_constraintStart_toStartOf="@+id/scanImage_button" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

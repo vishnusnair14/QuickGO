@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_startDuty"
+            android:checkable="true"
+            android:enabled="false"
+            android:icon="@drawable/baseline_delivery_dining_24"
+            android:title="@string/start_duty"
+            app:actionLayout="@layout/menu_item_switch"
+            app:showAsAction="always" />
+
+<!--        <item-->
+<!--            android:id="@+id/nav_separator"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="1dp"-->
+<!--            android:background="?android:attr/listDivider"-->
+<!--            android:enabled="false"-->
+<!--            android:icon="@null"-->
+<!--            android:title="" />-->
+
+        <item
+            android:id="@+id/nav_orders"
+            android:checkable="true"
+            android:enabled="true"
+            android:icon="@drawable/baseline_edit_note_24"
+            android:title="@string/all_orders" />
+
+        <item
+            android:id="@+id/nav_settings"
+            android:enabled="true"
+            android:icon="@drawable/baseline_bookmark_border_24"
+            android:title="@string/settings"
+            android:tooltipText="options" />
+    </group>
+</menu>

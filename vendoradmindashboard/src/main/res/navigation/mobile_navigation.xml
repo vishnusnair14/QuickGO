@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="com.vishnu.quickgovendor.ui.home.HomeFragment"
+        android:label="@string/menu_home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_nav_home_to_addProductFragment"
+            app:destination="@id/addProductFragment" />
+        <action
+            android:id="@+id/action_nav_home_to_editProductFragment"
+            app:destination="@id/editProductFragment"
+            app:launchSingleTop="false" />
+        <action
+            android:id="@+id/action_nav_home_to_signInActivity"
+            app:destination="@id/signInActivity" />
+        <action
+            android:id="@+id/action_nav_home_to_editShopDataFragment"
+            app:destination="@id/editShopDataFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addProductFragment"
+        android:name="com.vishnu.quickgovendor.ui.product.AddProductFragment"
+        android:label="DB Utilities"
+        tools:layout="@layout/fragment_add_product" />
+    <fragment
+        android:id="@+id/editProductFragment"
+        android:name="com.vishnu.quickgovendor.ui.product.EditProductFragment"
+        android:label="fragment_edit_product"
+        tools:layout="@layout/fragment_edit_product" />
+    <activity
+        android:id="@+id/signInActivity"
+        android:name="com.vishnu.quickgovendor.SignInActivity"
+        android:label="activity_sign_in"
+        tools:layout="@layout/activity_sign_in" />
+    <fragment
+        android:id="@+id/nav_advancedOptions"
+        android:name="com.vishnu.quickgovendor.ui.advoptions.AdvOptionsFragment"
+        android:label="Options"
+        tools:layout="@layout/fragment_adv_options" />
+    <fragment
+        android:id="@+id/editShopDataFragment"
+        android:name="com.vishnu.quickgovendor.ui.home.EditShopDataFragment"
+        android:label="Edit Shop Data"
+        tools:layout="@layout/fragment_edit_shop_data" />
+    <activity
+        android:id="@+id/signUpActivity"
+        android:name="com.vishnu.quickgovendor.SignUpActivity"
+        android:label="activity_sign_up"
+        tools:layout="@layout/activity_sign_up" />
+
+</navigation>

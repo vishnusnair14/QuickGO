@@ -1,0 +1,7 @@
+# Project exclude paths
+/.gradle/
+# Project exclude paths
+/order_app/build/
+/order_app/build/intermediates/javac/debug/classes/
+# Project exclude paths
+/build/

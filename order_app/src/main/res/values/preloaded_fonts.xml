@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="preloaded_fonts" translatable="false">
+        <item>@font/aldrich</item>
+        <item>@font/amaranth</item>
+        <item>@font/andika_new_basic</item>
+        <item>@font/anonymous_pro</item>
+        <item>@font/arbutus</item>
+        <item>@font/architects_daughter</item>
+        <item>@font/archivo</item>
+        <item>@font/archivo_black</item>
+        <item>@font/arima_madurai_bold</item>
+        <item>@font/averia_libre_light</item>
+        <item>@font/averia_sans_libre_bold</item>
+        <item>@font/montserrat</item>
+    </array>
+</resources>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="preloaded_fonts" translatable="false">
+        <item>@font/aldrich</item>
+        <item>@font/anonymous_pro</item>
+        <item>@font/ar_one_sans</item>
+        <item>@font/architects_daughter</item>
+        <item>@font/archivo</item>
+        <item>@font/archivo_black</item>
+        <item>@font/averia_libre</item>
+        <item>@font/montserrat</item>
+    </array>
+</resources>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_logout"
+        android:icon="@drawable/baseline_logout_24"
+        android:iconTint="#DCD7D7"
+        android:orderInCategory="100"
+        android:title="@string/logout" />
+    <item
+        android:id="@+id/action_delete_account"
+        android:icon="@drawable/baseline_delete_forever_24"
+        android:iconTint="#DCD7D7"
+        android:orderInCategory="100"
+        android:title="@string/delete_acc" />
+
+    <item
+        android:id="@+id/cartToolbarButton"
+        android:icon="@drawable/baseline_shopping_cart_24"
+        android:menuCategory="alternative"
+        android:text="@string/my_cart"
+        android:title="@string/my_cart"
+        android:tooltipText="@string/my_cart"
+        app:showAsAction="always" />
+
+</menu>

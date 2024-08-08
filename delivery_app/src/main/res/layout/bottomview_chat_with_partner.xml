@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayout2"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <TextView
+        android:id="@+id/chatViewStatusTV_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/montserrat"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/chatView_progressBar"
+        app:layout_constraintStart_toStartOf="@+id/chatView_progressBar"
+        app:layout_constraintTop_toBottomOf="@+id/chatView_progressBar" />
+
+    <ProgressBar
+        android:id="@+id/chatView_progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="21dp"
+        android:layout_height="21dp"
+        app:layout_constraintBottom_toBottomOf="@+id/chatMessages_recyclerView"
+        app:layout_constraintEnd_toEndOf="@+id/chatMessages_recyclerView"
+        app:layout_constraintStart_toStartOf="@+id/chatMessages_recyclerView"
+        app:layout_constraintTop_toTopOf="@+id/chatMessages_recyclerView" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/chatMessages_recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:layout_marginBottom="15dp"
+        android:animateLayoutChanges="false"
+        android:fadeScrollbars="true"
+        android:padding="10dp"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="10dp"
+        android:scrollbars="vertical"
+        android:verticalScrollbarPosition="defaultPosition"
+        app:layout_constraintBottom_toTopOf="@+id/chatField_editTextText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:reverseLayout="false"
+        tools:listitem="@layout/item_message_received" />
+
+    <Button
+        android:id="@+id/chatSendButton_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:fontFamily="@font/montserrat"
+        android:text="@string/send"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/chatViewBtmStatusTV_textView"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <EditText
+        android:id="@+id/chatField_editTextText"
+        android:layout_width="275dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:ems="10"
+        android:fontFamily="@font/anonymous_pro"
+        android:hint="@string/enter_your_message"
+        android:inputType="text"
+        android:textColor="#535252"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/chatSendButton_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/chatSendButton_button" />
+
+    <ImageView
+        android:id="@+id/imageView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        app:layout_constraintBottom_toTopOf="@+id/textView37"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/baseline_expand_more_24" />
+
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="25dp"
+        android:layout_marginEnd="25dp"
+        android:layout_marginBottom="15dp"
+        android:fontFamily="@font/montserrat"
+        android:text="You can message them about the order status, ETA. Phone calls can be minimized."
+        android:textAlignment="center"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/chatMessages_recyclerView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView37"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/archivo_black"
+        android:text="@string/chat_with_your_order_client"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/textView10"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/chatViewBtmStatusTV_textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="5dp"
+        android:fontFamily="@font/anonymous_pro"
+        android:text="@string/disconnected"
+        android:textAlignment="textEnd"
+        android:textColor="#5E0303"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/chatSendButton_button" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

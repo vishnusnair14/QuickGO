@@ -1,0 +1,128 @@
+<resources>
+    <string name="app_name">Vendor\'s Dashboard</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_advanced_options">Advanced Options</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="continue_">Continue :)</string>
+    <string name="manage_your_intellicart_shopiee_here">Manage your intellicart shopiee here :)</string>
+    <string name="todo">TODO</string>
+    <string name="register_new_account">REGISTER NEW ACCOUNT</string>
+    <string name="register_account">REGISTER ACCOUNT</string>
+    <string name="signin_feedback">$(signin_feedback)</string>
+    <string name="password">Password</string>
+    <string name="_123456789">123456789</string>
+    <string name="email_id">Email ID</string>
+    <string name="vendor1_gmail_com">vendor1@gmail.com</string>
+    <string name="forgot_password">Forgot password ?</string>
+    <string name="sign_in">SIGN IN</string>
+    <string name="_1234500">1234500</string>
+    <string name="signing_in">signing in…</string>
+    <string name="signin_failed">signin failed!</string>
+    <string name="vendor_dashboard">Vendor Dashboard</string>
+    <string name="vendor_id">$(vendor_id)</string>
+    <string name="vendor_name">$(vendor_name)</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="image_upload_success">Image upload success</string>
+    <string name="uploading_image">uploading image…</string>
+    <string name="select_image">Select Image</string>
+    <string name="new_shop_registration_successfull">"registration successful with RID: "</string>
+    <string name="reset_your_password">RESET YOUR PASSWORD</string>
+    <string name="password_reset_link_descp">Enter your registered email address to sent the password reset link</string>
+    <string name="send_password_reset_email">Send Password Reset email</string>
+    <string name="user_logged_out">[user logged out]</string>
+    <string name="not_found">[not found]</string>
+    <string name="open_your_email_and_follow_the_instruction_to_reset_password">Open your email and follow the instruction to reset password</string>
+    <string name="reset_email_sent_successfully">Reset email sent successfully</string>
+    <string name="add_new_product_txtdscp">Add a new products to your database, and those will be reflected to user application with immediate effect.</string>
+    <string name="please_wait">Please wait…</string>
+    <string name="add_product">ADD PRODUCT</string>
+    <string name="advanced_options">Advanced Options</string>
+    <string name="settings">Settings</string>
+    <string name="remotely_end_active_sessions">Remotely end active sessions on all devices where you have logged in.</string>
+    <string name="removes_all_your_data">Removes all your data and identity from our databases.\nThis action can\'t be undone.\nDo you want to proceed?</string>
+    <string name="delete_account_confirmation">Delete Account Confirmation</string>
+    <string name="edit_your_product">Edit your product\'s attributes in database, those will be reflected to user app with immediate effect.</string>
+    <string name="edit_products">EDIT PRODUCTS</string>
+    <string name="setup_location_information"><u>Setup Location Information</u></string>
+    <string name="setup_user_information"><u>Setup User Information</u></string>
+    <string name="how_it_works"><u>How it works:</u> Move out to your storePrefDataModel location and press the \'Set Location\' button your right part of screen, automatically fetch GPS provided accurate co-ordinates and used for future recommendation purposes.</string>
+    <string name="loc_def">0.0000000°N\n0.0000000°E</string>
+    <string name="show_edit_options">
+<u>Show edit options</u>
+</string>
+    <string name="hide_edit_options">
+<u>Hide edit options</u>
+</string>
+    <string name="invalid_pincode">Invalid pincode</string>
+    <string name="REGISTER">REGISTER</string>
+    <string name="LOGIN">LOGIN</string>
+    <string name="reset_password">RESET PASSWORD</string>
+    <string name="checking">Checking…</string>
+    <string name="email_verification_link_sent">Email verification link sent success.</string>
+    <string name="please_verify_your_email_id">Please verify your email ID.</string>
+    <string name="length_should_be_6_or_more">Length should be more than 6 chars!</string>
+    <string name="fields_can_t_be_empty">Fields can\'t be empty!</string>
+    <string name="please_enter_the_email_id">Please enter the email-ID</string>
+    <string name="please_enter_the_password">Please enter the password!</string>
+    <string name="enter_your_regi">Enter your registered email address and associated password to login</string>
+    <string name="enter_your_email_address">Enter your email address</string>
+    <string name="email">Email</string>
+    <string name="enter_your_password">Enter your password</string>
+    <string name="remember_me">Remember me</string>
+    <string name="login">LOGIN</string>
+    <string name="delivery">delivery</string>
+    <string name="user_login">USER LOGIN</string>
+    <string name="re_enter_password">Re-enter the password</string>
+    <string name="register">REGISTER</string>
+    <string name="set_a_new_password">Set a new password</string>
+    <string name="enter_the_email_address">Enter the email address</string>
+    <string name="enter_a_new">Enter a new email and password to register with us. Remember the password for future logins.</string>
+    <string name="enter_your_reg">Enter your registered email address to get the password reset link</string>
+    <string name="enter_the_registered_email">Enter your registered email</string>
+    <string name="send_link">SEND LINK</string>
+    <string name="password_not_match">Password doesn\'t match</string>
+    <string name="email_address_has_already_taken">Email address has already taken</string>
+    <string name="verify_login_again">Verify and login again</string>
+    <string name="registration_successful">Registration successful</string>
+    <string name="registration_failed">Registration failed!</string>
+    <string name="email_field_can_t_be_empty">Email field can\'t be empty!</string>
+    <string name="reset_email_sent">Password reset email sent success.</string>
+    <string name="unable_to_sent_reset_mail">Unable to sent password reset email!</string>
+    <string name="shop_name">Shop name</string>
+    <string name="street">Shop Street</string>
+    <string name="pincode">Pincode</string>
+    <string name="realtime_co_ordinates">realtime co-ordinates</string>
+    <string name="city">City</string>
+    <string name="state">State</string>
+    <string name="choose_an_image"><u>Choose an Image</u></string>
+    <string name="creating_profile">Please wait, creating profile…</string>
+    <string name="sign_failed">Sign failed!</string>
+    <string name="failed_to_register_shop_server_busy_404">Failed to register storePrefDataModel, server busy (404)</string>
+    <string name="profile_updated">Profile updated</string>
+    <string name="profile_created_successfully">Profile created successfully</string>
+    <string name="registration_in_progress">Registration in progress…</string>
+    <string name="please_wait_while_we_reg">Please wait while we registering new storePrefDataModel in our system. This may take a while. Please don\'t press back button</string>
+    <string name="device_location_not_enabled">Device location not enabled!</string>
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+</resources>

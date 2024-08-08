@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/allPlacedOrders_cardView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:autofillHints="75415"
+    android:background="#FAECEC"
+    card_view:cardBackgroundColor="#C65555"
+    card_view:cardCornerRadius="15dp"
+    card_view:cardElevation="4dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/PlacedOrdersViewlayout_constraintlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#298CCA"
+        android:backgroundTint="#F1EAEA"
+        android:backgroundTintMode="add"
+        android:hapticFeedbackEnabled="true"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/srvPlacedOrdersShopNameView_textView"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="20dp"
+            android:ellipsize="marquee"
+            android:fontFamily="@font/aldrich"
+            android:gravity="center_vertical"
+            android:text="$(shop_name)"
+            android:textAlignment="textStart"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            card_view:layout_constraintStart_toEndOf="@+id/addressTypeIconView_imageView"
+            card_view:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/srvOrdersOrderNoView_textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="45dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:fontFamily="@font/anonymous_pro"
+            android:singleLine="true"
+            android:text="$(order_no)"
+            android:textColor="#539149"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintStart_toEndOf="@+id/addressTypeIconView_imageView"
+            card_view:layout_constraintTop_toBottomOf="@+id/srvPlacedOrdersShopNameView_textView" />
+
+        <TextView
+            android:id="@+id/srvOrdersOrderTimeView_textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="45dp"
+            android:layout_marginEnd="5dp"
+            android:fontFamily="@font/anonymous_pro"
+            android:singleLine="false"
+            android:text="$(order_time)"
+            android:textColor="#539149"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            card_view:layout_constraintBottom_toBottomOf="parent"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintHorizontal_bias="1.0"
+            card_view:layout_constraintStart_toEndOf="@+id/addressTypeIconView_imageView"
+            card_view:layout_constraintTop_toBottomOf="@+id/srvOrdersOrderNoView_textView" />
+
+        <ImageView
+            android:id="@+id/addressTypeIconView_imageView"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            card_view:layout_constraintBottom_toBottomOf="@+id/srvOrdersOrderTimeView_textView"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintTop_toTopOf="@+id/srvPlacedOrdersShopNameView_textView"
+            card_view:srcCompat="@drawable/baseline_local_grocery_store_24" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/orderAcceptedView_textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#157319"
+            android:fontFamily="@font/montserrat"
+            android:gravity="center"
+            android:paddingStart="10dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="5dp"
+            android:text="$(order_status)"
+            android:textAlignment="textEnd"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

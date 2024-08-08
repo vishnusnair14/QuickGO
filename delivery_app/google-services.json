@@ -1,0 +1,98 @@
+{
+  "project_info": {
+    "project_number": "40307109185",
+    "firebase_url": "https://intelli-cart-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "intelli-cart",
+    "storage_bucket": "intelli-cart.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:40307109185:android:eeb92d5278146bc24605c0",
+        "android_client_info": {
+          "package_name": "com.vishnu.quickgodelivery"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "40307109185-019pbi6fvmbmaijh06be5p6p4gt79alf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8miMtsYFq8W1LSMu73lkSr6WgJ_yQBLo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "40307109185-019pbi6fvmbmaijh06be5p6p4gt79alf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:40307109185:android:a583fc60af94e9d14605c0",
+        "android_client_info": {
+          "package_name": "com.vishnu.quickgoorder"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "40307109185-019pbi6fvmbmaijh06be5p6p4gt79alf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8miMtsYFq8W1LSMu73lkSr6WgJ_yQBLo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "40307109185-019pbi6fvmbmaijh06be5p6p4gt79alf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:40307109185:android:b821d1924466afb34605c0",
+        "android_client_info": {
+          "package_name": "com.vishnu.quickgovendor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "40307109185-019pbi6fvmbmaijh06be5p6p4gt79alf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8miMtsYFq8W1LSMu73lkSr6WgJ_yQBLo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "40307109185-019pbi6fvmbmaijh06be5p6p4gt79alf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

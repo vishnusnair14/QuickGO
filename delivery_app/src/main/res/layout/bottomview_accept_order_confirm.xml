@@ -1,0 +1,245 @@
+<!-- menu_layout.xml -->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout2"
+    style="@style/Theme.MaterialComponents.Light.BottomSheetDialog"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/extView989"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="15dp"
+        android:fontFamily="@font/archivo_black"
+        android:text="@string/choose_a_delivery_action_for_this_order"
+        android:textSize="18sp"
+        android:typeface="normal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/separator"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="15dp"
+        android:background="#969A95"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/extView989" />
+
+    <ImageView
+        android:id="@+id/acceptOrderBtmViewCallToShopBtn_imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:autofillHints="call storePrefDataModel"
+        android:contentDescription="call storePrefDataModel"
+        android:elevation="8dp"
+        android:src="@drawable/baseline_call_24"
+        app:layout_constraintBottom_toBottomOf="@+id/acceptOrderBtmViewShopPlaceAndKm_textView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/acceptOrderBtmViewShopname_textView" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        app:layout_constraintBottom_toBottomOf="@+id/acceptOrderBtmViewODDD_textView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/acceptOrderBtmViewPDD_textView"
+        app:srcCompat="@drawable/baseline_directions_bike_24" />
+
+    <TextView
+        android:id="@+id/acceptOrderBtmViewShopname_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:fontFamily="@font/anonymous_pro"
+        android:text="$(shop_name)"
+        android:textColor="#064E10"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/imageView4"
+        app:layout_constraintTop_toBottomOf="@+id/separator" />
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        app:layout_constraintBottom_toBottomOf="@+id/acceptOrderBtmViewShopPhno_textView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/acceptOrderBtmViewShopname_textView"
+        app:srcCompat="@drawable/baseline_local_grocery_store_24" />
+
+    <TextView
+        android:id="@+id/acceptOrderBtmViewPDD_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:fontFamily="@font/anonymous_pro"
+        android:text="$(pickup_destination_distance)"
+        android:textColor="#009688"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/imageView2"
+        app:layout_constraintTop_toBottomOf="@+id/acceptOrderBtmViewDeliveryAddress_textView" />
+
+    <TextView
+        android:id="@+id/acceptOrderBtmViewShopPlaceAndKm_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:fontFamily="@font/anonymous_pro"
+        android:text="$(shop_place_km)"
+        android:textColor="#064E10"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/imageView4"
+        app:layout_constraintTop_toBottomOf="@+id/acceptOrderBtmViewShopname_textView" />
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        app:layout_constraintBottom_toBottomOf="@+id/acceptOrderBtmViewDeliveryAddress_textView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/acceptOrderBtmViewDeliveryAddress_textView"
+        app:srcCompat="@drawable/baseline_home_24" />
+
+    <TextView
+        android:id="@+id/acceptOrderBtmViewODDD_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:fontFamily="@font/anonymous_pro"
+        android:text="$(order_delivery_destination_distance)"
+        android:textColor="#009688"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/imageView2"
+        app:layout_constraintTop_toBottomOf="@+id/acceptOrderBtmViewPDD_textView" />
+
+    <TextView
+        android:id="@+id/acceptOrderBtmViewDeliveryAddress_textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="45dp"
+        android:layout_marginTop="5dp"
+        android:fontFamily="@font/anonymous_pro"
+        android:text="$(delivery_address_km)"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageView3"
+        app:layout_constraintTop_toBottomOf="@+id/acceptOrderBtmViewShopPhno_textView" />
+
+    <View
+        android:id="@+id/separator1"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="15dp"
+        android:background="#969A95"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/acceptOrderBtmViewODDD_textView" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="15dp"
+        android:fontFamily="@font/montserrat"
+        android:gravity="center|start"
+        android:text="@string/do_you_want_to_acc"
+        android:textColor="#686767"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/separator1" />
+
+    <TextView
+        android:id="@+id/acceptOrderView_textView"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="15dp"
+        android:background="#064E10"
+        android:fontFamily="@font/montserrat"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="@string/accept_order"
+        android:textColor="#FFD400"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btmViewOrderAcceptStatusView_textView" />
+
+    <TextView
+        android:id="@+id/declineOrderView_textView"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:background="#810E06"
+        android:fontFamily="@font/montserrat"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="@string/decline_order"
+        android:textColor="#FFD400"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/acceptOrderView_textView" />
+
+    <TextView
+        android:id="@+id/btmViewOrderAcceptStatusView_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:fontFamily="@font/montserrat"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+    <ProgressBar
+        android:id="@+id/btmViewOrderAcceptStatusPB_progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="21dp"
+        android:layout_height="21dp"
+        android:layout_marginEnd="3dp"
+        app:layout_constraintBottom_toBottomOf="@+id/btmViewOrderAcceptStatusView_textView"
+        app:layout_constraintEnd_toStartOf="@+id/btmViewOrderAcceptStatusView_textView"
+        app:layout_constraintTop_toTopOf="@+id/btmViewOrderAcceptStatusView_textView" />
+
+    <TextView
+        android:id="@+id/acceptOrderBtmViewShopPhno_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:fontFamily="@font/anonymous_pro"
+        android:text="$(shop_phno)"
+        android:textColor="#064E10"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/imageView4"
+        app:layout_constraintTop_toBottomOf="@+id/acceptOrderBtmViewShopPlaceAndKm_textView" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
