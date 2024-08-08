@@ -80,7 +80,7 @@
             android:elevation="8dp"
             android:fontFamily="@font/montserrat"
             android:gravity="center"
-            android:padding="@dimen/dp_16"
+            android:padding="16dp"
             android:text="@string/ADD_TO_CART"
             android:textColor="#FFC519"
             android:textSize="12sp"

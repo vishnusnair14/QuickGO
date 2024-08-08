@@ -44,11 +44,10 @@ public class ChatClient extends WebSocketListener {
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private boolean isActivityDestroyed = false;
     private RecyclerView chatRecycleView;
-    private DeliveryPartnerStatusListener deliveryPartnerStatusListener;
 
     public ChatClient(OrderTrackActivity activity, FirebaseUser user, RecyclerView chatRecycleView,
                       String chatId, TextView chatStatusTV, ProgressBar chatViewPB,
-                      TextView chatBtmStatusTV, EditText msgET, Button chatSendBtn, DeliveryPartnerStatusListener listener) {
+                      TextView chatBtmStatusTV, EditText msgET, Button chatSendBtn) {
         this.activity = activity;
         this.user = user;
         this.chatRecycleView = chatRecycleView;
@@ -57,7 +56,6 @@ public class ChatClient extends WebSocketListener {
         this.chatViewPB = chatViewPB;
         this.msgET = msgET;
         this.chatSendBtn = chatSendBtn;
-        this.deliveryPartnerStatusListener = listener;;
         client = new OkHttpClient();
 
         chatSendBtn.setEnabled(false);
@@ -119,7 +117,9 @@ public class ChatClient extends WebSocketListener {
             String receivedMessageTime = json.getString("message_time");
 
             if (!receivedUserId.equals(user.getUid())) {
-                mainHandler.post(() -> activity.addMessage(receivedUserName, receivedMessage, receivedMessageTime));
+
+                activity.runOnUiThread(() ->
+                        activity.addMessage(receivedUserName, receivedMessage, receivedMessageTime));
             }
         } catch (JSONException e) {
             Log.e(LOG_TAG, "JSON decode error: " + e.getMessage());
@@ -156,9 +156,18 @@ public class ChatClient extends WebSocketListener {
     public void sendMessage(String message, String messageTime) {
         if (webSocket != null) {
             try {
+                String username = user.getDisplayName();
+                if (username != null) {
+                    if (!username.isEmpty()) {
+                        username = "Unknown";
+                    }
+                } else {
+                    username = "Unknown";
+                }
+
                 JSONObject json = new JSONObject();
                 json.put("user_id", user.getUid());
-                json.put("user_name", user.getDisplayName());
+                json.put("user_name", username);
                 json.put("message", message);
                 json.put("client_type", "order");
                 json.put("message_time", messageTime);

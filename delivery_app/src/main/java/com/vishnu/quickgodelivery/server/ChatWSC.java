@@ -111,7 +111,7 @@ public class ChatWSC extends WebSocketListener {
     @Override
     public void onOpen(@NotNull WebSocket webSocket, @NotNull okhttp3.Response response) {
         Log.d(TAG, "WebSocket Connection opened");
-
+        retryCount = 0;
         mainHandler.post(() -> {
             chatBtmStatusTV.setTextColor(activity.getColor(R.color.wsc_connected));
             chatBtmStatusTV.setText(R.string.connected);
@@ -131,11 +131,11 @@ public class ChatWSC extends WebSocketListener {
         try {
             JSONObject json = new JSONObject(text);
             String message = json.getString("message");
-            String messageId = json.getString("user_id");
+            String receiverUserID = json.getString("user_id");
             String receivedUserName = json.getString("user_name");
             String receivedMessageTime = json.getString("message_time");
 
-            if (!messageId.equals(user.getUid())) {
+            if (!receiverUserID.equals(user.getUid())) {
                 activity.runOnUiThread(() -> {
                     if (obsOrderInformationFragment != null) {
                         obsOrderInformationFragment.addMessage(receivedUserName, message, receivedMessageTime);

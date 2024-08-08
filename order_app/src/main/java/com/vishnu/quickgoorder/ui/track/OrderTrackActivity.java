@@ -132,8 +132,8 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
 
         if (orderToTrackOrderID != null && !orderToTrackOrderID.isEmpty()) {
             fetchData(orderToTrackOrderID);
-            initSSE(orderToTrackOrderID, rootViewGroup);
-//            initChatBtmView(rootViewGroup);
+            initSSE(orderToTrackOrderID);
+            initChatBtmView(rootViewGroup);
         } else {
             Toast.makeText(this, "Invalid order-id", Toast.LENGTH_SHORT).show();
         }
@@ -148,7 +148,7 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
         });
 
         gotoMap.setOnClickListener(v -> {
-            startActivity(new Intent(OrderTrackActivity.this, MapActivity.class));
+
         });
 
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
@@ -193,20 +193,23 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
         }
     }
 
-    private void initSSE(String orderID, ViewGroup root) {
+    private void initSSE(String orderID) {
         sseClient = new SSEClient(this, user.getUid(), orderID);
 
         sseClient.setConnectionListener(new SSEClient.SSEConnectionListener() {
             @Override
             public void onConnected() {
                 runOnUiThread(() -> {
-                    initChatBtmView(root);
+                    Toast.makeText(OrderTrackActivity.this, "SSE connected", Toast.LENGTH_SHORT).show();
+
                 });
             }
 
             @Override
             public void onDisconnected() {
                 runOnUiThread(() -> {
+                    Toast.makeText(OrderTrackActivity.this, "SSE disconnected", Toast.LENGTH_SHORT).show();
+
                 });
             }
         });
@@ -266,7 +269,7 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
 
         chatClient = new ChatClient(this, user, chatRecyclerView, orderToTrackOrderID,
                 chatViewStatusTV, chatViewPB, chatViewBtmStatusTV,
-                messageET, chatSendBtn, this);
+                messageET, chatSendBtn);
 
         chatMessageList = new ArrayList<>();
         chatAdapter = new ChatAdapter(chatMessageList);
@@ -432,8 +435,6 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
         }
 
         if (chatClient != null) {
-//            chatWSC.webSocket.close(1000, "Client disconnected");
-//            chatWSC = null;
             chatClient.onActivityDestroyed();
 
         }

@@ -310,5 +310,6 @@
     <string name="store_preference_data_for_the_selected">Store preference data for the selected address was not found on the servers. Please set to continue.</string>
     <string name="use_default_address_for_delivery">Use default address for delivery.</string>
     <string name="checkout_summary">Checkout Summary</string>
+    <string name="cancel">Cancel</string>
 
 </resources>

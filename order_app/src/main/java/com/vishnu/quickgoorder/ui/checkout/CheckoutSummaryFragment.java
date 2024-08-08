@@ -59,6 +59,7 @@ public class CheckoutSummaryFragment extends Fragment {
     private BottomSheetDialog storePrefCheckFailedBtmView;
     String shopID;
     String shopDistrict;
+    String from;
 
 
     public CheckoutSummaryFragment() {
@@ -76,6 +77,7 @@ public class CheckoutSummaryFragment extends Fragment {
         if (getArguments() != null) {
             shopID = getArguments().getString("shop_id");
             shopDistrict = getArguments().getString("shop_district");
+            from = getArguments().getString("from");
 
             bundle.putString("from", getArguments().getString("from"));
             bundle.putString("shop_id", getArguments().getString("shop_id"));
@@ -110,21 +112,25 @@ public class CheckoutSummaryFragment extends Fragment {
 
         proceedToPaymentBtn.setOnClickListener(view -> {
             if (setDefaultAsDeliveryCheckBox.isChecked()) {
-                if (this.hasData == -1) {
-                    proceedToPaymentBtn.setText("PROCEED ANYWAY");
-                    showStorePrefCheckFailedProceedAnywayBtmView();
-                } else if (this.hasData == 0) {
-                    proceedToPaymentBtn.setText("SET PREFERENCE");
-                    showSetStorePreferenceBtmView();
-                } else if (this.hasData == 1) {
-                    Utils.vibrate(requireContext(), 50, 2);
+                if (from.equals("fromHomeOrderByVoiceFragment")) {
+                    if (this.hasData == -1) {
+                        proceedToPaymentBtn.setText("PROCEED ANYWAY");
+                        showStorePrefCheckFailedProceedAnywayBtmView();
+                    } else if (this.hasData == 0) {
+                        proceedToPaymentBtn.setText("SET PREFERENCE");
+                        showSetStorePreferenceBtmView();
+                    } else if (this.hasData == 1) {
+                        paymentIntent.putExtras(bundle);
+                        startActivity(paymentIntent);
+                        Utils.vibrate(requireContext(), 50, 2);
+                    } else {
+                        tryCheckForStorePrefData(null);
+                    }
+                } else {
                     paymentIntent.putExtras(bundle);
                     startActivity(paymentIntent);
                     Utils.vibrate(requireContext(), 50, 2);
-                } else {
-                    tryCheckForStorePrefData(null);
                 }
-
             } else if (!setDefaultAsDeliveryCheckBox.isChecked()) {
                 NavHostFragment.findNavController(this)
                         .navigate(R.id.action_checkoutSummaryFragment_to_savedAddressFragment);
@@ -327,6 +333,8 @@ public class CheckoutSummaryFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        checkAndSaveStorePrefDataState();
+        if (from.equals("fromHomeOrderByVoiceFragment")) {
+            checkAndSaveStorePrefDataState();
+        }
     }
 }

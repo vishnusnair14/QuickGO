@@ -99,6 +99,7 @@ public class HomeOrderByVoiceFragment extends Fragment {
     private SavedAddressAdapter savedAddressAdapter;
     private Chronometer chronometer;
     private BottomSheetDialog addressNotSelectedView;
+    private Runnable checkConditionRunnable;
 
     public HomeOrderByVoiceFragment() {
         // Required empty public constructor
@@ -126,6 +127,7 @@ public class HomeOrderByVoiceFragment extends Fragment {
 
         AppAudioDir = new File(externalFilesDir, "orderByVoice");
 
+
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -152,6 +154,21 @@ public class HomeOrderByVoiceFragment extends Fragment {
                 PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_TYPE, "Select an address"));
         binding.selectedFullAddressViewTextView.setText(preferences.getString(
                 PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_FULL_ADDRESS, "Tap on a delivery address to make it as default"));
+
+        // Define the Runnable
+        checkConditionRunnable = new Runnable() {
+            @Override
+            public void run() {
+                // Check your condition here
+                if (preferences.getString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_KEY, "None").equals("None")) {
+                    showAddressNotSelectedBtmView(root);
+
+                }
+
+                // Schedule the runnable to run again after 5 seconds
+                handler.postDelayed(this, 5000); // 5000ms = 5 seconds
+            }
+        };
 
         recordBtn.setOnTouchListener((v, event) -> {
             switch (event.getAction()) {
@@ -309,7 +326,7 @@ public class HomeOrderByVoiceFragment extends Fragment {
         }
     }
 
-    private void showAddressNotSelectedBtmView() {
+    private void showAddressNotSelectedBtmView(View root) {
         if (addressNotSelectedView == null) {
             View savedStorePrefView = LayoutInflater.from(requireContext()).inflate(
                     R.layout.bottomview_delivery_address_not_selected, null, false);
@@ -327,15 +344,22 @@ public class HomeOrderByVoiceFragment extends Fragment {
 //            });
 
             selectAddressBtn.setOnClickListener(v -> {
-                addressNotSelectedView.hide();
                 addressNotSelectedView.dismiss();
+                showSetDeliveryAddressBtmView(root);
             });
         }
 
         if (!addressNotSelectedView.isShowing()) {
-            addressNotSelectedView.show();
+            if (setDeliveryAddrBtmView == null) {
+                addressNotSelectedView.show();
+            } else if (!setDeliveryAddrBtmView.isShowing()) {
+                addressNotSelectedView.show();
+            } else {
+                Toast.makeText(requireContext(), "Select any address.", Toast.LENGTH_SHORT).show();
+            }
         }
     }
+
 
     private void showSetDeliveryAddressBtmView(View root) {
         View setDefAddrView = LayoutInflater.from(requireContext()).inflate(
@@ -582,4 +606,21 @@ public class HomeOrderByVoiceFragment extends Fragment {
         }
     };
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        handler.post(checkConditionRunnable);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        handler.removeCallbacks(checkConditionRunnable);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacksAndMessages(null);
+    }
 }
