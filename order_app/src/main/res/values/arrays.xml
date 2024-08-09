@@ -26,4 +26,66 @@
         <item>4</item>
     </string-array>
 
+    <string-array name="india_states_array">
+        <item>Select State</item>
+        <item>Kerala</item>
+        <item>Karnataka</item>
+    </string-array>
+
+    <string-array name="karnataka_districts_array">
+        <item>Select District</item>
+        <item>Mysuru</item>
+        <item>Bagalkot</item>
+        <item>Bangalore Rural</item>
+        <item>Bangalore Urban</item>
+        <item>Belagavi</item>
+        <item>Bellary</item>
+        <item>Bidar</item>
+        <item>Bijapur</item>
+        <item>Chamarajanagar</item>
+        <item>Chikkamagaluru</item>
+        <item>Chikkaballapura</item>
+        <item>Chitradurga</item>
+        <item>Dakshina Kannada</item>
+        <item>Davanagere</item>
+        <item>Dharwad</item>
+        <item>Gadag</item>
+        <item>Hassan</item>
+        <item>Haveri</item>
+        <item>Kodagu</item>
+        <item>Kolar</item>
+        <item>Koppal</item>
+        <item>Mandya</item>
+        <item>Raichur</item>
+        <item>Ramanagara</item>
+        <item>Shimoga</item>
+        <item>Tumkur</item>
+        <item>Udupi</item>
+        <item>Uttara Kannada</item>
+        <item>Yadgir</item>
+    </string-array>
+
+    <!-- Districts Array for Kerala -->
+    <string-array name="kerala_districts_array">
+        <item>Select District</item>
+        <item>Palakkad</item>
+        <item>Thiruvananthapuram</item>
+        <item>Kollam</item>
+        <item>Pathanamthitta</item>
+        <item>Alappuzha</item>
+        <item>Kottayam</item>
+        <item>Idukki</item>
+        <item>Ernakulam</item>
+        <item>Thrissur</item>
+        <item>Malappuram</item>
+        <item>Kozhikode</item>
+        <item>Wayanad</item>
+        <item>Kannur</item>
+        <item>Kasaragod</item>
+    </string-array>
+
+    <string-array name="empty_array">
+
+    </string-array>
+
 </resources>

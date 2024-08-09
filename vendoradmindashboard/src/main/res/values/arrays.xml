@@ -9,4 +9,89 @@
         <item>reply</item>
         <item>reply_all</item>
     </string-array>
+
+    <!-- Country Array -->
+    <string-array name="countries_array">
+        <item>India</item>
+    </string-array>
+
+    <!-- States Array for India -->
+    <string-array name="india_states_array">
+        <item>— Select —</item>
+        <item>Kerala</item>
+        <item>Maharashtra</item>
+        <item>Karnataka</item>
+        <item>Tamil Nadu</item>
+    </string-array>
+
+    <!-- Districts Array for Maharashtra -->
+    <string-array name="maharashtra_districts_array">
+        <item>Mumbai</item>
+        <item>Pune</item>
+        <item>Nagpur</item>
+    </string-array>
+
+    <!-- Districts Array for Karnataka -->
+    <string-array name="karnataka_districts_array">
+        <item>— Select —</item>
+        <item>Mysuru</item>
+        <item>Bagalkot</item>
+        <item>Bangalore Rural</item>
+        <item>Bangalore Urban</item>
+        <item>Belagavi</item>
+        <item>Bellary</item>
+        <item>Bidar</item>
+        <item>Bijapur</item>
+        <item>Chamarajanagar</item>
+        <item>Chikkamagaluru</item>
+        <item>Chikkaballapura</item>
+        <item>Chitradurga</item>
+        <item>Dakshina Kannada</item>
+        <item>Davanagere</item>
+        <item>Dharwad</item>
+        <item>Gadag</item>
+        <item>Hassan</item>
+        <item>Haveri</item>
+        <item>Kodagu</item>
+        <item>Kolar</item>
+        <item>Koppal</item>
+        <item>Mandya</item>
+        <item>Raichur</item>
+        <item>Ramanagara</item>
+        <item>Shimoga</item>
+        <item>Tumkur</item>
+        <item>Udupi</item>
+        <item>Uttara Kannada</item>
+        <item>Yadgir</item>
+    </string-array>
+
+    <!-- Districts Array for Kerala -->
+    <string-array name="kerala_districts_array">
+        <item>— Select —</item>
+        <item>Palakkad</item>
+        <item>Thiruvananthapuram</item>
+        <item>Kollam</item>
+        <item>Pathanamthitta</item>
+        <item>Alappuzha</item>
+        <item>Kottayam</item>
+        <item>Idukki</item>
+        <item>Ernakulam</item>
+        <item>Thrissur</item>
+        <item>Malappuram</item>
+        <item>Kozhikode</item>
+        <item>Wayanad</item>
+        <item>Kannur</item>
+        <item>Kasaragod</item>
+    </string-array>
+
+    <!-- Districts Array for Tamil Nadu -->
+    <string-array name="tamil_nadu_districts_array">
+        <item>Chennai</item>
+        <item>Coimbatore</item>
+        <item>Madurai</item>
+    </string-array>
+
+
+    <string-array name="none_array">
+    </string-array>
 </resources>

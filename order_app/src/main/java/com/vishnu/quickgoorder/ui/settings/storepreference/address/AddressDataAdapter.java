@@ -172,11 +172,12 @@ public class AddressDataAdapter extends RecyclerView.Adapter<AddressDataAdapter.
 
         private void overwriteStorePrefData(@NonNull AddressData addressData) {
             Bundle args = new Bundle();
-            args.putDouble("param_lat", addressData.getAddressLat());
-            args.putDouble("param_lon", addressData.getAddressLon());
-            args.putString("param_city", addressData.getCity());
-            args.putString("param_pincode", addressData.getPincode());
-            args.putString("param_phone", addressData.getPhoneNo());
+            args.putDouble("addr_lat", addressData.getAddressLat());
+            args.putDouble("addr_lon", addressData.getAddressLon());
+            args.putString("addr_state", addressData.getState());
+            args.putString("addr_district", addressData.getDistrict());
+            args.putString("addr_pincode", addressData.getPincode());
+            args.putString("addr_phone", addressData.getPhoneNo());
 
             Navigation.findNavController(itemView).navigate(
                     R.id.action_nav_store_pref_address_to_nav_store_pref_store, args);

@@ -125,9 +125,9 @@
 
                     <ProgressBar
                         android:id="@+id/serverStatus_progressBar"
-                        style="?android:attr/progressBarStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="@+id/shopInfoFragment_recycleView"
                         app:layout_constraintStart_toStartOf="parent"

@@ -93,7 +93,7 @@ public class HomeRecommendationFragment extends Fragment {
     JsonObject shopData;
     TextView recommendedForYouTV;
     TextView serverStatusFeedbackTV;
-    ProgressBar serverStatusFeedbackPB;
+    ProgressBar shopsRecycleViewPB;
     SharedPreferences preferences;
     SharedPreferences settingsPreferences;
     Button enableLocationBtn;
@@ -147,7 +147,7 @@ public class HomeRecommendationFragment extends Fragment {
 
         serverStatusFeedbackTV = binding.serverStatusFeedbackTextView;
         recommendedForYouTV = binding.recommendedForYouTextView;
-        serverStatusFeedbackPB = binding.serverStatusProgressBar;
+        shopsRecycleViewPB = binding.serverStatusProgressBar;
         trackOrderFab = binding.trackOrder0Fab;
         locationTV = binding.locationViewTextView;
 //        nearbyShopCardView = binding.recommendedShopsCardView;
@@ -183,6 +183,12 @@ public class HomeRecommendationFragment extends Fragment {
             preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_FRAGMENT_AUDIO_REF_ID, Utils.generateAudioRefID()).apply();
             Toast.makeText(requireContext(), preferences.getString(
                     PreferenceKeys.HOME_RECOMMENDATION_FRAGMENT_AUDIO_REF_ID, "0"), Toast.LENGTH_SHORT).show();
+        }
+
+        if (preferences.getString(PreferenceKeys.HOME_RECOMMENDATION_FRAGMENT_ORDER_ID, "0").equals("0")) {
+            preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_FRAGMENT_ORDER_ID, Utils.generateOrderID()).apply();
+        } else {
+            Log.d(LOG_TAG, PreferenceKeys.HOME_RECOMMENDATION_FRAGMENT_ORDER_ID + ": already exists");
         }
 
         return root;
@@ -535,7 +541,7 @@ public class HomeRecommendationFragment extends Fragment {
             EventBus.getDefault().post(new EBSyncEmptyShopData("{'recommended_shop_data':[]}", 1274));
 
             //TODO: update auto detect pincode
-            getRecommendedShopsData(binding, latitude, longitude, "NONE", "NONE");
+            getRecommendedShopsData(binding, latitude, longitude, "None", "NONE", "NONE");
             preferences.edit().putBoolean(PreferenceKeys.IS_SET_TO_CURRENT_LOCATION, true).apply();
             preferences.edit().putString("currentLocLat", String.valueOf(latitude)).apply();
             preferences.edit().putString("currentLocLon", String.valueOf(longitude)).apply();
@@ -552,13 +558,13 @@ public class HomeRecommendationFragment extends Fragment {
     }
 
     private void getRecommendedShopsData(FragmentHomeRecommendationBinding binding,
-                                         double la, double lo, String user_city, String pincode) {
+                                         double la, double lo, String user_state, String user_district, String user_pincode) {
 
-        serverStatusFeedbackPB.setVisibility(View.VISIBLE);
+        shopsRecycleViewPB.setVisibility(View.VISIBLE);
         serverStatusFeedbackTV.setVisibility(View.VISIBLE);
 
         APIService apiService = ApiServiceGenerator.getApiService(requireContext());
-        Call<JsonObject> call3499 = apiService.getShopRecommendations(la, lo, user_city, pincode);
+        Call<JsonObject> call3499 = apiService.getShopRecommendations(la, lo, user_state, user_district, user_pincode);
 
         int SERVER_CALL_MID_LIMIT = 5;
 
@@ -579,6 +585,7 @@ public class HomeRecommendationFragment extends Fragment {
             public void onResponse(@NonNull Call<JsonObject> call34, @NonNull Response<JsonObject> response) {
                 if (response.isSuccessful()) {
 //                  serverStatusFeedbackTV.setText(R.string.fetching_data);
+                    shopsRecycleViewPB.setVisibility(View.GONE);
                     shopData = response.body();
                     assert shopData != null;
 
@@ -593,11 +600,11 @@ public class HomeRecommendationFragment extends Fragment {
                             preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_CURRENT_SHOP_PINCODE, shopData.get("shop_pincode").getAsString()).apply();
 
 //                            Toast.makeText(requireContext(), preferences.getString(PreferenceKeys.HOME_RECOMMENDATION_CURRENT_SHOP_PINCODE, "0"), Toast.LENGTH_SHORT).show();
-                            serverStatusFeedbackTV.setVisibility(View.INVISIBLE);
-                            serverStatusFeedbackPB.setVisibility(View.INVISIBLE);
+                            serverStatusFeedbackTV.setVisibility(View.GONE);
+                            shopsRecycleViewPB.setVisibility(View.GONE);
                         } else {
                             deleteShopDataFile(requireContext());
-                            serverStatusFeedbackPB.setVisibility(View.INVISIBLE);
+                            shopsRecycleViewPB.setVisibility(View.GONE);
                             serverStatusFeedbackTV.setTextColor(getResources().getColor(R.color.serverStatusFeedbackNoShopsFoundColor, null));
                             serverStatusFeedbackTV.setText(R.string.no_nearby_shops_found);
 
@@ -616,13 +623,13 @@ public class HomeRecommendationFragment extends Fragment {
                         if (serverContactFlag <= SERVER_CALL_MAX_LIMIT) {
                             serverStatusFeedbackTV.setVisibility(View.VISIBLE);
                             serverStatusFeedbackTV.setText(R.string.connecting_to_server);
-                            getRecommendedShopsData(binding, la, lo, user_city, pincode);
+                            getRecommendedShopsData(binding, la, lo, user_state, user_district, user_pincode);
                             serverContactFlag++;
                         }
                         if (serverContactFlag > SERVER_CALL_MAX_LIMIT) {
                             serverStatusFeedbackTV.setTextColor(getResources().getColor(R.color.serverStatusFeedbackTryAgainColor, null));
                             serverStatusFeedbackTV.setText(R.string.server_offline1);
-                            serverStatusFeedbackPB.setVisibility(View.GONE);
+                            shopsRecycleViewPB.setVisibility(View.GONE);
                         }
                     }, 2000);
                 }
@@ -632,6 +639,7 @@ public class HomeRecommendationFragment extends Fragment {
             public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
                 Log.e(LOG_TAG, "Unable to contact server at the moment!");
                 Log.e(LOG_TAG, "Server offline maybe!");
+                shopsRecycleViewPB.setVisibility(View.GONE);
                 serverStatusFeedbackTV.setTextColor(getResources().getColor(R.color.serverStatusFeedbackOfflineColor, null));
             }
         });
@@ -815,7 +823,7 @@ public class HomeRecommendationFragment extends Fragment {
         preferences.edit().putString("selectedDeliveryAddressLat", Double.toString(ad.addr_lat)).apply();
         preferences.edit().putString("selectedDeliveryAddressLon", Double.toString(ad.addr_lon)).apply();
 
-        getRecommendedShopsData(binding, ad.addr_lat, ad.addr_lon, ad.addr_city, ad.pincode);
+        getRecommendedShopsData(binding, ad.addr_lat, ad.addr_lon, ad.addr_state, ad.addr_district, ad.pincode);
         if (setDeliveryAddrBtmView != null && setDeliveryAddrBtmView.isShowing()) {
             setDeliveryAddrBtmView.hide();
         }

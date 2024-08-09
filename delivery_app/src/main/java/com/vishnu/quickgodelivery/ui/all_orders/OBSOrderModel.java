@@ -14,6 +14,7 @@ public class OBSOrderModel implements OrderModel {
     private double pickup_destination_distance;
     private String shop_id;
     private String shop_name;
+    private String user_phno;
     private String shop_phno;
     private String user_id;
 
@@ -30,6 +31,11 @@ public class OBSOrderModel implements OrderModel {
     @Override
     public String getOrder_type() {
         return order_type;
+    }
+
+    @Override
+    public String getUser_phno() {
+        return user_phno;
     }
 
     @Override

@@ -66,10 +66,9 @@ public class OBVOrderInformationFragment extends Fragment {
     FirebaseFirestore db;
     FirebaseUser user;
     TextView callUserIV;
-    TextView callShopIV;
     Button showDeliveryLocOnMapBtn;
-    Button showShopLocOnMapBtn;
-    String orderKey;
+    private String orderKey;
+    private String userPhno;
     Intent callIntent;
     String receiverPhno;
     String shopPhno;
@@ -83,7 +82,7 @@ public class OBVOrderInformationFragment extends Fragment {
     TextView chatBtmStatusTV;
     TextView chatStatusTV;
     ProgressBar chatStatusPB;
-    FloatingActionButton chatFab;
+    Button chatFab;
     private RecyclerView recyclerView;
     private List<MessageModel> messageList;
     BottomSheetDialog chatBtmDialogView;
@@ -95,6 +94,7 @@ public class OBVOrderInformationFragment extends Fragment {
     private String orderByVoiceDocID;
     private GridView gridView;
     private TextView gridViewStatusTV;
+    private TextView statusTV;
 
     private FragmentObvOrderInformationBinding binding;
 
@@ -110,10 +110,12 @@ public class OBVOrderInformationFragment extends Fragment {
         if (arguments != null) {
             userID = arguments.getString("user_id");
             orderKey = arguments.getString("order_id");
+            userPhno = arguments.getString("user_phno");
             orderType = arguments.getString("order_by_voice_type");
             orderByVoiceDocID = arguments.getString("order_by_voice_doc_id");
             orderByVoiceAudioRefID = arguments.getString("order_by_voice_audio_ref_id");
         }
+
 
         db = FirebaseFirestore.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
@@ -130,11 +132,27 @@ public class OBVOrderInformationFragment extends Fragment {
 
         callUserIV = binding.obvOrderInfoCallOrderReceiverClientTextView;
         showDeliveryLocOnMapBtn = binding.obvOrderInfoShowDeliveryDestnOnMapButton;
-        chatFab = binding.obvOrderInfoChatFloatingActionButton;
+        chatFab = binding.obvChatFloatingActionButton;
         gridView = binding.storePrefShopDataGridView;
         gridViewStatusTV = binding.storePrefShopDetailsGridViewStatusTextView;
+        statusTV = binding.orderInfoObvStatusTVTextView;
 
 //        gridViewStatusTV.setVisibility(View.GONE);
+
+        statusTV.setOnClickListener(v -> {
+            fetchData(orderKey, chatId -> {
+                if (chatId != null) {
+                    // TODO: migrate to base activity
+                    chatWSC = new ChatWSC(requireActivity(), this, user, chatId, chatStatusTV,
+                            chatStatusPB, chatBtmStatusTV, messageET, chatSendBtn);
+                } else {
+                    Toast.makeText(requireContext(), "No channel for chat found!",
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+
+        statusTV.setVisibility(View.GONE);
 
         messageList = new ArrayList<>();
         messageAdapter = new MessageAdapter(messageList);
@@ -178,7 +196,7 @@ public class OBVOrderInformationFragment extends Fragment {
             }
         });
 
-        binding.allDeliveryOptionsFloatingActionButton.setOnClickListener(v -> showAllDeliveryOptionsBtmView());
+        binding.obvAllDeliveryOptionsFloatingActionButton.setOnClickListener(v -> showAllDeliveryOptionsBtmView());
 
         return root;
     }
@@ -245,10 +263,10 @@ public class OBVOrderInformationFragment extends Fragment {
         Uri gmmIntentUri = Uri.parse("https://www.google.com/maps/dir/?api=1&destination=" +
                 destLat + "," + destLng + "&travelmode=driving");
 
-        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-        mapIntent.setPackage("com.google.android.apps.maps");
+        Intent mapIntent = new Intent(Intent.CATEGORY_APP_MAPS, gmmIntentUri);
+//        mapIntent.setPackage("com.google.android.apps.maps");
         if (mapIntent.resolveActivity(requireActivity().getPackageManager()) != null) {
-            startActivity(mapIntent);
+            this.startActivity(mapIntent);
         }
     }
 
@@ -294,8 +312,9 @@ public class OBVOrderInformationFragment extends Fragment {
 
 
     private void fetchData(String key, ChatID chatID) {
+        statusTV.setVisibility(View.GONE);
         APIService apiService = ApiServiceGenerator.getApiService(requireContext());
-        Call<JsonObject> call = apiService.fetchOrderData(orderType, userID, user.getUid(), key);
+        Call<JsonObject> call = apiService.fetchOrderData(orderType, userID, user.getUid(), userPhno, key);
 
         call.enqueue(new Callback<>() {
             @Override
@@ -303,6 +322,7 @@ public class OBVOrderInformationFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null) {
                     handleResponse(response.body(), chatID);
                 } else {
+                    binding.obvOrderInfoLoadingPBProgressBar.setVisibility(View.GONE);
                     logError("Response is not successful or body is null.");
                 }
             }
@@ -310,6 +330,9 @@ public class OBVOrderInformationFragment extends Fragment {
             @Override
             public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
                 logError("Error fetching document: " + t.getMessage());
+                statusTV.setVisibility(View.VISIBLE);
+                statusTV.setText(R.string.unable_to_fetch_data_at_the_moment);
+                binding.obvOrderInfoLoadingPBProgressBar.setVisibility(View.GONE);
                 Toast.makeText(requireContext(), "Network error. Please try again.", Toast.LENGTH_SHORT).show();
             }
         });
@@ -535,7 +558,7 @@ public class OBVOrderInformationFragment extends Fragment {
                     shopObject.get("shop_pincode").getAsString(),
                     shopObject.get("shop_lat").getAsDouble(),
                     shopObject.get("shop_lon").getAsDouble(),
-                    shopObject.get("shop_city").getAsString(),
+                    shopObject.get("shop_state").getAsString(),
                     shopObject.get("shop_name").getAsString(),
                     shopObject.get("shop_address").getAsString(),
                     shopObject.get("shop_preference").getAsInt(),
@@ -633,8 +656,8 @@ public class OBVOrderInformationFragment extends Fragment {
         binding.textView7.setVisibility(View.VISIBLE);
         binding.obvobvOrderInfoReceiverFullAddressViewTextView.setVisibility(View.VISIBLE);
         showDeliveryLocOnMapBtn.setVisibility(View.VISIBLE);
-        binding.obvOrderInfoChatFloatingActionButton.setVisibility(View.VISIBLE);
-        binding.allDeliveryOptionsFloatingActionButton.setVisibility(View.VISIBLE);
+        binding.obvChatFloatingActionButton.setVisibility(View.VISIBLE);
+        binding.obvAllDeliveryOptionsFloatingActionButton.setVisibility(View.VISIBLE);
     }
 
     private void showLoadingUI() {
@@ -644,8 +667,8 @@ public class OBVOrderInformationFragment extends Fragment {
         binding.textView7.setVisibility(View.GONE);
         binding.obvobvOrderInfoReceiverFullAddressViewTextView.setVisibility(View.GONE);
         showDeliveryLocOnMapBtn.setVisibility(View.GONE);
-        binding.obvOrderInfoChatFloatingActionButton.setVisibility(View.GONE);
-        binding.allDeliveryOptionsFloatingActionButton.setVisibility(View.GONE);
+        binding.obvChatFloatingActionButton.setVisibility(View.GONE);
+        binding.obvAllDeliveryOptionsFloatingActionButton.setVisibility(View.GONE);
     }
 
 
@@ -666,8 +689,8 @@ public class OBVOrderInformationFragment extends Fragment {
         progressBar.setVisibility(View.GONE);
 
         subTitle.setText(MessageFormat.format("Are you sure you want to call +91 {0}?" +
-                "\nThis action will use your phone''s call functionality, " +
-                "which applies standard carrier charges.", phno));
+                "This action will use your phone''s call functionality, " +
+                "applies standard carrier charges.", phno));
 
         proceedBtn.setOnClickListener(v -> {
             progressBar.setVisibility(View.VISIBLE);

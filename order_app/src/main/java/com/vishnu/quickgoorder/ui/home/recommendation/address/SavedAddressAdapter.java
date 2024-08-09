@@ -134,7 +134,7 @@ public class SavedAddressAdapter extends RecyclerView.Adapter<SavedAddressAdapte
             // Set the values to their respective TextViews
             fullAddressTV.setText(MessageFormat.format("{0}", address.getStreetAddress()));
             addressCityPincodeTV.setText(MessageFormat.format("{0}{1} | {2}",
-                    address.getCity().substring(0, 1).toUpperCase(), address.getCity().substring(1), address.getPincode()));
+                    address.getDistrict().substring(0, 1).toUpperCase(), address.getDistrict().substring(1), address.getPincode()));
             addressLocationTV.setText(MessageFormat.format("{0}°N {1}°E", address.getAddressLat(), address.getAddressLon()));
             addressNameViewTV.setText(MessageFormat.format("{0}", address.getName()));
 
@@ -161,7 +161,7 @@ public class SavedAddressAdapter extends RecyclerView.Adapter<SavedAddressAdapte
                     EventBus.getDefault().post(new EBSyncEmptyShopData("{'recommended_shop_data':[]}", 1273));
 
                     EventBus.getDefault().post(new EBDeliveryAddressData(address.getAddressLat(),
-                            address.getAddressLon(), address.getCity(),
+                            address.getAddressLon(), address.getState(), address.getDistrict(),
                             address.getPhoneNo(), address.getPincode(), address.getStreetAddress()));
                 } else {
                     setDeliveryAddrBtmView.hide();

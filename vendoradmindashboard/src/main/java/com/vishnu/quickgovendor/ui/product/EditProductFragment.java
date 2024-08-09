@@ -49,7 +49,7 @@ public class EditProductFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         shopID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
-        shopIdRef = db.collection("RetailerData").document("ShopIDMap").collection("ShopItemData").document(shopID);
+        shopIdRef = db.collection("ShopData").document("itemData").collection("allAvailableItems").document(shopID);
     }
 
     @Override

@@ -90,7 +90,8 @@ public class EditProductVA extends RecyclerView.Adapter<EditProductVA.ViewHolder
 
     private void removeFieldFromDocument(String fieldName) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference docRef = db.collection("RetailerData").document("ShopIDMap").collection("ShopItemData").document(shopID);
+        DocumentReference docRef = db.collection("ShopData").document("itemData")
+                .collection("allAvailableItems").document(shopID);
 
         Map<String, Object> updates = new HashMap<>();
         updates.put(fieldName, FieldValue.delete());

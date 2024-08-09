@@ -48,166 +48,218 @@
                 android:id="@+id/textView9"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16sp"
+                android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
-                android:fontFamily="@font/archivo_black"
+                android:fontFamily="@font/archivo"
                 android:text="@string/shop_details"
-                android:textSize="18sp" />
+                android:textAllCaps="true"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView3"
-                style="@style/Widget.Material3.CardView.Filled"
+                style="@style/Widget.Material3.CardView.Elevated"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="16sp"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="6dp">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/orderInfoShopNameView_textView"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="3dp"
-                        android:layout_marginTop="3dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="3dp"
                         android:fontFamily="@font/montserrat"
                         android:padding="3dp"
                         android:text="@string/shop_name"
                         android:textSize="16sp"
-                        android:textStyle="bold"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:textStyle="bold" />
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                    <LinearLayout
+                        style="?android:attr/buttonBarStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="24dp"
+                        android:background="#E3E8F1"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/callShopClient_textView"
+                            style="?android:attr/buttonBarButtonStyle"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/montserrat"
+                            android:gravity="center"
+                            android:text="@string/call"
+                            android:textAllCaps="true"
+                            android:textStyle="bold" />
+
+                        <Button
+                            android:id="@+id/showShopDestnOnMap_button"
+                            style="?android:attr/buttonBarButtonStyle"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginStart="@dimen/m3_btn_dialog_btn_spacing"
+                            android:layout_marginEnd="@dimen/m3_btn_dialog_btn_spacing"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/montserrat"
+                            android:text="SHOW ON MAP"
+                            android:textAllCaps="true"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                </LinearLayout>
 
             </androidx.cardview.widget.CardView>
-
-            <Button
-                android:id="@+id/callShopClient_textView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="5dp"
-                android:fontFamily="@font/montserrat"
-                android:gravity="center"
-                android:text="Call Shop"
-                android:textAllCaps="true"
-                android:textStyle="bold" />
-
-            <Button
-                android:id="@+id/showShopDestnOnMap_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="5dp"
-                android:fontFamily="@font/montserrat"
-                android:text="SHOW SHOP ON MAP"
-                android:textAllCaps="true"
-                android:textStyle="bold" />
 
             <View
                 android:id="@+id/separator"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_margin="16dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="8dp"
                 android:background="@color/separatorColor" />
 
             <TextView
                 android:id="@+id/textView7"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16sp"
-                android:layout_marginTop="8dp"
-                android:fontFamily="@font/archivo_black"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16sp"
+                android:fontFamily="@font/archivo"
                 android:text="@string/delivery_details"
-                android:textSize="18sp" />
+                android:textAllCaps="true"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView1"
-                style="@style/Widget.Material3.CardView.Filled"
+                style="@style/Widget.Material3.CardView.Elevated"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="16dp"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="6dp">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/orderInfoReceiverFullAddressView_textView"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="3dp"
-                        android:layout_marginTop="3dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="3dp"
                         android:fontFamily="@font/montserrat"
                         android:padding="3dp"
                         android:text="@string/receiver_full_addr"
                         android:textSize="16sp"
-                        android:textStyle="bold"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:textStyle="bold" />
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                    <LinearLayout
+                        style="?android:attr/buttonBarStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="24dp"
+                        android:background="#E3E8F1"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/callOrderReceiverClient_textView"
+                            style="?android:attr/buttonBarButtonStyle"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/montserrat"
+                            android:gravity="center"
+                            android:text="@string/call"
+                            android:textAllCaps="true"
+                            android:textStyle="bold" />
+
+                        <Button
+                            android:id="@+id/showDeliveryDestnOnMap_button"
+                            style="?android:attr/buttonBarButtonStyle"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="@dimen/m3_btn_dialog_btn_spacing"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/montserrat"
+                            android:text="SHOW ON MAP"
+                            android:textAllCaps="true"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                </LinearLayout>
 
             </androidx.cardview.widget.CardView>
-
-            <Button
-                android:id="@+id/callOrderReceiverClient_textView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="5dp"
-                android:fontFamily="@font/montserrat"
-                android:gravity="center"
-                android:text="Call Client"
-                android:textAllCaps="true"
-                android:textStyle="bold" />
-
-            <Button
-                android:id="@+id/showDeliveryDestnOnMap_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="5dp"
-                android:layout_marginBottom="32dp"
-                android:fontFamily="@font/montserrat"
-                android:text="SHOW DELIVERY ON MAP"
-                android:textAllCaps="true"
-                android:textStyle="bold" />
 
         </LinearLayout>
     </ScrollView>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/chat_floatingActionButton"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/linearLayout5"
+        style="?android:attr/buttonBarStyle"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:src="@drawable/baseline_message_24"
+        android:background="@color/md_theme_primary"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/allDeliveryOptions_floatingActionButton" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/allDeliveryOptions_floatingActionButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:src="@drawable/baseline_delivery_dining_24"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <Button
+            android:id="@+id/chat_floatingActionButton"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:fontFamily="@font/montserrat"
+            android:padding="12dp"
+            android:text="CHAT"
+            android:textColor="@color/md_theme_onPrimary"
+            android:textStyle="bold"
+            app:icon="@drawable/baseline_chat_24"
+            app:iconTint="@color/md_theme_onPrimary" />
 
-
+        <Button
+            android:id="@+id/allDeliveryOptions_floatingActionButton"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:fontFamily="@font/montserrat"
+            android:padding="12dp"
+            android:text="DELIVERY OPTIONS"
+            android:textColor="@color/md_theme_onPrimary"
+            android:textStyle="bold"
+            app:icon="@drawable/baseline_next_plan_24"
+            app:iconTint="@color/md_theme_onPrimary" />
+    </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

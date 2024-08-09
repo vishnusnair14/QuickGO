@@ -67,8 +67,8 @@ public class AddProductFragment extends Fragment {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         assert user != null;
-        retailerAddNewProductRef = db.collection("RetailerData").document("ShopIDMap")
-                .collection("ShopItemData").document(user.getUid());
+        retailerAddNewProductRef = db.collection("ShopData").document("itemData")
+                .collection("allAvailableItems").document(user.getUid());
 
         retailerIDRef = db.collection("AuthenticationData").document("RegisteredUsersEmail");
 

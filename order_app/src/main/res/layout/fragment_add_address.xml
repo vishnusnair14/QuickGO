@@ -40,293 +40,297 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/authBanner_textView" />
+        app:layout_constraintTop_toBottomOf="@id/authBanner_textView" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/addNewAddress_cardView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_margin="8dp"
         android:layout_marginTop="5dp"
-        app:cardCornerRadius="25dp"
+        app:cardCornerRadius="16dp"
         app:cardElevation="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintTop_toBottomOf="@id/textView">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#B2FBF7F7">
+            android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/textView11"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="20dp"
-                android:fontFamily="@font/montserrat"
-                android:text="@string/enter_your_name"
-                android:textColor="#6750A3"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <EditText
-                android:id="@+id/nameNewAddress_editText"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp"
-                android:alpha="1.5"
-                android:ems="10"
-                android:fontFamily="@font/montserrat"
-                android:hint="@string/name"
-                android:inputType="text"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView11" />
+                android:background="#B2FBF7F7"
+                android:orientation="vertical"
+                android:padding="8dp">
 
-            <TextView
-                android:id="@+id/textView26"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="15dp"
-                android:fontFamily="@font/montserrat"
-                android:text="@string/enter_your_delivery_address"
-                android:textColor="#6750A3"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/nameNewAddress_editText" />
+                <!-- Your form content here -->
 
-            <EditText
-                android:id="@+id/streetNewAddress_editText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp"
-                android:alpha="1.5"
-                android:ems="10"
-                android:fontFamily="@font/montserrat"
-                android:hint="@string/street_address"
-                android:inputType="textMultiLine"
-                android:nestedScrollingEnabled="false"
-                android:singleLine="false"
-                android:text="vishnu vihar, kaithakuzhi, erattukulam PO, (via) elappulli"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView26" />
-
-            <TextView
-                android:id="@+id/textView28"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:layout_marginEnd="5dp"
-                android:fontFamily="@font/montserrat"
-                android:text="@string/enter_your_pincode"
-                android:textColor="#6750A2"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/landmarkNewAddress_editText" />
-
-            <EditText
-                android:id="@+id/pincode_textBox"
-                android:layout_width="110dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="5dp"
-                android:ems="10"
-                android:fontFamily="@font/montserrat"
-                android:gravity="center"
-                android:hint="@string/pin_code"
-                android:inputType="number"
-                android:paddingStart="10dp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView28" />
-
-            <TextView
-                android:id="@+id/textView29"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="15dp"
-                android:fontFamily="@font/montserrat"
-                android:text="Enter any nearby landmarks"
-                android:textColor="#6750A3"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/streetNewAddress_editText" />
-
-            <EditText
-                android:id="@+id/landmarkNewAddress_editText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp"
-                android:ems="10"
-                android:fontFamily="@font/montserrat"
-                android:hint="@string/landmark"
-                android:inputType="textMultiLine"
-                android:paddingStart="1dp"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView29" />
-
-            <TextView
-                android:id="@+id/textView30"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="5dp"
-                android:fontFamily="@font/montserrat"
-                android:text="@string/select_address_type"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cityStateView_textView" />
-
-            <TextView
-                android:id="@+id/postOffValidateName_textView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#146131"
-                android:textSize="12sp"
-                app:layout_constraintEnd_toEndOf="@+id/pincode_textBox"
-                app:layout_constraintTop_toBottomOf="@+id/pincode_textBox" />
-
-            <CheckBox
-                android:id="@+id/setAsDefaultAddressBool_checkBox"
-                android:layout_width="wrap_content"
-                android:layout_height="20dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="10dp"
-                android:fontFamily="@font/montserrat"
-                android:text="@string/set_this_as_my_default_address"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/addressType_radioGroup" />
-
-            <RadioGroup
-                android:id="@+id/addressType_radioGroup"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:orientation="horizontal"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView30">
-
-                <RadioButton
-                    android:id="@+id/homeType_radioButton"
+                <TextView
+                    android:id="@+id/textView11"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     android:fontFamily="@font/montserrat"
-                    android:text="@string/home"
+                    android:text="@string/enter_your_name"
+                    android:textColor="#6750A3"
+                    android:textSize="16sp"
                     android:textStyle="bold" />
 
-                <RadioButton
-                    android:id="@+id/workType_radioButton"
+                <EditText
+                    android:id="@+id/nameNewAddress_editText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:alpha="1.5"
+                    android:ems="10"
+                    android:fontFamily="@font/montserrat"
+                    android:hint="@string/name"
+                    android:inputType="text"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textView26"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
                     android:fontFamily="@font/montserrat"
-                    android:text="@string/work"
+                    android:text="@string/enter_your_delivery_address"
+                    android:textColor="#6750A3"
+                    android:textSize="16sp"
                     android:textStyle="bold" />
 
-                <RadioButton
-                    android:id="@+id/otherType_radioButton"
+                <EditText
+                    android:id="@+id/streetNewAddress_editText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:alpha="1.5"
+                    android:ems="10"
+                    android:fontFamily="@font/montserrat"
+                    android:hint="@string/street_address"
+                    android:inputType="textMultiLine"
+                    android:singleLine="false"
+                    android:text="vishnu vihar, kaithakuzhi, erattukulam PO, (via) elappulli"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textView29"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
                     android:fontFamily="@font/montserrat"
-                    android:text="@string/other"
-                    android:textAlignment="textStart"
+                    android:text="Enter any nearby landmarks"
+                    android:textColor="#6750A3"
+                    android:textSize="16sp"
                     android:textStyle="bold" />
 
-            </RadioGroup>
+                <EditText
+                    android:id="@+id/landmarkNewAddress_editText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:ems="10"
+                    android:fontFamily="@font/montserrat"
+                    android:hint="@string/landmark"
+                    android:inputType="textMultiLine"
+                    android:paddingStart="1dp"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/textView36"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="15dp"
-                android:fontFamily="@font/montserrat"
-                android:text="@string/enter_phone_no"
-                android:textColor="#6750A2"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/landmarkNewAddress_editText" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/phoneNumber_editTextText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:ems="10"
-                android:fontFamily="@font/montserrat"
-                android:hint="@string/phone_no"
-                android:inputType="phone"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView36" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/cityStateView_textView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="5dp"
-                android:fontFamily="courier new"
-                android:textColor="#9F9A9A"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/postOffValidateName_textView" />
+                        <TextView
+                            android:id="@+id/textView28"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end"
+                            android:layout_marginTop="15dp"
+                            android:layout_marginEnd="5dp"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/montserrat"
+                            android:text="@string/enter_your_pincode"
+                            android:textColor="#6750A2"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/addNewAddress_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="35dp"
-                android:background="#3E9A41"
-                android:elevation="5dp"
-                android:fontFamily="@font/montserrat"
-                android:gravity="center"
-                android:includeFontPadding="false"
-                android:padding="10dp"
-                android:text="@string/add_address"
-                android:textColor="#FFFFFF"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/setAsDefaultAddressBool_checkBox" />
+                        <TextView
+                            android:id="@+id/textView36"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:layout_weight="2"
+                            android:fontFamily="@font/montserrat"
+                            android:text="@string/enter_phone_no"
+                            android:textColor="#6750A2"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/addFragLocationView_textView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:fontFamily="@font/anonymous_pro"
-                android:textSize="11sp"
-                app:layout_constraintBottom_toTopOf="@+id/addNewAddress_button"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/setAsDefaultAddressBool_checkBox" />
+                    </LinearLayout>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <EditText
+                            android:id="@+id/pincode_textBox"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end"
+                            android:layout_marginEnd="5dp"
+                            android:layout_weight="1"
+                            android:ems="10"
+                            android:fontFamily="@font/montserrat"
+                            android:gravity="center"
+                            android:hint="@string/pin_code"
+                            android:inputType="number"
+                            android:paddingStart="10dp"
+                            android:textStyle="bold" />
+
+                        <EditText
+                            android:id="@+id/phoneNumber_editTextText"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:layout_weight="2"
+                            android:ems="10"
+                            android:fontFamily="@font/montserrat"
+                            android:hint="@string/phone_no"
+                            android:inputType="phone"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/postOffValidateName_textView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:textColor="#146131"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/cityStateView_textView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:fontFamily="courier new"
+                        android:textColor="#9F9A9A"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linearLayout5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:orientation="horizontal">
+
+                    <Spinner
+                        android:id="@+id/spinner_state"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <Spinner
+                        android:id="@+id/spinner_district"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/textView30"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:fontFamily="@font/montserrat"
+                    android:text="@string/select_address_type"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <RadioGroup
+                    android:id="@+id/addressType_radioGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/homeType_radioButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/montserrat"
+                        android:text="@string/home"
+                        android:textStyle="bold" />
+
+                    <RadioButton
+                        android:id="@+id/workType_radioButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/montserrat"
+                        android:text="@string/work"
+                        android:textStyle="bold" />
+
+                    <RadioButton
+                        android:id="@+id/otherType_radioButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/montserrat"
+                        android:text="@string/other"
+                        android:textAlignment="textStart"
+                        android:textStyle="bold" />
+
+                </RadioGroup>
+
+                <CheckBox
+                    android:id="@+id/setAsDefaultAddressBool_checkBox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:fontFamily="@font/montserrat"
+                    android:text="@string/set_this_as_my_default_address"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/addFragLocationView_textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/anonymous_pro"
+                    android:textSize="11sp" />
+
+                <TextView
+                    android:id="@+id/addNewAddress_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:background="#3E9A41"
+                    android:elevation="5dp"
+                    android:fontFamily="@font/montserrat"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:padding="10dp"
+                    android:text="@string/add_address"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+        </ScrollView>
 
     </androidx.cardview.widget.CardView>
 

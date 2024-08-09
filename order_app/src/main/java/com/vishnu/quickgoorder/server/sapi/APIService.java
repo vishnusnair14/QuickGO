@@ -39,11 +39,12 @@ public interface APIService {
             @Path("curr_lat") String currLat,
             @Path("curr_lon") String currLon);
 
-    @GET("recommend-shop/{user_la}/{user_lo}/{user_city}/{user_pincode}")
+    @GET("recommend-shop/{user_la}/{user_lo}/{user_state}/{user_district}/{user_pincode}")
     Call<JsonObject> getShopRecommendations(
             @Path("user_la") double latitude,
             @Path("user_lo") double longitude,
-            @Path("user_city") String user_city,
+            @Path("user_state") String user_state,
+            @Path("user_district") String user_district,
             @Path("user_pincode") String user_pincode);
 
     @GET("delete-address/")

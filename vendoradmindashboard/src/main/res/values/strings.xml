@@ -53,7 +53,7 @@
     <string name="edit_products">EDIT PRODUCTS</string>
     <string name="setup_location_information"><u>Setup Location Information</u></string>
     <string name="setup_user_information"><u>Setup User Information</u></string>
-    <string name="how_it_works"><u>How it works:</u> Move out to your storePrefDataModel location and press the \'Set Location\' button your right part of screen, automatically fetch GPS provided accurate co-ordinates and used for future recommendation purposes.</string>
+    <string name="how_it_works"><u>How it works:</u> Move to your store\'s location and press the \'Set Location\' button on the right side of the screen. The system will automatically fetch GPS-provided accurate coordinates, which will be used for future recommendation purposes.</string>
     <string name="loc_def">0.0000000°N\n0.0000000°E</string>
     <string name="show_edit_options">
 <u>Show edit options</u>
@@ -80,7 +80,7 @@
     <string name="login">LOGIN</string>
     <string name="delivery">delivery</string>
     <string name="user_login">USER LOGIN</string>
-    <string name="re_enter_password">Re-enter the password</string>
+    <string name="re_enter_password">Re-enter password</string>
     <string name="register">REGISTER</string>
     <string name="set_a_new_password">Set a new password</string>
     <string name="enter_the_email_address">Enter the email address</string>

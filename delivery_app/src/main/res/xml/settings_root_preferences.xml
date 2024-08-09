@@ -15,15 +15,23 @@
             app:key="reply"
             app:title="Account settings"
             app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
 
-
+    <PreferenceCategory app:title="Duty Settings">
+        <Preference
+            app:enabled="true"
+            app:iconSpaceReserved="true"
+            app:isPreferenceVisible="true"
+            app:key="manageDutyPreferences_pref"
+            app:summary="Manage your default duty location and associated preferences."
+            app:title="Manage duty preferences" />
     </PreferenceCategory>
 
     <PreferenceCategory app:title="Developer settings">
         <SwitchPreferenceCompat
             android:defaultValue="false"
             app:key="use_test_server"
-            app:summary="When enabled, the application will route all requests to the test server, Requires restart."
+            app:summary="When enabled, the application will route all requests to the test server, Requires app restart."
             app:title="Use test server" />
     </PreferenceCategory>
 

@@ -147,7 +147,7 @@
     <string name="delivery_details">Delivery Details</string>
     <string name="shop_details">Shop Details</string>
     <string name="call">CALL</string>
-    <string name="show_on_map">Show Address on Map</string>
+    <string name="show_on_map">Show on Map</string>
     <string name="shop_name">$(shop_name)</string>
     <string name="shop_address">$(shop_address)</string>
     <string name="shop_id_time_distance">$(shop_id_time_distance)</string>
@@ -195,4 +195,5 @@
     <string name="open_map">OPEN MAP</string>
     <string name="preferred_store_details">Preferred Store Details</string>
     <string name="no_store_preference_details_found">No store preference details found</string>
+    <string name="unable_to_fetch_data_at_the_moment">Unable to fetch data at the moment</string>
 </resources>

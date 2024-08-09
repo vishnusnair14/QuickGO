@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreferenceCompat;
 
@@ -20,7 +22,17 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         setPreferencesFromResource(R.xml.settings_root_preferences, rootKey);
         preferences = requireContext().getSharedPreferences("settings", Context.MODE_PRIVATE);
 
+        Preference manageDutyPref_button = findPreference("manageDutyPreferences_pref");
+
         SwitchPreferenceCompat useTestServer_button = findPreference("use_test_server");
+
+
+        if (manageDutyPref_button != null) {
+            manageDutyPref_button.setOnPreferenceClickListener(preference -> {
+                NavHostFragment.findNavController(this).navigate(R.id.action_nav_settings_to_dutySettingsFragment);
+                return true;
+            });
+        }
 
         if (useTestServer_button != null) {
             useTestServer_button.setOnPreferenceChangeListener((preference, newValue) -> {

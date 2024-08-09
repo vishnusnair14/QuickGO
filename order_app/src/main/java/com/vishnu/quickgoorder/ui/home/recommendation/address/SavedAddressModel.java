@@ -28,8 +28,11 @@ public class SavedAddressModel {
         this.addressType = addressType;
     }
 
-    @SerializedName("city")
-    private String city;
+    @SerializedName("district")
+    private String district;
+
+    @SerializedName("state")
+    private String state;
 
     public String getStreetAddress() {
         return streetAddress;
@@ -43,7 +46,7 @@ public class SavedAddressModel {
     private String pincode;
 
     @SerializedName("phone_no")
-    private  String phoneNo;
+    private String phoneNo;
 
     private List<StoreData> nearbyShops;
 
@@ -62,6 +65,14 @@ public class SavedAddressModel {
 
     public String getPhoneNo() {
         return phoneNo;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 
     public void setPhoneNo(String phoneNo) {
@@ -88,12 +99,12 @@ public class SavedAddressModel {
         this.addressLon = addressLon;
     }
 
-    public String getCity() {
-        return city;
+    public String getDistrict() {
+        return district;
     }
 
-    public void setCity(String city) {
-        this.city = city;
+    public void setDistrict(String district) {
+        this.district = district;
     }
 
     public String getPincode() {

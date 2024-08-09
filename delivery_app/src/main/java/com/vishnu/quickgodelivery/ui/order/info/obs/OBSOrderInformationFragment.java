@@ -63,11 +63,13 @@ public class OBSOrderInformationFragment extends Fragment {
     TextView callShopIV;
     Button showDeliveryLocOnMapBtn;
     Button showShopLocOnMapBtn;
-    String orderKey;
+    private String orderKey;
+    private String shopID;
     Intent callIntent;
     String receiverPhno;
-    String shopPhno;
+    private String shopPhno;
     private String userID;
+    private String userPhno;
     SharedPreferences preferences;
     MessageAdapter messageAdapter;
     FragmentOrderInformationObsBinding binding;
@@ -78,7 +80,7 @@ public class OBSOrderInformationFragment extends Fragment {
     TextView chatBtmStatusTV;
     TextView chatStatusTV;
     ProgressBar chatStatusPB;
-    FloatingActionButton chatFab;
+    Button chatFab;
     private RecyclerView recyclerView;
     private List<MessageModel> messageList;
     BottomSheetDialog chatBtmDialogView;
@@ -100,8 +102,9 @@ public class OBSOrderInformationFragment extends Fragment {
         Bundle arguments = getArguments();
         if (arguments != null) {
             userID = arguments.getString("user_id");
+            userPhno = arguments.getString("user_phno");
             orderKey = arguments.getString("order_id");
-//            shopID = arguments.getString("shop_id");
+            shopID = arguments.getString("shop_id");
             orderType = arguments.getString("order_by_voice_type");
             orderByVoiceDocID = arguments.getString("order_by_voice_doc_id");
             orderByVoiceAudioRefID = arguments.getString("order_by_voice_audio_ref_id");
@@ -425,7 +428,7 @@ public class OBSOrderInformationFragment extends Fragment {
         binding.orderInfoShopNameViewTextView.setText(MessageFormat.format(
                 "{0}\n{1}, {2}\n\nOrder ID: {3}\nOrder time: {4}\nShop distance: {5} km",
                 data.get("shop_name").getAsString().toUpperCase(),
-                data.get("shop_street").getAsString(), data.get("shop_city").getAsString(),
+                data.get("shop_street").getAsString(), data.get("shop_district").getAsString(),
                 data.get("order_id").getAsString().substring(6),
                 data.get("order_time").getAsString(), data.get("pickup_destination_distance").getAsBigDecimal()));
 
@@ -438,7 +441,7 @@ public class OBSOrderInformationFragment extends Fragment {
     private void fetchData(String key, ChatID chatID) {
 
         APIService apiService = ApiServiceGenerator.getApiService(requireContext());
-        Call<JsonObject> call = apiService.fetchOrderData(orderType, userID, user.getUid(), key);
+        Call<JsonObject> call = apiService.fetchOrderData(orderType, userID, user.getUid(), userPhno, key);
 
         call.enqueue(new Callback<>() {
             @Override

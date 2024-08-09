@@ -106,8 +106,9 @@ public class SavedAddressAdapter extends RecyclerView.Adapter<SavedAddressAdapte
         public void bind(SavedAddressModel address, int pos) {
             fullAddressTV.setText(address.getFullAddress());
             phoneNoTv.setText(address.getPhoneNo());
-            pincodeTV.setText(MessageFormat.format("{0} | {1}",
-                    address.getCity(), address.getPincode()));
+            pincodeTV.setText(MessageFormat.format("{0}{1} | {2}",
+                    address.getDistrict().substring(0, 1).toUpperCase(),
+                    address.getDistrict().substring(1), address.getPincode()));
 
             deleteAddressTV.setOnClickListener(v -> {
                 adapter.deleteAddress(user.getUid(), address.getPhoneNo(), pos);

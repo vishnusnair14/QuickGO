@@ -41,7 +41,8 @@ public class SetStorePrefFragment extends Fragment {
     private final String LOG_TAG = "StorePrefSetStoreFragment";
     private double mParamLat;
     private double mParamLon;
-    private String mParamCity;
+    private String mParamState;
+    private String mParamDistrict;
     private String mParamPincode;
     private String mParamPhone;
     private Button sendPrefBtn;
@@ -61,11 +62,12 @@ public class SetStorePrefFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParamLat = getArguments().getDouble("param_lat");
-            mParamLon = getArguments().getDouble("param_lon");
-            mParamCity = getArguments().getString("param_city");
-            mParamPincode = getArguments().getString("param_pincode");
-            mParamPhone = getArguments().getString("param_phone");
+            mParamLat = getArguments().getDouble("addr_lat");
+            mParamLon = getArguments().getDouble("addr_lon");
+            mParamState = getArguments().getString("addr_state");
+            mParamDistrict = getArguments().getString("addr_district");
+            mParamPincode = getArguments().getString("addr_pincode");
+            mParamPhone = getArguments().getString("addr_phone");
         }
         user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -170,7 +172,7 @@ public class SetStorePrefFragment extends Fragment {
         progressBar.setVisibility(View.VISIBLE);
 
         APIService apiService = ApiServiceGenerator.getApiService(requireContext());
-        Call<JsonObject> call = apiService.getShopRecommendations(mParamLat, mParamLon, mParamCity, mParamPincode);
+        Call<JsonObject> call = apiService.getShopRecommendations(mParamLat, mParamLon, mParamState, mParamDistrict, mParamPincode);
 
         call.enqueue(new Callback<>() {
             @Override

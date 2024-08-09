@@ -35,286 +35,317 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/textView11"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="5dp"
-                android:fontFamily="@font/arima_madurai_black"
-                android:text="@string/setup_user_information"
-                android:textAlignment="center"
-                android:textColor="#009688"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <EditText
-                android:id="@+id/emailIdFieldSignUp_editText"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="5dp"
-                android:autofillHints=""
-                android:drawablePadding="15sp"
-                android:ems="10"
-                android:fontFamily="@font/anonymous_pro_bold"
-                android:hint="@string/email_id"
-                android:inputType="textEmailAddress"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView11" />
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/passwordFieldSignUp_editText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp"
-                android:autofillHints=""
-                android:ems="10"
-                android:fontFamily="@font/anonymous_pro_bold"
-                android:hint="@string/password"
-                android:inputType="textWebPassword"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:text="1234567890"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/emailIdFieldSignUp_editText" />
+                <TextView
+                    android:id="@+id/textView11"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="5dp"
+                    android:fontFamily="@font/arima_madurai_black"
+                    android:text="@string/setup_user_information"
+                    android:textAlignment="center"
+                    android:textColor="#009688"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
-            <EditText
-                android:id="@+id/shopNameSignUp_editText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp"
-                android:ems="10"
-                android:fontFamily="@font/anonymous_pro_bold"
-                android:hint="@string/shop_name"
-                android:inputType="text"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/passwordFieldSignUp_editText" />
+                <EditText
+                    android:id="@+id/emailIdFieldSignUp_editText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:autofillHints=""
+                    android:drawablePadding="15sp"
+                    android:ems="10"
+                    android:fontFamily="@font/anonymous_pro_bold"
+                    android:hint="@string/email_id"
+                    android:inputType="textEmailAddress"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:textStyle="bold" />
 
-            <EditText
-                android:id="@+id/shopStreetSignup_editText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="5dp"
-                android:autofillHints=""
-                android:ems="10"
-                android:fontFamily="@font/anonymous_pro_bold"
-                android:hint="@string/street"
-                android:inputType="text"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/shopNameSignUp_editText" />
+                <EditText
+                    android:id="@+id/passwordFieldSignUp_editText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:autofillHints=""
+                    android:ems="10"
+                    android:fontFamily="@font/anonymous_pro_bold"
+                    android:hint="@string/password"
+                    android:inputType="textWebPassword"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:textStyle="bold" />
 
-            <EditText
-                android:id="@+id/pincodeSignUp_editText"
-                android:layout_width="160dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="5dp"
-                android:ems="10"
-                android:fontFamily="@font/anonymous_pro_bold"
-                android:gravity="center_vertical"
-                android:hint="@string/pincode"
-                android:inputType="number"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toEndOf="@+id/shopStreetSignup_editText"
-                app:layout_constraintTop_toBottomOf="@+id/shopNameSignUp_editText" />
+                <EditText
+                    android:id="@+id/passwordFieldSignUp2_editText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:autofillHints=""
+                    android:ems="10"
+                    android:fontFamily="@font/anonymous_pro_bold"
+                    android:hint="@string/re_enter_password"
+                    android:inputType="textWebPassword"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/textView28"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:fontFamily="@font/anonymous_pro_bold"
-                android:text="@string/realtime_co_ordinates"
-                android:textSize="11sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView30" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
 
+                    <EditText
+                        android:id="@+id/shopNameSignUp_editText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:fontFamily="@font/anonymous_pro_bold"
+                        android:hint="@string/shop_name"
+                        android:inputType="text"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/textView29"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="5dp"
-                android:fontFamily="@font/arima_madurai_black"
-                android:text="@string/setup_location_information"
-                android:textAlignment="center"
-                android:textColor="#009688"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/selectedImageSignup_imageView" />
+                    <EditText
+                        android:id="@+id/shopPhoneNoSignup_editTextPhone"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:fontFamily="@font/anonymous_pro_bold"
+                        android:hint="Shop Phone"
+                        android:inputType="phone"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp" />
 
-            <TextView
-                android:id="@+id/realtimeCoordinatesView_textew"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/arvo"
-                android:gravity="center|center_horizontal|center_vertical"
-                android:padding="5dp"
-                android:paddingStart="5dp"
-                android:paddingLeft="5dp"
-                android:paddingEnd="5dp"
-                android:paddingRight="5dp"
-                android:text="@string/loc_def"
-                android:textColor="#626C6B"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/textView28"
-                app:layout_constraintStart_toStartOf="@+id/textView28"
-                app:layout_constraintTop_toBottomOf="@+id/textView28" />
+                </LinearLayout>
 
-            <TextView
-                android:id="@+id/textView30"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="5dp"
-                android:fontFamily="@font/anonymous_pro_bold"
-                android:text="@string/how_it_works"
-                android:textSize="12sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView29" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/postOffNameViewSignUp_textView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="5dp"
-                android:fontFamily="@font/anonymous_pro_bold"
-                android:textColor="#4CAF50"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="@+id/pincodeSignUp_editText"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="@+id/pincodeSignUp_editText"
-                app:layout_constraintTop_toBottomOf="@+id/pincodeSignUp_editText" />
+                    <EditText
+                        android:id="@+id/shopStreetSignup_editText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_weight="2"
+                        android:autofillHints=""
+                        android:ems="10"
+                        android:fontFamily="@font/anonymous_pro_bold"
+                        android:hint="@string/street"
+                        android:inputType="text"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/textView7"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:fontFamily="@font/arima_madurai_black"
-                android:text="@string/choose_an_image"
-                android:textColor="#009688"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="@+id/pincodeSignUp_editText"
-                app:layout_constraintStart_toStartOf="@+id/pincodeSignUp_editText"
-                app:layout_constraintTop_toBottomOf="@+id/stateDistrictViewSignUp_textView" />
+                    <EditText
+                        android:id="@+id/pincodeSignUp_editText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:fontFamily="@font/montserrat"
+                        android:gravity="center_vertical"
+                        android:hint="@string/pincode"
+                        android:inputType="number"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
 
-            <ImageView
-                android:id="@+id/selectedImageSignup_imageView"
-                android:layout_width="55dp"
-                android:layout_height="55dp"
-                android:layout_marginTop="5dp"
-                android:adjustViewBounds="true"
-                android:contentDescription="@string/todo"
-                android:cropToPadding="true"
-                android:padding="5dp"
-                android:paddingStart="5dp"
-                android:paddingLeft="5dp"
-                android:paddingTop="5dp"
-                android:paddingEnd="5dp"
-                android:paddingRight="5dp"
-                android:paddingBottom="5dp"
-                android:scaleType="centerCrop"
-                app:layout_constraintEnd_toEndOf="@+id/textView7"
-                app:layout_constraintStart_toStartOf="@+id/textView7"
-                app:layout_constraintTop_toBottomOf="@+id/textView7"
-                app:srcCompat="@drawable/baseline_add_a_photo_24" />
+                <EditText
+                    android:id="@+id/editTextTextPostalAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Shop address"
+                    android:inputType="textPostalAddress" />
 
-            <TextView
-                android:id="@+id/stateDistrictViewSignUp_textView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:fontFamily="@font/anonymous_pro"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="@+id/postOffNameViewSignUp_textView"
-                app:layout_constraintTop_toBottomOf="@+id/postOffNameViewSignUp_textView" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
 
-            <EditText
-                android:id="@+id/shopPhoneNoSignup_editTextPhone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="5dp"
-                android:ems="10"
-                android:fontFamily="@font/anonymous_pro_bold"
-                android:hint="Shop Phone"
-                android:inputType="phone"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/shopStreetSignup_editText" />
+                    <Spinner
+                        android:id="@+id/spinner_country"
+                        style="@android:style/Widget.Material.Spinner.Underlined"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:layout_weight="1" />
+
+                    <Spinner
+                        android:id="@+id/spinner_state"
+                        style="@android:style/Widget.Material.Spinner.Underlined"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:layout_weight="1" />
+
+                </LinearLayout>
+
+                <Spinner
+                    android:id="@+id/spinner_district"
+                    style="@android:style/Widget.Material.Spinner.Underlined"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/textView7"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/arima_madurai_black"
+                        android:text="@string/choose_an_image"
+                        android:textColor="#009688"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/selectedImageSignup_imageView"
+                        android:layout_width="0dp"
+                        android:layout_height="55dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_weight="2"
+                        android:adjustViewBounds="true"
+                        android:contentDescription="@string/todo"
+                        android:cropToPadding="true"
+                        android:padding="5dp"
+                        android:paddingStart="5dp"
+                        android:paddingLeft="5dp"
+                        android:paddingTop="5dp"
+                        android:paddingEnd="5dp"
+                        android:paddingRight="5dp"
+                        android:paddingBottom="5dp"
+                        android:scaleType="centerCrop"
+                        app:srcCompat="@drawable/ic_menu_gallery" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/textView29"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="5dp"
+                    android:fontFamily="@font/arima_madurai_black"
+                    android:text="@string/setup_location_information"
+                    android:textAlignment="center"
+                    android:textColor="#009688"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/textView28"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:fontFamily="@font/anonymous_pro_bold"
+                        android:text="@string/realtime_co_ordinates"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:id="@+id/realtimeCoordinatesView_textew"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/arvo"
+                        android:gravity="center|center_horizontal|center_vertical"
+                        android:padding="5dp"
+                        android:paddingStart="5dp"
+                        android:paddingLeft="5dp"
+                        android:paddingEnd="5dp"
+                        android:paddingRight="5dp"
+                        android:text="@string/loc_def"
+                        android:textColor="#626C6B"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/textView30"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:fontFamily="@font/anonymous_pro_bold"
+                    android:text="@string/how_it_works"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/postOffNameViewSignUp_textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:fontFamily="@font/anonymous_pro_bold"
+                    android:textColor="#4CAF50"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/stateDistrictViewSignUp_textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:fontFamily="@font/anonymous_pro"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/statusView_textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/anonymous_pro_bold"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:textStyle="italic"
+                    android:verticalScrollbarPosition="defaultPosition" />
+
+                <Button
+                    android:id="@+id/customerRegister_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:backgroundTint="#051D73"
+                    android:elevation="10dp"
+                    android:fontFamily="@font/chakra_petch_light"
+                    android:text="@string/register_account"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
-
-    <TextView
-        android:id="@+id/statusView_textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:fontFamily="@font/anonymous_pro_bold"
-        android:gravity="center"
-        android:textSize="12sp"
-        android:textStyle="italic"
-        android:verticalScrollbarPosition="defaultPosition"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/scrollView2" />
-
-    <Button
-        android:id="@+id/customerRegister_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:backgroundTint="#051D73"
-        android:elevation="10dp"
-        android:fontFamily="@font/chakra_petch_light"
-        android:text="@string/register_account"
-        android:textSize="12sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/statusView_textView"
-        app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -10,9 +10,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -64,10 +67,14 @@ public class AddAddressFragment extends Fragment {
     private final String NOT_FOUND = "NOT FOUND!";
     private String addressType = "Others";
     CheckBox setAsDefaultAddressCheckBox;
+    String selectedDistrict;
+    String selectedState;
     private TextView locationTV;
     private final DecimalFormat coordinateFormat = new DecimalFormat("#.##########");
     private FragmentAddAddressBinding binding;
     private FirebaseUser user;
+    private Spinner spinnerCountry, spinnerState, spinnerDistrict;
+
 
     public AddAddressFragment() {
     }
@@ -95,6 +102,32 @@ public class AddAddressFragment extends Fragment {
         phoneNoET = binding.phoneNumberEditTextText;
         locationTV = binding.addFragLocationViewTextView;
 
+        spinnerState = binding.spinnerState;
+        spinnerDistrict = binding.spinnerDistrict;
+
+        // Populate state spinner
+        ArrayAdapter<CharSequence> stateAdapter = ArrayAdapter.createFromResource(
+                requireContext(), R.array.india_states_array, R.layout.spinner_item);
+        stateAdapter.setDropDownViewResource(R.layout.spinner_item);
+        spinnerState.setAdapter(stateAdapter);
+
+        // Set listener for state spinner
+        spinnerState.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedState = parent.getItemAtPosition(position).toString();
+                populateDistrictSpinner(selectedState);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Do nothing
+            }
+        });
+
+        // Initial population
+        populateDistrictSpinner("Select State");
+
         // ADD-ADDRESS button action def.
         addNewAddressButton.setOnClickListener(view -> {
             pincode = pinCodeEditText.getText().toString();
@@ -108,20 +141,22 @@ public class AddAddressFragment extends Fragment {
             } else if (TextUtils.isEmpty(phoneno)) {
                 Toast.makeText(requireContext(), "Please enter phone no", Toast.LENGTH_SHORT).show();
             } else {
-                validatePinCode(pincode, (isPinValid, postOffName) -> {
-                    if (isPinValid) {
-                        if (latitude != 0 && longitude != 0) {
-//                            dbHandler.addNewAddressToDB(requireContext(), getAddressFieldData(binding, postOffName,
-//                                    setAsDefaultAddressCheckBox.isChecked()), phoneNoET.getText().toString());
+                selectedDistrict = spinnerDistrict.getSelectedItem() != null ? spinnerDistrict.getSelectedItem().toString() : "0";
+                selectedState = spinnerState.getSelectedItem() != null ? spinnerState.getSelectedItem().toString() : "0";
 
+                if (selectedDistrict.equals("Select District") || selectedDistrict.isEmpty()) {
+                    Toast.makeText(requireContext(), "Please select district", Toast.LENGTH_SHORT).show();
+                } else if (selectedState.equals("Select State") || selectedState.isEmpty()) {
+                    Toast.makeText(requireContext(), "Please select state", Toast.LENGTH_SHORT).show();
+                } else {
+                    validatePinCode(pincode, (isPinValid, postOffName) -> {
+                        if (isPinValid) {
                             sentAddressAddRequest(postOffName, setAsDefaultAddressCheckBox.isChecked());
                         } else {
-                            Toast.makeText(requireContext(), "Please wait, initializing GPS", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(requireContext(), "Unable to validate pincode, at the moment!", Toast.LENGTH_SHORT).show();
                         }
-                    } else {
-                        Toast.makeText(requireContext(), "Unable to validate pincode, at the moment!", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                    });
+                }
             }
         });
 
@@ -138,6 +173,22 @@ public class AddAddressFragment extends Fragment {
         });
 
         return root;
+    }
+
+    private void populateDistrictSpinner(String state) {
+        int districtsArrayId = switch (state) {
+            case "Karnataka" -> R.array.karnataka_districts_array;
+            case "Kerala" -> R.array.kerala_districts_array;
+            default -> R.array.empty_array
+            ;
+        };
+
+        ArrayAdapter<CharSequence> districtAdapter = ArrayAdapter.createFromResource(
+                requireContext(),
+                districtsArrayId,
+                R.layout.spinner_item);
+        districtAdapter.setDropDownViewResource(R.layout.spinner_item);
+        spinnerDistrict.setAdapter(districtAdapter);
     }
 
     private final BroadcastReceiver locationReceiver = new BroadcastReceiver() {
@@ -353,8 +404,8 @@ public class AddAddressFragment extends Fragment {
         jsonData.addProperty("user_id", user.getUid());
         jsonData.addProperty("name", name_address);
         jsonData.addProperty("street_address", street_address);
-        jsonData.addProperty("city", city);
-        jsonData.addProperty("state", state);
+        jsonData.addProperty("district", selectedDistrict);
+        jsonData.addProperty("state", selectedState);
         jsonData.addProperty("pincode", pincode_address);
         jsonData.addProperty("landmark", landmark_address);
         jsonData.addProperty("full_address", full_address);

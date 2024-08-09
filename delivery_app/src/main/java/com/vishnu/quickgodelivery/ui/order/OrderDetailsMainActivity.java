@@ -137,6 +137,7 @@ public class OrderDetailsMainActivity extends AppCompatActivity {
         String shopName = intent.getStringExtra("shop_name");
         String shopID = intent.getStringExtra("shop_id");
         String userID = intent.getStringExtra("user_id");
+        String userPhno = intent.getStringExtra("user_phno");
         orderByVoiceType = intent.getStringExtra("order_by_voice_type");
         String orderByVoiceDocID = intent.getStringExtra("order_by_voice_doc_id");
         String orderByVoiceAudioRefID = intent.getStringExtra("order_by_voice_audio_ref_id");
@@ -147,6 +148,7 @@ public class OrderDetailsMainActivity extends AppCompatActivity {
         bundle.putString("shop_name", shopName);
         bundle.putString("shop_id", shopID);
         bundle.putString("user_id", userID);
+        bundle.putString("user_phno", userPhno);
         bundle.putString("order_by_voice_type", orderByVoiceType);
         bundle.putString("order_by_voice_doc_id", orderByVoiceDocID);
         bundle.putString("order_by_voice_audio_ref_id", orderByVoiceAudioRefID);

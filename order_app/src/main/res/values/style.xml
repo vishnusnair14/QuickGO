@@ -31,4 +31,10 @@
         <item name="fontFamily">@font/anonymous_pro</item>
         <item name="android:textStyle">bold</item>
     </style>
+
+    <style name="CustomSpinnerStyle">
+        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 </resources>

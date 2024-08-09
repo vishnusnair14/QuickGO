@@ -236,7 +236,7 @@ public class ItemFragment extends Fragment {
         itemList.clear();
 
         /* Retrieve data from Firestore */
-        db.collection("RetailerData").document("ShopIDMap").collection("ShopItemData")
+        db.collection("ShopData").document("itemData").collection("allAvailableItems")
                 .document(SHOP_ID).get().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();

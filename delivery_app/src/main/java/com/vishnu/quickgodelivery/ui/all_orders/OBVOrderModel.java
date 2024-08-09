@@ -10,6 +10,7 @@ public class OBVOrderModel implements OrderModel {
     private String order_id;
     private String order_saved_status;
     private String order_time;
+    private String user_phno;
     private long order_time_millis;
     private String order_type;
     private double pickup_destination_distance;
@@ -48,6 +49,11 @@ public class OBVOrderModel implements OrderModel {
     @Override
     public String getOrder_type() {
         return order_type;
+    }
+
+    @Override
+    public String getUser_phno() {
+        return user_phno;
     }
 
     @Override
@@ -91,6 +97,14 @@ public class OBVOrderModel implements OrderModel {
 
     public void setOrder_saved_status(String order_saved_status) {
         this.order_saved_status = order_saved_status;
+    }
+
+    public void setUser_phno(String user_phno) {
+        this.user_phno = user_phno;
+    }
+
+    public long getOrder_time_millis() {
+        return order_time_millis;
     }
 
     public void setOrder_time(String order_time) {

@@ -26,10 +26,13 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -117,9 +120,13 @@ public class RegisterFragment extends Fragment implements LocationUpdateListener
     private String pincode;
     TextView stateDistTV;
     private View root;
+    String selectedDistrict;
+    String selectedState;
     String filePath;
     private Vibrator vibrator;
     private GPSLocationProvider gpsLocationProvider;
+    private Spinner spinnerCountry, spinnerState, spinnerDistrict;
+
     Button enableLocationBtn;
     DecimalFormat coordinateFormat = new DecimalFormat("0.0000000000");
     private final String NOT_FOUND = "NOT FOUND!";
@@ -214,6 +221,47 @@ public class RegisterFragment extends Fragment implements LocationUpdateListener
         postOffNameTV = binding.postOffNameViewSignUpTextView;
         pinCodeET = binding.pincodeSignUpEditText;
 
+        spinnerCountry = binding.spinnerCountry;
+        spinnerState = binding.spinnerState;
+        spinnerDistrict = binding.spinnerDistrict;
+
+
+        // Populate country spinner from resources
+        ArrayAdapter<CharSequence> countryAdapter = ArrayAdapter.createFromResource(
+                requireContext(), R.array.countries_array,
+                R.layout.spinner_item);
+        countryAdapter.setDropDownViewResource(R.layout.spinner_item);
+        spinnerCountry.setAdapter(countryAdapter);
+
+
+        // Set listener for country spinner
+        spinnerCountry.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedCountry = parent.getItemAtPosition(position).toString();
+                populateStateSpinner(selectedCountry);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Do nothing
+            }
+        });
+
+        // Set listener for state spinner
+        spinnerState.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedState = parent.getItemAtPosition(position).toString();
+                populateDistrictSpinner(selectedState);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Do nothing
+            }
+        });
+
         registerBtn.setOnClickListener(v -> {
             if (selectedImageUri != null) {
                 pincode = pinCodeET.getText().toString();
@@ -232,13 +280,22 @@ public class RegisterFragment extends Fragment implements LocationUpdateListener
                 } else if (!(passwordET.getText().toString().length() >= 6)) {
                     Toast.makeText(context, "Password length should be more that 6 chars!", Toast.LENGTH_SHORT).show();
                 } else {
-                    validatePinCode(pincode, (isPinValid, postOffName, cityName) -> {
-                        if (isPinValid) {
-                            registerNewShop(cityName);
-                        } else {
-                            Toast.makeText(requireContext(), "Unable to validate pincode!", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    selectedDistrict = spinnerDistrict.getSelectedItem() != null ? spinnerDistrict.getSelectedItem().toString() : "0";
+                    selectedState = spinnerState.getSelectedItem() != null ? spinnerState.getSelectedItem().toString() : "0";
+
+                    if (selectedDistrict.equals("— Select —") || selectedDistrict.isEmpty()) {
+                        Toast.makeText(context, "Select district", Toast.LENGTH_SHORT).show();
+                    } else if (selectedState.equals("— Select —") || selectedState.isEmpty()) {
+                        Toast.makeText(context, "Select state", Toast.LENGTH_SHORT).show();
+                    } else {
+                        validatePinCode(pincode, (isPinValid, postOffName, cityName) -> {
+                            if (isPinValid) {
+                                registerNewShop();
+                            } else {
+                                Toast.makeText(requireContext(), "Unable to validate pincode!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
                 }
             } else {
                 Toast.makeText(requireContext(), "Please select an image", Toast.LENGTH_SHORT).show();
@@ -259,8 +316,46 @@ public class RegisterFragment extends Fragment implements LocationUpdateListener
         }
 
         startLocationUpdates();
-
+        populateStateSpinner("India");
+        populateDistrictSpinner("Kerala");
         return root;
+    }
+
+    private void populateStateSpinner(String country) {
+        int statesArrayId = switch (country) {
+            case "India" -> R.array.india_states_array;
+            default -> 0;
+            // Add more cases if there are more countries
+        };
+
+        ArrayAdapter<CharSequence> stateAdapter = ArrayAdapter.createFromResource(
+                requireContext(),
+                statesArrayId,
+                R.layout.spinner_item);
+        stateAdapter.setDropDownViewResource(R.layout.spinner_item);
+        spinnerState.setAdapter(stateAdapter);
+
+        // Reset district spinner
+        spinnerDistrict.setAdapter(null);
+    }
+
+
+    private void populateDistrictSpinner(String state) {
+        int districtsArrayId = switch (state) {
+            case "Kerala" -> R.array.kerala_districts_array;
+            case "Maharashtra" -> R.array.maharashtra_districts_array;
+            case "Karnataka" -> R.array.karnataka_districts_array;
+            case "Tamil Nadu" -> R.array.tamil_nadu_districts_array;
+            default -> R.array.none_array;
+            // Add more cases if there are more states
+        };
+
+        ArrayAdapter<CharSequence> districtAdapter = ArrayAdapter.createFromResource(
+                requireContext(),
+                districtsArrayId,
+                R.layout.spinner_item);
+        districtAdapter.setDropDownViewResource(R.layout.spinner_item);
+        spinnerDistrict.setAdapter(districtAdapter);
     }
 
     private void showRegistrationStatusBtmView() {
@@ -302,7 +397,7 @@ public class RegisterFragment extends Fragment implements LocationUpdateListener
 
 
     @NonNull
-    private JsonObject getShopData(String cityName) {
+    private JsonObject getShopData() {
         JsonObject jsonData = new JsonObject();
         jsonData.addProperty("shop_name", shopNameET.getText().toString());
         jsonData.addProperty("shop_reg_email", emailET.getText().toString());
@@ -311,19 +406,20 @@ public class RegisterFragment extends Fragment implements LocationUpdateListener
         jsonData.addProperty("shop_image_url", "image_url");
         jsonData.addProperty("shop_lat", shop_lat);
         jsonData.addProperty("shop_lon", shop_lon);
-        jsonData.addProperty("shop_city", cityName);
+        jsonData.addProperty("shop_state", selectedState);
+        jsonData.addProperty("shop_district", selectedDistrict);
         jsonData.addProperty("shop_pincode", pincode);
         jsonData.addProperty("shop_street", signUpShopStreetET.getText().toString());
         return jsonData;
     }
 
-    private void sentCreateShopRequest(File imageFile, String cityName) {
+    private void sentCreateShopRequest(File imageFile) {
         showRegistrationStatusBtmView();
         RequestBody requestFile = RequestBody.create(imageFile, MediaType.parse("image/jpeg"));
         MultipartBody.Part body = MultipartBody.Part.createFormData("image", imageFile.getName(), requestFile);
 
         // Prepare JSON data
-        JsonObject jsonData = getShopData(cityName);
+        JsonObject jsonData = getShopData();
         RequestBody shopData = RequestBody.create(jsonData.toString(), MediaType.parse("application/json"));
 
         APISerivce apiService = ApiServiceGenerator.getApiService(requireContext());
@@ -388,7 +484,7 @@ public class RegisterFragment extends Fragment implements LocationUpdateListener
         });
     }
 
-    private void registerNewShop(String cityName) {
+    private void registerNewShop() {
         registeredUsersEmailRef.get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
@@ -405,7 +501,7 @@ public class RegisterFragment extends Fragment implements LocationUpdateListener
                                 }
                             }
                             if (selectedImageUri != null && selectedImageUri.getPath() != null) {
-                                sentCreateShopRequest(new File(getFilePath()), cityName);
+                                sentCreateShopRequest(new File(getFilePath()));
                             } else {
                                 Toast.makeText(requireContext(), "Please select an image", Toast.LENGTH_SHORT).show();
                             }

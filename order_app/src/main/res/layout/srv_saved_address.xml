@@ -54,7 +54,6 @@
             android:fontFamily="@font/montserrat"
             android:text="$(phno)"
             android:textColor="#125906"
-            android:textSize="12sp"
             android:textStyle="bold"
             card_view:layout_constraintBottom_toBottomOf="parent"
             card_view:layout_constraintStart_toStartOf="@+id/scrollView"
@@ -70,6 +69,7 @@
             android:fontFamily="@font/montserrat"
             android:text="$(pincode)"
             android:textSize="12sp"
+            android:textStyle="bold"
             card_view:layout_constraintBottom_toBottomOf="parent"
             card_view:layout_constraintEnd_toEndOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>

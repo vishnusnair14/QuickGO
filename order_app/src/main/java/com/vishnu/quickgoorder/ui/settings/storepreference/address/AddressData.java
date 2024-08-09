@@ -20,8 +20,11 @@ public class AddressData {
     @SerializedName("address_lon")
     private double addressLon;
 
-    @SerializedName("city")
-    private String city;
+    @SerializedName("state")
+    private String state;
+
+    @SerializedName("district")
+    private String district;
 
     @SerializedName("phone_no")
     private String phoneNo;
@@ -80,12 +83,20 @@ public class AddressData {
         this.phoneNo = phoneNo;
     }
 
-    public String getCity() {
-        return city;
+    public String getDistrict() {
+        return district;
     }
 
-    public void setCity(String city) {
-        this.city = city;
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public void setDistrict(String district) {
+        this.district = district;
     }
 
     public String getPincode() {

@@ -7,8 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.squareup.picasso.Picasso;
@@ -77,38 +79,58 @@ public class StorePrefAdapter extends BaseAdapter {
     }
 
     private void showShopDetailsBtmView(StorePrefDataModel storePrefDataModel) {
-        View shopDetailView = LayoutInflater.from(context).inflate(
-                R.layout.bottomview_store_pref_shop_details, null, false);
-
-        TextView shopNameTV1 = shopDetailView.findViewById(R.id.btmview_ShopInfoShopName_textView);
-        TextView shopPlaceDistrictTV1 = shopDetailView.findViewById(R.id.btmview_ShopInfoShopStreetDistrict_textView);
-
-        TextView shopInfoTV1 = shopDetailView.findViewById(R.id.btmview_ShopInfo1_textView);
-        TextView shopInfoTV2 = shopDetailView.findViewById(R.id.btmview_ShopInfo2_textView);
-        TextView shopInfoTV3 = shopDetailView.findViewById(R.id.btmview_ShopInfo3_textView);
-
-        shopNameTV1.setText(storePrefDataModel.getShopName());
-        shopPlaceDistrictTV1.setText(MessageFormat.format("{0} | {1}",
-                storePrefDataModel.getShopStreet(), storePrefDataModel.getShopDistrict()));
-
-        String info1 = "";
-        String info2 = "";
-        String info3 = "";
-
-        shopInfoTV1.setText(info1);
-        shopInfoTV2.setText(info2);
-        shopInfoTV3.setText(info3);
-
         if (shopDetailsBtmView == null) {
             shopDetailsBtmView = new BottomSheetDialog(context);
+            View shopDetailView = LayoutInflater.from(context).inflate(
+                    R.layout.bottomview_store_pref_shop_details, null, false);
+
             shopDetailsBtmView.setContentView(shopDetailView);
-            shopDetailsBtmView.setCanceledOnTouchOutside(false);
             Objects.requireNonNull(shopDetailsBtmView.getWindow()).setGravity(Gravity.TOP);
-        } else {
-            shopDetailsBtmView.show();
         }
 
+        // Retrieve the existing content view directly from the BottomSheetDialog
+        View shopDetailView = shopDetailsBtmView.findViewById(R.id.btmview_ShopInfoShopName_textView);
+
+        if (shopDetailView != null) {
+            // Get the root view of the inflated layout
+            shopDetailView = shopDetailView.getRootView();
+
+            // Now use shopDetailView to find and update other views
+            TextView shopNameTV1 = shopDetailView.findViewById(R.id.btmview_ShopInfoShopName_textView);
+            TextView shopPlaceDistrictTV1 = shopDetailView.findViewById(R.id.btmview_ShopInfoShopStreetDistrict_textView);
+
+            Button hideBtn = shopDetailView.findViewById(R.id.btmview_ShopInfoHideBtn_button);
+            Button showOnMapBtn = shopDetailView.findViewById(R.id.btmview_ShopInfoShowOnMap_button);
+            TextView shopInfoTV1 = shopDetailView.findViewById(R.id.btmview_ShopInfo1_textView);
+            TextView shopInfoTV2 = shopDetailView.findViewById(R.id.btmview_ShopInfo2_textView);
+            TextView shopInfoTV3 = shopDetailView.findViewById(R.id.btmview_ShopInfo3_textView);
+
+            shopNameTV1.setText(storePrefDataModel.getShopName().toUpperCase());
+            shopPlaceDistrictTV1.setText(MessageFormat.format("{0}{1} | {2}{3}",
+                    storePrefDataModel.getShopStreet().substring(0, 1).toUpperCase(),
+                    storePrefDataModel.getShopStreet().substring(1),
+                    storePrefDataModel.getShopDistrict().substring(0, 1).toUpperCase(),
+                    storePrefDataModel.getShopDistrict().substring(1)));
+
+            // Update information
+            shopInfoTV1.setText("");
+            shopInfoTV2.setText("");
+            shopInfoTV3.setText("");
+
+            showOnMapBtn.setOnClickListener(v->{
+
+            });
+            hideBtn.setOnClickListener(v -> shopDetailsBtmView.dismiss());
+
+            // Show the dialog
+            shopDetailsBtmView.show();
+        } else {
+            // Handle the case where the view is not found
+            Log.e("showShopDetailsBtmView", "View not found");
+        }
     }
+
+
 
     static class ViewHolder {
         ImageView shopImage;

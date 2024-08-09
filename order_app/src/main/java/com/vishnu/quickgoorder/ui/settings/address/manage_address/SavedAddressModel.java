@@ -8,6 +8,7 @@ import java.util.List;
 public class SavedAddressModel {
     @SerializedName("name")
     private String name;
+
     @SerializedName("full_address")
     private String fullAddress;
 
@@ -17,8 +18,8 @@ public class SavedAddressModel {
     @SerializedName("address_lon")
     private double addressLon;
 
-    @SerializedName("city")
-    private String city;
+    @SerializedName("district")
+    private String district;
 
     @SerializedName("pincode")
     private String pincode;
@@ -69,12 +70,12 @@ public class SavedAddressModel {
         this.addressLon = addressLon;
     }
 
-    public String getCity() {
-        return city;
+    public String getDistrict() {
+        return district;
     }
 
-    public void setCity(String city) {
-        this.city = city;
+    public void setDistrict(String district) {
+        this.district = district;
     }
 
     public String getPincode() {
