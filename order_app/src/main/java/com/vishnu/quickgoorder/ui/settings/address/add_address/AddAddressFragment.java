@@ -60,7 +60,7 @@ public class AddAddressFragment extends Fragment {
     private EditText pinCodeEditText;
     private EditText phoneNoET;
     private String pincode, phoneno;
-    private String city, state;
+    private String pincodeDistrict, state;
     TextView cityStateTV;
     private double latitude = 0;
     private double longitude = 0;
@@ -208,24 +208,6 @@ public class AddAddressFragment extends Fragment {
         }
     };
 
-//    private void deleteAddressDataInFile() {
-//        try {
-//            File file = new File(requireContext().getFilesDir(), "address_data.json");
-//            if (file.exists()) {
-//                boolean deleted = file.delete();
-//                if (deleted) {
-//                    Log.d(LOG_TAG, "Address data file deleted successfully");
-//                } else {
-//                    Log.e(LOG_TAG, "Failed to delete address data file");
-//                }
-//            } else {
-//                Log.d(LOG_TAG, "Address data file does not exist");
-//            }
-//        } catch (Exception e) {
-//            Log.e(LOG_TAG, "Error deleting address data file", e);
-//        }
-//    }
-
 
     private void sentAddressAddRequest(String postOffName, boolean isAddDefault) {
 //        RequestBody requestFile = RequestBody.create(imageFile, MediaType.parse("image/jpeg"));
@@ -326,8 +308,8 @@ public class AddAddressFragment extends Fragment {
 
                     Log.i("AddAddressFragment", obj.getString("Name") + "-" + obj.getString("District") + "-" + obj.getString("State"));
 
-                    city = obj.getString("District");
-                    state = obj.getString("State");
+                    pincodeDistrict = obj.getString("District");
+//                    state = obj.getString("State");
                     cityStateTV.setText(MessageFormat.format("{0}, {1}", obj.getString("District"), obj.getString("State")));
 
                     if (!obj.getString("Name").isEmpty()) {
@@ -366,13 +348,14 @@ public class AddAddressFragment extends Fragment {
         landmark_address = binding.landmarkNewAddressEditText.getText().toString();
 
         full_address = name_address + ",\n" + street_address + ",\n" + landmark_address + ", "
-                + city + ",\n" + pincode_address + ", " + state;
+                + pincodeDistrict + ",\n" + pincode_address + ", " + state;
 
         Map<String, Object> addressInfo = new HashMap<>();
         addressInfo.put("name", name_address);
         addressInfo.put("street_address", street_address);
-        addressInfo.put("city", city);
-        addressInfo.put("state", state);
+        addressInfo.put("district", spinnerDistrict.getSelectedItem().toString().toLowerCase());
+        addressInfo.put("state", spinnerState.getSelectedItem().toString().toLowerCase());
+        addressInfo.put("pincode_district", pincodeDistrict);
         addressInfo.put("pincode", pincode_address);
         addressInfo.put("landmark", landmark_address);
         addressInfo.put("full_address", full_address);
@@ -398,14 +381,15 @@ public class AddAddressFragment extends Fragment {
         landmark_address = binding.landmarkNewAddressEditText.getText().toString();
 
         full_address = name_address + ",\n" + street_address + ",\n" + landmark_address + ", "
-                + city + ",\n" + pincode_address + ", " + state;
+                + pincodeDistrict + ",\n" + pincode_address + ", " + state;
 
         JsonObject jsonData = new JsonObject();
         jsonData.addProperty("user_id", user.getUid());
         jsonData.addProperty("name", name_address);
         jsonData.addProperty("street_address", street_address);
-        jsonData.addProperty("district", selectedDistrict);
-        jsonData.addProperty("state", selectedState);
+        jsonData.addProperty("district", selectedDistrict.toLowerCase());
+        jsonData.addProperty("state", selectedState.toLowerCase());
+        jsonData.addProperty("district_from_pincode", pincodeDistrict.toLowerCase());
         jsonData.addProperty("pincode", pincode_address);
         jsonData.addProperty("landmark", landmark_address);
         jsonData.addProperty("full_address", full_address);

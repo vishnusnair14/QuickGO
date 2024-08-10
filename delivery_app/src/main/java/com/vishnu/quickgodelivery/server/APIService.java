@@ -1,8 +1,9 @@
 package com.vishnu.quickgodelivery.server;
 
 import com.google.gson.JsonObject;
-import com.vishnu.quickgodelivery.miscellaneous.DutyInfoDataModel;
-import com.vishnu.quickgodelivery.miscellaneous.DutyModelDataModel;
+import com.vishnu.quickgodelivery.miscellaneous.StartDutyModel;
+import com.vishnu.quickgodelivery.miscellaneous.EndDutyModel;
+import com.vishnu.quickgodelivery.miscellaneous.DutySettingsModel;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -24,14 +25,18 @@ public interface APIService {
             @Part("shop_data") RequestBody shopData
     );
 
-    @POST("update-duty-info/")
-    Call<JsonObject> updateDutyInfo(@Body DutyInfoDataModel dutyInfoDataModel);
-
     @POST("start-duty/")
-    Call<JsonObject> startDuty(@Body DutyInfoDataModel dutyInfoDataModel);
+    Call<JsonObject> startDuty(@Body StartDutyModel startDutyModel);
+
+    @POST("update-duty-data")
+    Call<JsonObject> updateDutySettingsData(@Body DutySettingsModel dutySettingsModel);
 
     @POST("end-duty/")
-    Call<JsonObject> endDuty(@Body DutyModelDataModel dutyModelDataModel);
+    Call<JsonObject> endDuty(@Body EndDutyModel endDutyModel);
+
+    @GET("get-delivery-client-data/{client_id}")
+    Call<JsonObject> getUserData(
+            @Path("client_id") String clientID);
 
     @GET("set-current-order/{delivery_partner_id}/{user_id}/{order_id}")
     Call<JsonObject> setCurrentDeliveryOrder(
@@ -81,3 +86,5 @@ public interface APIService {
             @Field("user_phno") String userPhno,
             @Field("order_key") String orderKey);
 }
+
+

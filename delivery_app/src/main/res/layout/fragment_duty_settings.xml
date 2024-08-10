@@ -11,87 +11,174 @@
     <!-- Delivery Status -->
     <TextView
         android:id="@+id/deliveryStatusTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/archivo_black"
-        android:text="Delivery Status"
-        android:textColor="?attr/colorOnBackground"
-        android:textSize="20sp" />
+        android:text="Manage your location preferences"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textColor="#000000"
+        android:textSize="20dp" />
 
+    <!-- Current Details Card -->
     <TextView
-        android:id="@+id/deliveryStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:fontFamily="@font/archivo_black"
-        android:text="Out for Delivery"
-        android:textColor="@color/md_theme_primary"
-        android:textSize="18sp" />
-
-    <!-- State Spinner -->
-    <LinearLayout
+        android:id="@+id/textView16"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
-        android:orientation="horizontal"
-        android:padding="16dp">
+        android:fontFamily="@font/archivo"
+        android:text="Saved location preferences"
+        android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/stateSpinnerTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:fontFamily="@font/montserrat"
-            android:text="Select State"
-            android:textColor="?attr/colorOnSurface"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <Spinner
-            android:id="@+id/stateSpinner"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_weight="1" />
-    </LinearLayout>
-
-    <!-- District Spinner -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp">
-
-        <TextView
-            android:id="@+id/districtSpinnerTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_weight="1"
-            android:fontFamily="@font/montserrat"
-            android:text="Select District"
-            android:textColor="?attr/colorOnSurface"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <Spinner
-            android:id="@+id/districtSpinner"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_weight="1" />
-    </LinearLayout>
-
-    <!-- Delivery Details Card -->
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/deliveryDetailsCard"
+        android:id="@+id/currentDetailsCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:layout_marginTop="24dp"
+        android:layout_margin="8dp"
+        android:layout_marginTop="16dp"
+        app:cardCornerRadius="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <!-- Current State -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/stateSpinnerTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/montserrat"
+                    android:text="State"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/currentStateTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/montserrat"
+                    android:gravity="center_vertical"
+                    android:text="..."
+                    android:textColor="?attr/colorSecondary"
+                    android:textStyle="bold|italic" />
+            </LinearLayout>
+
+            <!-- Current District -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/districtSpinnerTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/montserrat"
+                    android:text="District"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/currentDistrictTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/montserrat"
+                    android:gravity="center_vertical"
+                    android:text="..."
+                    android:textColor="?attr/colorSecondary"
+                    android:textStyle="bold|italic" />
+            </LinearLayout>
+
+            <!-- Current Locality -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/localitySpinnerTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/montserrat"
+                    android:text="Locality"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/currentLocalityTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/montserrat"
+                    android:gravity="center_vertical"
+                    android:text="..."
+                    android:textColor="?attr/colorSecondary"
+                    android:textStyle="bold|italic" />
+            </LinearLayout>
+
+            <!-- Current Pincode -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/pincodeTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/montserrat"
+                    android:text="Pincode"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/currentPincodeTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/montserrat"
+                    android:gravity="center_vertical"
+                    android:text="..."
+                    android:textColor="?attr/colorSecondary"
+                    android:textStyle="bold|italic" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- New Details Card -->
+    <TextView
+        android:id="@+id/textView17"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/archivo"
+        android:text="Update your location below"
+        android:textAllCaps="false"
+        android:textStyle="bold" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/changeDetailsCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:layout_marginTop="16dp"
         app:cardCornerRadius="16dp"
         app:cardElevation="4dp">
 
@@ -99,58 +186,137 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="12dp">
 
-            <TextView
-                android:id="@+id/deliveryAddressTitle"
-                android:layout_width="wrap_content"
+            <!-- New State -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/montserrat"
-                android:text="Delivery Address"
-                android:textColor="?attr/colorOnSurface"
-                android:textSize="18sp" />
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/deliveryAddress"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:fontFamily="@font/montserrat"
-                android:text="123 Main Street, Springfield, IL"
-                android:textColor="?attr/colorOnSurface"
-                android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/editStateTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/montserrat"
+                    android:text="New State"
+                    android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/deliveryTimeTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:fontFamily="@font/montserrat"
-                android:text="Estimated Delivery Time"
-                android:textColor="?attr/colorOnSurface"
-                android:textSize="18sp" />
+                <Spinner
+                    android:id="@+id/stateSpinner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </LinearLayout>
 
-            <TextView
-                android:id="@+id/deliveryTime"
-                android:layout_width="wrap_content"
+            <!-- New District -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:fontFamily="@font/montserrat"
-                android:text="45-60 minutes"
-                android:textColor="?attr/colorOnSurface"
-                android:textSize="16sp" />
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/editDistrictTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/montserrat"
+                    android:text="New District"
+                    android:textStyle="bold" />
+
+                <Spinner
+                    android:id="@+id/districtSpinner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <!-- New Locality -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/editLocalityTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/montserrat"
+                    android:text="New Locality"
+                    android:textStyle="bold" />
+
+                <Spinner
+                    android:id="@+id/localitySpinner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <!-- New Pincode -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/editPincodeTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/montserrat"
+                    android:text="New Pincode"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/dutySettingsPincode_editTet"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:fontFamily="@font/montserrat"
+                    android:inputType="number"
+                    android:maxLength="6"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
         </LinearLayout>
+
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Delivery Confirmation Button -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/confirmDeliveryButton"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:fontFamily="@font/montserrat"
-        android:text="Confirm Delivery"
-        android:textColor="@android:color/white"
-        android:textSize="16sp"
-        app:cornerRadius="24dp" />
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/refreshDutySettingsDataBtn_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:fontFamily="@font/montserrat"
+            android:text="Refresh"
+            android:textAllCaps="true"
+            android:textStyle="bold" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/updateDutySettingsData_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:fontFamily="@font/montserrat"
+            android:text="Update"
+            android:textAllCaps="true"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
 </LinearLayout>

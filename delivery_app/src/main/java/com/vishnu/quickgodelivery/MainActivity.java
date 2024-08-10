@@ -56,8 +56,8 @@ import com.google.gson.JsonObject;
 import com.squareup.picasso.Picasso;
 import com.vishnu.quickgodelivery.cloud.DbHandler;
 import com.vishnu.quickgodelivery.databinding.ActivityMainBinding;
-import com.vishnu.quickgodelivery.miscellaneous.DutyInfoDataModel;
-import com.vishnu.quickgodelivery.miscellaneous.DutyModelDataModel;
+import com.vishnu.quickgodelivery.miscellaneous.StartDutyModel;
+import com.vishnu.quickgodelivery.miscellaneous.EndDutyModel;
 import com.vishnu.quickgodelivery.miscellaneous.SharedDataView;
 import com.vishnu.quickgodelivery.miscellaneous.Utils;
 import com.vishnu.quickgodelivery.server.APIService;
@@ -369,7 +369,7 @@ public class MainActivity extends AppCompatActivity {
         if (!sentDutyStartRequestBtmDialog.isShowing()) {
             sentDutyStartRequestBtmDialog.show();
         }
-        DutyInfoDataModel startDutyData = new DutyInfoDataModel(user.getDisplayName(), user.getUid(), dp_lat, dp_lon, String.valueOf(System.currentTimeMillis()));
+        StartDutyModel startDutyData = new StartDutyModel(user.getDisplayName(), user.getUid(), dp_lat, dp_lon, String.valueOf(System.currentTimeMillis()));
 
         APIService apiService = ApiServiceGenerator.getApiService(this);
         Call<JsonObject> call2388 = apiService.startDuty(startDutyData);
@@ -448,7 +448,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         APIService apiService = ApiServiceGenerator.getApiService(this);
-        DutyModelDataModel stopRequestModel = new DutyModelDataModel(dpID, cityName);
+        EndDutyModel stopRequestModel = new EndDutyModel(dpID, cityName);
         Call<JsonObject> call2388 = apiService.endDuty(stopRequestModel);
         call2388.enqueue(new Callback<>() {
             @Override

@@ -25,6 +25,9 @@
         <action
             android:id="@+id/action_nav_settings_to_dutySettingsFragment"
             app:destination="@id/dutySettingsFragment" />
+        <action
+            android:id="@+id/action_nav_settings_to_manageAccountFragment"
+            app:destination="@id/manageAccountFragment" />
     </fragment>
 
     <fragment
@@ -51,4 +54,8 @@
         android:name="com.vishnu.quickgodelivery.ui.settings.duty.DutySettingsFragment"
         android:label="Duty Settings"
         tools:layout="@layout/fragment_duty_settings" />
+    <fragment
+        android:id="@+id/manageAccountFragment"
+        android:name="com.vishnu.quickgodelivery.ui.settings.account.ManageAccountFragment"
+        android:label="ManageAccountFragment" />
 </navigation>

@@ -1,11 +1,11 @@
 package com.vishnu.quickgodelivery.miscellaneous;
 
-public class DutyModelDataModel {
+public class EndDutyModel {
 
     String dp_id;
     String city_name;
 
-    public DutyModelDataModel(String dp_id, String city_name) {
+    public EndDutyModel(String dp_id, String city_name) {
         this.dp_id = dp_id;
         this.city_name = city_name;
     }

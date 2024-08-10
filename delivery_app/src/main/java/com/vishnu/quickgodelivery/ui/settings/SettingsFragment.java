@@ -22,10 +22,18 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         setPreferencesFromResource(R.xml.settings_root_preferences, rootKey);
         preferences = requireContext().getSharedPreferences("settings", Context.MODE_PRIVATE);
 
+        Preference manageAccountDetails_button = findPreference("manageAccountDetails_pref");
         Preference manageDutyPref_button = findPreference("manageDutyPreferences_pref");
 
         SwitchPreferenceCompat useTestServer_button = findPreference("use_test_server");
 
+
+        if (manageAccountDetails_button != null) {
+            manageAccountDetails_button.setOnPreferenceClickListener(preference -> {
+                NavHostFragment.findNavController(this).navigate(R.id.action_nav_settings_to_manageAccountFragment);
+                return true;
+            });
+        }
 
         if (manageDutyPref_button != null) {
             manageDutyPref_button.setOnPreferenceClickListener(preference -> {
