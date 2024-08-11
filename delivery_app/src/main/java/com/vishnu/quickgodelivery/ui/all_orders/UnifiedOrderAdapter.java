@@ -328,9 +328,9 @@ public class UnifiedOrderAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
 
         if (pdd < 1) {
-            pddTV.setText(MessageFormat.format("PICKUP DISTANCE: {0} mtr", pdd * 1000));
+            pddTV.setText(MessageFormat.format("PICKUP DISTANCE: (total travel) {0} mtr", pdd * 1000));
         } else {
-            pddTV.setText(MessageFormat.format("PICKUP DISTANCE: {0} km", pdd));
+            pddTV.setText(MessageFormat.format("PICKUP DISTANCE: (total travel) {0} km", pdd));
         }
 
         shopNameTV.setText(MessageFormat.format("{0}", shopName.toUpperCase(Locale.ROOT)));

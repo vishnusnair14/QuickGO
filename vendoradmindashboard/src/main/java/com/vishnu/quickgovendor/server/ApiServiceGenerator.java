@@ -9,10 +9,10 @@ import com.vishnu.quickgovendor.ui.settings.PreferencesManager;
 
 public class ApiServiceGenerator {
 
-    private static APISerivce apiService;
+    private static APIService apiService;
     private static final String LOG_TAG = "PreferenceManager";
 
-    public static APISerivce getApiService(Context context) {
+    public static APIService getApiService(Context context) {
         if (apiService != null) {
             Log.d(LOG_TAG, "apiService not NULL");
             return apiService;
@@ -21,7 +21,7 @@ public class ApiServiceGenerator {
         String baseUrl = PreferencesManager.getBaseUrl(context);
         Log.d(LOG_TAG, "apiService NULL: creating");
         Toast.makeText(context, baseUrl, Toast.LENGTH_SHORT).show();
-        apiService = ApiClient.getClient(baseUrl).create(APISerivce.class);
+        apiService = ApiClient.getClient(baseUrl).create(APIService.class);
         return apiService;
     }
 

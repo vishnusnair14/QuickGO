@@ -9,12 +9,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.JsonObject;
@@ -43,6 +47,13 @@ public class DutySettingsFragment extends Fragment {
     TextView currentDistrictTextView;
     TextView currentLocalityTextView;
     TextView currentPincodeTextView;
+    private MaterialCardView changeDetailsCard;
+    private MaterialCardView currentDetailsCard;
+    Button editBtn;
+    Animation slideInFromLeft;
+    Animation slideOutToRight;
+    Animation slideInFromRight;
+    Animation slideOutToLeft;
 
     public DutySettingsFragment() {
         // Required empty public constructor
@@ -65,11 +76,83 @@ public class DutySettingsFragment extends Fragment {
         spinnerState = binding.stateSpinner;
         districtSpinner = binding.districtSpinner;
         localitySpinner = binding.localitySpinner;
+        changeDetailsCard = binding.changeDetailsCard;
+        editBtn = binding.showUpdateOptionsBtn;
 
         currentStateTextView = binding.currentStateTextView;
         currentDistrictTextView = binding.currentDistrictTextView;
         currentLocalityTextView = binding.currentLocalityTextView;
         currentPincodeTextView = binding.currentPincodeTextView;
+        currentDetailsCard = binding.currentDetailsCard;
+
+        changeDetailsCard.setVisibility(View.GONE);
+
+        // Load animations
+        slideInFromLeft = AnimationUtils.loadAnimation(getContext(), R.anim.slide_in_from_left);
+        slideOutToRight = AnimationUtils.loadAnimation(getContext(), R.anim.slide_out_to_right);
+        slideInFromRight = AnimationUtils.loadAnimation(getContext(), R.anim.slide_in_from_right);
+        slideOutToLeft = AnimationUtils.loadAnimation(getContext(), R.anim.slide_out_to_left);
+
+        // Handle animation listeners if needed (for visibility changes after animation)
+        slideInFromLeft.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                changeDetailsCard.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+
+        slideInFromRight.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                currentDetailsCard.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+
+        slideOutToRight.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                currentDetailsCard.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+
+        slideOutToLeft.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                changeDetailsCard.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
 
         // Populate state spinner
         ArrayAdapter<CharSequence> stateAdapter = ArrayAdapter.createFromResource(
@@ -103,9 +186,8 @@ public class DutySettingsFragment extends Fragment {
 
             }
         });
-        // Initial population
+
         populateDistrictSpinner("Select State");
-        populateLocalitySpinner("Select Locality");
 
         binding.refreshDutySettingsDataBtnButton.setOnClickListener(v -> {
             getSavedDutyData();
@@ -117,15 +199,77 @@ public class DutySettingsFragment extends Fragment {
             }
         });
 
+        binding.updateDutySettingsDataCancelBtnButton.setOnClickListener(v -> {
+            showCurrentView();
+        });
+
+        editBtn.setOnClickListener(v -> {
+            showUpdateView();
+        });
+
         getSavedDutyData();
         return root;
     }
+
+    private void showUpdateView() {
+        if (changeDetailsCard.getVisibility() == View.GONE) {
+            // Hide the current card with slide out to the right animation
+            currentDetailsCard.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.slide_out_to_right));
+            currentDetailsCard.setVisibility(View.GONE);
+
+            // Show the change card with slide in from the left animation
+            changeDetailsCard.setVisibility(View.VISIBLE);
+            changeDetailsCard.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.slide_in_from_left));
+
+            editBtn.setText(R.string.hide);
+            binding.refreshDutySettingsDataBtnButton.setEnabled(false);
+        } else {
+            // Hide the change card with slide out to the right animation
+            changeDetailsCard.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.slide_out_to_right));
+            changeDetailsCard.setVisibility(View.GONE);
+
+            // Show the current card with slide in from the left animation
+            currentDetailsCard.setVisibility(View.VISIBLE);
+            currentDetailsCard.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.slide_in_from_left));
+
+            editBtn.setText(R.string.edit);
+            binding.refreshDutySettingsDataBtnButton.setEnabled(true);
+        }
+    }
+
+
+    private void showCurrentView() {
+        if (currentDetailsCard.getVisibility() == View.GONE) {
+            // Hide the change card with slide out to the right animation
+            changeDetailsCard.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.slide_out_to_right));
+            changeDetailsCard.setVisibility(View.GONE);
+
+            // Show the current card with slide in from the left animation
+            currentDetailsCard.setVisibility(View.VISIBLE);
+            currentDetailsCard.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.slide_in_from_left));
+
+            editBtn.setText(R.string.edit);
+            binding.refreshDutySettingsDataBtnButton.setEnabled(true);
+        } else {
+            // Hide the current card with slide out to the right animation
+            currentDetailsCard.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.slide_out_to_right));
+            currentDetailsCard.setVisibility(View.GONE);
+
+            // Show the change card with slide in from the left animation
+            changeDetailsCard.setVisibility(View.VISIBLE);
+            changeDetailsCard.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.slide_in_from_left));
+
+            editBtn.setText(R.string.hide);
+            binding.refreshDutySettingsDataBtnButton.setEnabled(false);
+        }
+    }
+
 
     private boolean validateSelections() {
         Object selectedState = spinnerState.getSelectedItem();
         Object selectedDistrict = districtSpinner.getSelectedItem();
         Object selectedLocality = localitySpinner.getSelectedItem();
-        String pincode = binding.dutySettingsPincodeEditTet.getText().toString().trim();
+        String pincode = binding.pincodeEditText.getText().toString().trim();
 
         if (selectedState == null || selectedState.toString().equals("Select State")) {
             Toast.makeText(requireContext(), "Please select a state.", Toast.LENGTH_SHORT).show();
@@ -155,7 +299,7 @@ public class DutySettingsFragment extends Fragment {
         int districtsArrayId = switch (state) {
             case "Karnataka" -> R.array.karnataka_districts_array;
             case "Kerala" -> R.array.kerala_districts_array;
-            default -> R.array.empty_array
+            default -> R.array.none_array
             ;
         };
 
@@ -171,7 +315,7 @@ public class DutySettingsFragment extends Fragment {
         int districtsArrayId = switch (district) {
             case "Palakkad" -> R.array.palakkad_locality_array;
             case "Mysuru" -> R.array.mysuru_locality_array;
-            default -> R.array.empty_array
+            default -> R.array.none_array
             ;
         };
 
@@ -188,7 +332,7 @@ public class DutySettingsFragment extends Fragment {
                 spinnerState.getSelectedItem().toString().toLowerCase(),
                 districtSpinner.getSelectedItem().toString().toLowerCase(),
                 localitySpinner.getSelectedItem().toString().toLowerCase(),
-                binding.dutySettingsPincodeEditTet.getText().toString());
+                binding.pincodeEditText.getText().toString());
 
         APIService apiService = ApiServiceGenerator.getApiService(requireContext());
         Call<JsonObject> call = apiService.updateDutySettingsData(dutySettingsModel);
@@ -198,6 +342,10 @@ public class DutySettingsFragment extends Fragment {
             public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Toast.makeText(requireContext(), response.body().get("message").getAsString(), Toast.LENGTH_SHORT).show();
+                    editBtn.performLongClick();
+                    editBtn.setText(R.string.edit);
+                    showCurrentView();
+                    getSavedDutyData();
                 } else {
 
                     Log.e(LOG_TAG, "Response is not successful or body is null.");
@@ -213,7 +361,10 @@ public class DutySettingsFragment extends Fragment {
 
 
     private void getSavedDutyData() {
-
+        currentStateTextView.setText("");
+        currentDistrictTextView.setText("");
+        currentLocalityTextView.setText("");
+        currentPincodeTextView.setText("");
         APIService apiService = ApiServiceGenerator.getApiService(requireContext());
         Call<JsonObject> call = apiService.getUserData(user.getUid());
 
@@ -221,30 +372,36 @@ public class DutySettingsFragment extends Fragment {
             @Override
             public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
                 if (response.isSuccessful() && response.body() != null) {
+                    if (response.body().has("data")) {
+                        JsonObject data = response.body().get("data").getAsJsonObject();
+                        if (data.has("user_state") && !data.get("user_state").isJsonNull()) {
+                            currentStateTextView.setText(
+                                    MessageFormat.format("{0}{1}",
+                                            data.get("user_state").getAsString().substring(0, 1).toUpperCase(),
+                                            data.get("user_state").getAsString().substring(1).toLowerCase())
+                            );
+                        }
 
-                    JsonObject data = response.body().get("data").getAsJsonObject();
-                    currentStateTextView.setText(
-                            MessageFormat.format("{0}{1}",
-                                    data.get("duty_state").getAsString().substring(0, 1).toUpperCase(),
-                                    data.get("duty_state").getAsString().substring(1).toLowerCase())
-                    );
+                        if (data.has("user_district") && !data.get("user_district").isJsonNull()) {
+                            currentDistrictTextView.setText(
+                                    MessageFormat.format("{0}{1}",
+                                            data.get("user_district").getAsString().substring(0, 1).toUpperCase(),
+                                            data.get("user_district").getAsString().substring(1).toLowerCase())
+                            );
+                        }
 
-                    currentDistrictTextView.setText(
-                            MessageFormat.format("{0}{1}",
-                                    data.get("duty_district").getAsString().substring(0, 1).toUpperCase(),
-                                    data.get("duty_district").getAsString().substring(1).toLowerCase())
-                    );
+                        if (data.has("user_locality") && !data.get("user_locality").isJsonNull()) {
+                            currentLocalityTextView.setText(
+                                    MessageFormat.format("{0}{1}",
+                                            data.get("user_locality").getAsString().substring(0, 1).toUpperCase(),
+                                            data.get("user_locality").getAsString().substring(1).toLowerCase())
+                            );
+                        }
 
-                    currentLocalityTextView.setText(
-                            MessageFormat.format("{0}{1}",
-                                    data.get("duty_locality").getAsString().substring(0, 1).toUpperCase(),
-                                    data.get("duty_locality").getAsString().substring(1).toLowerCase())
-                    );
-
-                    currentPincodeTextView.setText(
-                            data.get("duty_locality_pincode").getAsString()
-                    );
-                    Toast.makeText(requireContext(), response.body().get("message").getAsString(), Toast.LENGTH_SHORT).show();
+                        if (data.has("user_pincode") && !data.get("user_pincode").isJsonNull()) {
+                            currentPincodeTextView.setText(data.get("user_pincode").getAsString());
+                        }
+                    }
                 } else {
 
                     Log.e(LOG_TAG, "Response is not successful or body is null.");

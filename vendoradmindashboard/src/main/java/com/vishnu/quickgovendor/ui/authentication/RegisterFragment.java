@@ -58,7 +58,7 @@ import com.google.gson.JsonObject;
 import com.vishnu.quickgovendor.R;
 import com.vishnu.quickgovendor.callbacks.PincodeValidation;
 import com.vishnu.quickgovendor.databinding.FragmentRegistrationBinding;
-import com.vishnu.quickgovendor.server.APISerivce;
+import com.vishnu.quickgovendor.server.APIService;
 import com.vishnu.quickgovendor.server.ApiServiceGenerator;
 import com.vishnu.quickgovendor.services.GPSLocationProvider;
 import com.vishnu.quickgovendor.services.LocationUpdateListener;
@@ -343,9 +343,7 @@ public class RegisterFragment extends Fragment implements LocationUpdateListener
     private void populateDistrictSpinner(String state) {
         int districtsArrayId = switch (state) {
             case "Kerala" -> R.array.kerala_districts_array;
-            case "Maharashtra" -> R.array.maharashtra_districts_array;
             case "Karnataka" -> R.array.karnataka_districts_array;
-            case "Tamil Nadu" -> R.array.tamil_nadu_districts_array;
             default -> R.array.none_array;
             // Add more cases if there are more states
         };
@@ -422,7 +420,7 @@ public class RegisterFragment extends Fragment implements LocationUpdateListener
         JsonObject jsonData = getShopData();
         RequestBody shopData = RequestBody.create(jsonData.toString(), MediaType.parse("application/json"));
 
-        APISerivce apiService = ApiServiceGenerator.getApiService(requireContext());
+        APIService apiService = ApiServiceGenerator.getApiService(requireContext());
         Call<JsonObject> call = apiService.registerShop(body, shopData);
 
         call.enqueue(new Callback<>() {

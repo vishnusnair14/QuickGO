@@ -9,12 +9,12 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 
-public interface APISerivce {
+public interface APIService {
 
     @Multipart
-    @POST("register")
+    @POST("register-vendor-account")
     Call<JsonObject> registerShop(
             @Part MultipartBody.Part image,
-            @Part("shop_data") RequestBody shopData
+            @Part("account_data") RequestBody shopData
     );
 }

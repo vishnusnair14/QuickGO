@@ -18,11 +18,12 @@ import retrofit2.http.Part;
 import retrofit2.http.Path;
 
 public interface APIService {
+
     @Multipart
-    @POST("upload")
-    Call<UploadResponse> uploadImage(
+    @POST("register-delivery-account")
+    Call<JsonObject> registerUser(
             @Part MultipartBody.Part image,
-            @Part("shop_data") RequestBody shopData
+            @Part("account_data") RequestBody accountData
     );
 
     @POST("start-duty/")

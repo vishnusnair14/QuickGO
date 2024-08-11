@@ -60,7 +60,7 @@ public class AddAddressFragment extends Fragment {
     private EditText pinCodeEditText;
     private EditText phoneNoET;
     private String pincode, phoneno;
-    private String pincodeDistrict, state;
+    private String pincodeFromDistrict;
     TextView cityStateTV;
     private double latitude = 0;
     private double longitude = 0;
@@ -308,7 +308,7 @@ public class AddAddressFragment extends Fragment {
 
                     Log.i("AddAddressFragment", obj.getString("Name") + "-" + obj.getString("District") + "-" + obj.getString("State"));
 
-                    pincodeDistrict = obj.getString("District");
+                    pincodeFromDistrict = obj.getString("District");
 //                    state = obj.getString("State");
                     cityStateTV.setText(MessageFormat.format("{0}, {1}", obj.getString("District"), obj.getString("State")));
 
@@ -336,39 +336,6 @@ public class AddAddressFragment extends Fragment {
         queue.add(objectRequest);
     }
 
-    private Map<String, Object> getAddressFieldData(FragmentAddAddressBinding binding, String postOffName, boolean isAddDef) {
-
-        String name_address, street_address, pincode_address, landmark_address, full_address;
-
-        GeoPoint geoPoint = new GeoPoint(latitude, longitude);
-
-        name_address = binding.nameNewAddressEditText.getText().toString();
-        street_address = binding.streetNewAddressEditText.getText().toString();
-        pincode_address = binding.pincodeTextBox.getText().toString();
-        landmark_address = binding.landmarkNewAddressEditText.getText().toString();
-
-        full_address = name_address + ",\n" + street_address + ",\n" + landmark_address + ", "
-                + pincodeDistrict + ",\n" + pincode_address + ", " + state;
-
-        Map<String, Object> addressInfo = new HashMap<>();
-        addressInfo.put("name", name_address);
-        addressInfo.put("street_address", street_address);
-        addressInfo.put("district", spinnerDistrict.getSelectedItem().toString().toLowerCase());
-        addressInfo.put("state", spinnerState.getSelectedItem().toString().toLowerCase());
-        addressInfo.put("pincode_district", pincodeDistrict);
-        addressInfo.put("pincode", pincode_address);
-        addressInfo.put("landmark", landmark_address);
-        addressInfo.put("full_address", full_address);
-        addressInfo.put("is_default", isAddDef);
-        addressInfo.put("post_office_name", postOffName);
-        addressInfo.put("address_type", addressType);
-        addressInfo.put("address_loc_cords", geoPoint);
-        addressInfo.put("phone_no", phoneNoET.getText().toString());
-
-        Log.i("AddAddressFragment", "addressFieldData: " + addressInfo);
-
-        return addressInfo;
-    }
 
     @NonNull
     private JsonObject getAddressData(String postOffName, boolean isAddDef) {
@@ -380,8 +347,9 @@ public class AddAddressFragment extends Fragment {
         pincode_address = binding.pincodeTextBox.getText().toString();
         landmark_address = binding.landmarkNewAddressEditText.getText().toString();
 
-        full_address = name_address + ",\n" + street_address + ",\n" + landmark_address + ", "
-                + pincodeDistrict + ",\n" + pincode_address + ", " + state;
+        full_address = name_address + ",\n" + street_address + ", " + landmark_address.trim() + ", "
+                + selectedDistrict.substring(0, 1).toUpperCase() + selectedDistrict.substring(1) + ", "
+                + pincode_address + ", " + selectedState.substring(0, 1).toUpperCase() + selectedState.substring(1);
 
         JsonObject jsonData = new JsonObject();
         jsonData.addProperty("user_id", user.getUid());
@@ -389,7 +357,7 @@ public class AddAddressFragment extends Fragment {
         jsonData.addProperty("street_address", street_address);
         jsonData.addProperty("district", selectedDistrict.toLowerCase());
         jsonData.addProperty("state", selectedState.toLowerCase());
-        jsonData.addProperty("district_from_pincode", pincodeDistrict.toLowerCase());
+        jsonData.addProperty("district_from_pincode", pincodeFromDistrict);
         jsonData.addProperty("pincode", pincode_address);
         jsonData.addProperty("landmark", landmark_address);
         jsonData.addProperty("full_address", full_address);

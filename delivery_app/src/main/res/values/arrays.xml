@@ -82,7 +82,8 @@
         <item>Vijayanagar</item>
     </string-array>
 
-    <string-array name="empty_array">
+
+    <string-array name="none_array">
 
     </string-array>
 
