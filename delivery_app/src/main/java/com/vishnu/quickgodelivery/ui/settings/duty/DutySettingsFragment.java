@@ -411,6 +411,7 @@ public class DutySettingsFragment extends Fragment {
             @Override
             public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
                 Toast.makeText(requireContext(), "Network error. Please try again.", Toast.LENGTH_SHORT).show();
+                Log.e(LOG_TAG, "GIT ");
             }
         });
     }
