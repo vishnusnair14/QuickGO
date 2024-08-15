@@ -22,7 +22,7 @@
 
     <fragment
         android:id="@+id/nav_store_pref_choose_address"
-        android:name="com.vishnu.quickgoorder.ui.settings.storepreference.address.ChooseAddressFragment"
+        android:name="com.vishnu.quickgoorder.ui.settings.storepreference.choose_address.ChooseAddressFragment"
         android:label="@string/menu_settings"
         tools:layout="@layout/fragment_store_preference_choose_address">
 

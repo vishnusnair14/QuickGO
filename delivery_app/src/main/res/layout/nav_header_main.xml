@@ -9,18 +9,30 @@
     android:gravity="bottom|top"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
-    <de.hdodenhof.circleimageview.CircleImageView
+<!--    <de.hdodenhof.circleimageview.CircleImageView-->
+<!--        android:id="@+id/profilePhoto_imageView"-->
+<!--        android:layout_width="85dp"-->
+<!--        android:layout_height="85dp"-->
+<!--        android:layout_marginTop="24dp"-->
+<!--        android:layout_marginEnd="10dp"-->
+<!--        android:contentDescription="@string/todo"-->
+<!--        android:cropToPadding="true"-->
+<!--        android:scaleType="centerCrop"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent" />-->
+
+    <ImageView
         android:id="@+id/profilePhoto_imageView"
-        android:layout_width="85dp"
-        android:layout_height="85dp"
-        android:layout_marginTop="45dp"
-        android:layout_marginEnd="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="125dp"
         android:contentDescription="@string/todo"
         android:cropToPadding="true"
         android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/baseline_image_24" />
 
     <TextView
         android:id="@+id/profileUsername_textView"
@@ -28,7 +40,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginTop="5dp"
-        android:fontFamily="courier new"
+        android:fontFamily="@font/montserrat"
+        android:gravity="center"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         android:text="@string/delivery_app"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
@@ -41,7 +54,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:fontFamily="courier new"
+        android:fontFamily="@font/anonymous_pro"
         android:text="@string/email_id"
         android:textSize="11sp"
         android:textStyle="bold"
@@ -54,7 +67,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="5dp"
-        android:fontFamily="courier new"
+        android:fontFamily="@font/anonymous_pro"
         android:text="@string/uid"
         android:textSize="11sp"
         android:textStyle="bold"

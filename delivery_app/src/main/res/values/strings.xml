@@ -127,7 +127,7 @@
     <string name="if_you_">If you want to decline this order,\nClick \'Decline Order\' button, else close this dialog. Remember you can only deliver this order after delivering the current order if not declined.</string>
     <string name="choose_a_delivery_action_for_this_order">Choose a delivery action for this order?</string>
     <string name="this_order_">This order has been saved for next delivery and successfully added to your next-orders-bucket. Once you deliver the current accepted order successfully, then next you can deliver this selected order.</string>
-    <string name="delivery_app">DELIVERY APP</string>
+    <string name="delivery_app">QuickGO Delivery App</string>
     <string name="email_id">$(email_id)</string>
     <string name="uid">$(uid)</string>
     <string name="all_orders">All Orders</string>
@@ -204,4 +204,19 @@
     <string name="edit">Edit</string>
     <string name="hide">Hide</string>
     <string name="save">Save</string>
+    <string name="district">District</string>
+    <string name="state">State</string>
+    <string name="select_profile_image">Select profile image</string>
+    <string name="phone_number_hint">phno</string>
+    <string name="pincode_hint">pincode</string>
+    <string name="phone_number">Phone number</string>
+    <string name="reenter_password_hint">re-enter password</string>
+    <string name="password_hint">password</string>
+    <string name="locality">Locality</string>
+    <string name="pincode">Pincode</string>
+    <string name="reenter_password">Re-enter password</string>
+    <string name="enter_username">Enter username</string>
+    <string name="email_address">Enter email address</string>
+    <string name="email_hint">email address</string>
+    <string name="username">Enter username</string>
 </resources>

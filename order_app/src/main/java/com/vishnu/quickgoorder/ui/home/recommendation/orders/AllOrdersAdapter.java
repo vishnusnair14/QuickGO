@@ -43,7 +43,7 @@ public class AllOrdersAdapter extends RecyclerView.Adapter<AllOrdersAdapter.View
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         AllOrdersModel item = itemList.get(position);
-        holder.shopNameTv.setText(item.getShop_name());
+        holder.shopNameTv.setText(item.getShop_name().toUpperCase());
         holder.orderNoTv.setText(MessageFormat.format("Order No: {0}", item.getOrder_id().substring(6)));
         holder.orderTimeTV.setText(MessageFormat.format("Order Time: {0}", item.getOrder_time()));
 

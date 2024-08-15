@@ -61,6 +61,13 @@ public class OBSOrderModel implements OrderModel {
         return order_time;
     }
 
+    public long getOrder_time_millis() {
+        return order_time_millis;
+    }
+
+    public void setOrder_time_millis(long order_time_millis) {
+        this.order_time_millis = order_time_millis;
+    }
 
     public double getPickup_destination_distance() {
         return pickup_destination_distance;

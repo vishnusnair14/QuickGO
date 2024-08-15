@@ -355,7 +355,7 @@ public class PaymentActivity extends AppCompatActivity implements PaymentResultW
 
                         preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_FRAGMENT_ORDER_ID, "0").apply();
                         preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_FRAGMENT_AUDIO_REF_ID, "0").apply();
-                        Utils.deleteVoiceOrderFile(context, orderByVoiceDocID);
+                        Utils.deleteVoiceOrderCacheFile(context, orderByVoiceDocID);
 
                         Toast.makeText(PaymentActivity.this, "Order placed successfully\n" +
                                 resp.get("dp_id").getAsString(), Toast.LENGTH_SHORT).show();
@@ -407,7 +407,7 @@ public class PaymentActivity extends AppCompatActivity implements PaymentResultW
 
                         preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_FRAGMENT_ORDER_ID, "0").apply();
                         preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_FRAGMENT_AUDIO_REF_ID, "0").apply();
-                        Utils.deleteVoiceOrderFile(context, shopID);
+                        Utils.deleteVoiceOrderCacheFile(context, shopID);
 
                         Toast.makeText(PaymentActivity.this, "Order placed successfully\n" +
                                 resp.get("dp_id").getAsString(), Toast.LENGTH_SHORT).show();

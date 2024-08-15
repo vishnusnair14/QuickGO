@@ -7,6 +7,7 @@ public class StoreData {
     @SerializedName("shop_id")
     private String shopId;
 
+    @SerializedName("shop_preference")
     private int shop_preference;
 
     @SerializedName("shop_name")

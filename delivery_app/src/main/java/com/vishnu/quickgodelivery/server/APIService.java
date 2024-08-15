@@ -35,6 +35,10 @@ public interface APIService {
     @POST("end-duty/")
     Call<JsonObject> endDuty(@Body EndDutyModel endDutyModel);
 
+    @GET("get-duty-status/{delivery_partner_id}")
+    Call<JsonObject> getDutyStatus(
+            @Path("delivery_partner_id") String deliveryPartnerID);
+
     @GET("get-delivery-client-data/{client_id}")
     Call<JsonObject> getUserData(
             @Path("client_id") String clientID);

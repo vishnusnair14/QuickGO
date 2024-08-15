@@ -27,13 +27,13 @@
             android:id="@+id/nav_orders"
             android:checkable="true"
             android:enabled="true"
-            android:icon="@drawable/baseline_edit_note_24"
+            android:icon="@drawable/orders_24dp_e8eaed_fill0_wght400_grad0_opsz24"
             android:title="@string/all_orders" />
 
         <item
             android:id="@+id/nav_settings"
             android:enabled="true"
-            android:icon="@drawable/baseline_bookmark_border_24"
+            android:icon="@drawable/baseline_settings_24"
             android:title="@string/settings"
             android:tooltipText="options" />
     </group>

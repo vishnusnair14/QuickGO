@@ -44,6 +44,8 @@ import java.io.File;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -150,163 +152,6 @@ public class AllOrdersFragment extends Fragment {
     }
 
 
-//    @SuppressLint("NotifyDataSetChanged")
-//    private void syncAllOrdersRecycleView(View root) {
-//        orderItemList = new ArrayList<>();
-//        OBSOrdersAdapter = new OBSOrdersAdapter(this, (ViewGroup) root,
-//                getContext(), preferences, orderItemList);
-//
-//        ordersListRecycleView.setLayoutManager(new LinearLayoutManager(getContext()));
-//        ordersListRecycleView.setAdapter(OBSOrdersAdapter);
-//
-//        String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-//        CollectionReference ordersRef = FirebaseFirestore.getInstance()
-//                .collection("DeliveryPartners").document(userId)
-//                .collection("pendingOrders");
-//
-//        ordersRef.addSnapshotListener((value, e) -> {
-//            if (e != null) {
-//                Log.w(TAG, "Listen failed.", e);
-//                return;
-//            }
-//
-//            if (value != null && !value.isEmpty()) {
-//                serverStatusTV.setText("");
-//                orderItemList.clear();
-//
-//                for (QueryDocumentSnapshot doc : value) {
-//                    if (doc.exists()) {
-//                        Log.d(LOG_TAG, "All orders data: " + doc.getData());
-//                        BaseOrderModel order = doc.toObject(BaseOrderModel.class);
-//
-//                        String orderType = doc.getString("order_type");
-//                        DocumentReference dataRef;
-//
-//                        dataRef = doc.getDocumentReference("order_data_payload_reference");
-//
-//                        if (orderType != null && orderType.equals("obs")) {
-//
-//                            if (dataRef != null) {
-//                                dataRef.get().addOnSuccessListener(additionalDataDoc -> {
-//                                    if (additionalDataDoc.exists()) {
-//                                        Log.d(LOG_TAG, "Additional data: " + additionalDataDoc.getData());
-//                                        OBSOrderModel orderData = additionalDataDoc.toObject(OBSOrderModel.class);
-//                                        orderItemList.add(orderData);
-//                                        OBSOrdersAdapter.notifyDataSetChanged();
-//                                    } else {
-//                                        Log.w(LOG_TAG, "No additional data found for order: " + doc.getId());
-//                                    }
-//                                    OBSOrdersAdapter.notifyDataSetChanged();
-//                                }).addOnFailureListener(exception -> {
-//                                    Log.e(LOG_TAG, "Error fetching additional data", exception);
-//                                });
-//                            } else {
-////                            orderItemList.add(order);
-//                                OBSOrdersAdapter.notifyDataSetChanged();
-//                                Log.e(LOG_TAG, "dataRef is null");
-//                            }
-//                        } else {
-//                            Toast.makeText(requireContext(), "It is an OBV type order", Toast.LENGTH_SHORT).show();
-//                        }
-//                    }
-//                }
-//            } else {
-//                orderItemList.clear();
-//                preferences.edit().putString("currentDeliveryOrderID", "0").apply();
-//                OBSOrdersAdapter.notifyDataSetChanged();
-//                serverStatusTV.setText(R.string.no_orders_on_queue);
-//
-//                startTVBlink(serverStatusTV);
-//            }
-//        });
-//    }
-
-//    @SuppressLint("NotifyDataSetChanged")
-//    private void syncAllOrdersRecycleView(View root) {
-//        orderItemList = new ArrayList<>();
-//        OBSOrderAdapter = new OBSOrderAdapter(this, (ViewGroup) root, getContext(),
-//                preferences, orderItemList);
-//
-//        RecyclerView ordersListRecycleView = root.findViewById(R.id.allOrdersListView_recycleView);
-//        ordersListRecycleView.setLayoutManager(new LinearLayoutManager(getContext()));
-//        ordersListRecycleView.setAdapter(OBSOrderAdapter);
-//
-//        ProgressBar loadingProgressBar = root.findViewById(R.id.loadingProgressBar);
-//        TextView serverStatusTV = root.findViewById(R.id.serverStatusFeedbackOrders_textView);
-//        loadingProgressBar.setVisibility(View.VISIBLE); // Show loading indicator
-//
-//        String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-//        CollectionReference ordersRef = FirebaseFirestore.getInstance()
-//                .collection("DeliveryPartners").document(userId)
-//                .collection("pendingOrders");
-//
-//        ordersRef.addSnapshotListener((value, e) -> {
-//            if (e != null) {
-//                Log.w(TAG, "Listen failed.", e);
-//                loadingProgressBar.setVisibility(View.GONE); // Hide loading indicator on error
-//                return;
-//            }
-//
-//            if (value != null && !value.isEmpty()) {
-//                serverStatusTV.setText("");
-//                orderItemList.clear();
-//
-//                List<Task<DocumentSnapshot>> tasks = new ArrayList<>();
-//
-//                for (QueryDocumentSnapshot doc : value) {
-//                    if (doc.exists()) {
-//                        Log.d(LOG_TAG, "All orders data: " + doc.getData());
-//                        String orderType = doc.getString("order_type");
-//                        DocumentReference dataRef = doc.getDocumentReference("order_data_payload_reference");
-//
-//                        if ("obs".equals(orderType) && dataRef != null) {
-//                            Task<DocumentSnapshot> task = dataRef.get();
-//                            tasks.add(task);
-//                            task.addOnSuccessListener(additionalDataDoc -> {
-//                                if (additionalDataDoc.exists()) {
-//                                    Log.d(LOG_TAG, "OBS data: " + additionalDataDoc.getData());
-//                                    OBSOrderModel orderData = additionalDataDoc.toObject(OBSOrderModel.class);
-//                                    orderItemList.add(orderData);
-//                                } else {
-//                                    Log.w(LOG_TAG, "No OBS data found for order: " + doc.getId());
-//                                }
-//                            }).addOnFailureListener(exception -> {
-//                                Log.e(LOG_TAG, "Error fetching OBS data", exception);
-//                            });
-//                        } else if ("obv".equals(orderType) && dataRef != null) {
-//                            Task<DocumentSnapshot> task = dataRef.get();
-//                            tasks.add(task);
-//                            task.addOnSuccessListener(additionalDataDoc -> {
-//                                if (additionalDataDoc.exists()) {
-//                                    Log.d(LOG_TAG, "OBV data: " + additionalDataDoc.getData());
-//                                    OBVOrderModel orderData = additionalDataDoc.toObject(OBVOrderModel.class);
-//                                    orderItemList.add(orderData);
-//                                } else {
-//                                    Log.w(LOG_TAG, "No OBV data found for order: " + doc.getId());
-//                                }
-//                            }).addOnFailureListener(exception -> {
-//                                Log.e(LOG_TAG, "Error fetching OBV data", exception);
-//                            });
-//                        }
-//                    }
-//                }
-//
-//                Tasks.whenAllComplete(tasks).addOnCompleteListener(task -> {
-//                    OBSOrderAdapter.notifyDataSetChanged();
-//                    loadingProgressBar.setVisibility(View.GONE); // Hide loading indicator after data is loaded
-//                });
-//            } else {
-//                orderItemList.clear();
-//                preferences.edit().putString("currentDeliveryOrderID", "0").apply();
-//                OBSOrderAdapter.notifyDataSetChanged();
-//                serverStatusTV.setText(R.string.no_orders_on_queue);
-//
-//                startTVBlink(serverStatusTV);
-//                loadingProgressBar.setVisibility(View.GONE); // Hide loading indicator if no data
-//            }
-//        });
-//    }
-
     @SuppressLint("NotifyDataSetChanged")
     private void syncAllOrdersRecycleView(View root) {
         List<AllOrdersModel> orderList = new ArrayList<>();
@@ -351,12 +196,22 @@ public class AllOrdersFragment extends Fragment {
                                 if (additionalDataDoc.exists()) {
                                     AllOrdersModel allOrdersModel = new AllOrdersModel();
                                     allOrdersModel.setOrderType(orderType);
+
+                                    // Fetch the order timestamp in milliseconds
+                                    Long orderTimeMillis = doc.getLong("order_time_millis");
+
                                     if ("obs".equals(orderType)) {
                                         OBSOrderModel orderData = additionalDataDoc.toObject(OBSOrderModel.class);
                                         allOrdersModel.setObsOrderData(orderData);
                                     } else if ("obv".equals(orderType)) {
                                         OBVOrderModel orderData = additionalDataDoc.toObject(OBVOrderModel.class);
                                         allOrdersModel.setObvOrderData(orderData);
+                                        if (orderTimeMillis != null) {
+                                            allOrdersModel.setOrderTimeMillis(orderTimeMillis);
+                                        } else {
+                                            Log.w(LOG_TAG, "order_time_millis is null for order: " + doc.getId());
+                                            allOrdersModel.setOrderTimeMillis(0);
+                                        }
                                     }
                                     orderList.add(allOrdersModel);
                                 } else {
@@ -370,8 +225,10 @@ public class AllOrdersFragment extends Fragment {
                 }
 
                 Tasks.whenAllComplete(tasks).addOnCompleteListener(task -> {
+                    orderList.sort(Comparator.comparingLong(AllOrdersModel::getOrderTimeMillis));
+
                     orderAdapter.notifyDataSetChanged();
-                    loadingProgressBar.setVisibility(View.GONE); // Hide loading indicator after data is loaded
+                    loadingProgressBar.setVisibility(View.GONE);
                 });
             } else {
                 orderList.clear();
@@ -380,7 +237,7 @@ public class AllOrdersFragment extends Fragment {
                 serverStatusTV.setText(R.string.no_orders_on_queue);
 
                 startTVBlink(serverStatusTV);
-                loadingProgressBar.setVisibility(View.GONE); // Hide loading indicator if no data
+                loadingProgressBar.setVisibility(View.GONE);
             }
         });
     }

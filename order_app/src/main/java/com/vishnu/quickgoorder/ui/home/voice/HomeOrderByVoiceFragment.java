@@ -37,11 +37,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -53,9 +56,12 @@ import com.google.gson.JsonParser;
 import com.vishnu.quickgoorder.R;
 import com.vishnu.quickgoorder.databinding.FragmentHomeOrderByVoiceBinding;
 import com.vishnu.quickgoorder.miscellaneous.PreferenceKeys;
+import com.vishnu.quickgoorder.miscellaneous.SoundManager;
 import com.vishnu.quickgoorder.miscellaneous.Utils;
 import com.vishnu.quickgoorder.server.sapi.APIService;
 import com.vishnu.quickgoorder.server.sapi.ApiServiceGenerator;
+import com.vishnu.quickgoorder.ui.home.recommendation.orders.AllOrdersAdapter;
+import com.vishnu.quickgoorder.ui.home.recommendation.orders.AllOrdersModel;
 import com.vishnu.quickgoorder.ui.home.voice.address.SavedAddressAdapter;
 import com.vishnu.quickgoorder.ui.home.voice.address.SavedAddressModel;
 
@@ -88,18 +94,23 @@ public class HomeOrderByVoiceFragment extends Fragment {
     TextView pressAndRecMainTV;
     private FirebaseUser user;
     private FirebaseFirestore db;
-    static String audioFileName = "orderByVoice.mp3";
+    static String audioFileName = "_voice.mp3";
     private SharedPreferences preferences;
     private BottomSheetDialog setDeliveryAddrBtmView;
     Button enableLocationBtn;
+    CollectionReference placedOrderDataRef;
     Button setDeliveryToCurrentLocBtn;
-    TextView noAddrFndBnr;
+    TextView savedAddressStatusTV;
+    FloatingActionButton trackOrderFab;
+    List<AllOrdersModel> placedOrdersList;
     ImageButton recordBtn;
     private List<SavedAddressModel> savedAddressList;
     private SavedAddressAdapter savedAddressAdapter;
     private Chronometer chronometer;
     private BottomSheetDialog addressNotSelectedView;
     private Runnable checkConditionRunnable;
+    private BottomSheetDialog selectOrderToTrackBtmView;
+    private AllOrdersAdapter allOrdersAdapter;
 
     public HomeOrderByVoiceFragment() {
         // Required empty public constructor
@@ -112,7 +123,11 @@ public class HomeOrderByVoiceFragment extends Fragment {
         user = FirebaseAuth.getInstance().getCurrentUser();
         db = FirebaseFirestore.getInstance();
 
+        placedOrderDataRef = db.collection("Users")
+                .document(user.getUid()).collection("placedOrderData");
+
         preferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        SoundManager.initialize(requireContext());
 
         File externalFilesDir = requireContext().getExternalFilesDir(Context.AUDIO_SERVICE);
 
@@ -127,7 +142,6 @@ public class HomeOrderByVoiceFragment extends Fragment {
 
         AppAudioDir = new File(externalFilesDir, "orderByVoice");
 
-
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -136,12 +150,13 @@ public class HomeOrderByVoiceFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentHomeOrderByVoiceBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
+        ViewGroup root = binding.getRoot();
 
         recordBtn = binding.recordVoiceImageButton;
         pressAndRecMainTV = binding.tapAndRecordMainTextView;
         recordingStatusTV = binding.recordingStatusTextView;
         chronometer = binding.chronometer29;
+        trackOrderFab = binding.trackOrder1FloatingActionButton;
         ImageView recIcon = binding.micIconImageView;
 
         Animation blinkAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.blink);
@@ -156,19 +171,28 @@ public class HomeOrderByVoiceFragment extends Fragment {
                 PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_FULL_ADDRESS, "Tap on a delivery address to make it as default"));
 
         // Define the Runnable
-        checkConditionRunnable = new Runnable() {
-            @Override
-            public void run() {
-                // Check your condition here
-                if (preferences.getString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_KEY, "None").equals("None")) {
-                    showAddressNotSelectedBtmView(root);
-
-                }
-
-                // Schedule the runnable to run again after 5 seconds
-                handler.postDelayed(this, 5000); // 5000ms = 5 seconds
+        checkConditionRunnable = () -> {
+            if (preferences.getString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_KEY, "None").equals("None")) {
+                showAddressNotSelectedBtmView(root);
             }
         };
+
+        // Add a real-time listener for all-orders button
+        placedOrderDataRef.addSnapshotListener((value, e) -> {
+            if (e != null) {
+                Log.e(LOG_TAG, "Error fetching orders: " + e.getMessage());
+                return;
+            }
+
+            if (value != null && !value.isEmpty()) {
+                trackOrderFab.setVisibility(View.VISIBLE);
+                trackOrderFab.setOnClickListener(v ->
+                        showOrderToTrackBtmView(root));
+            } else {
+                trackOrderFab.setVisibility(View.GONE);
+                Log.d(LOG_TAG, "No orders in placedOrder bucket");
+            }
+        });
 
         recordBtn.setOnTouchListener((v, event) -> {
             switch (event.getAction()) {
@@ -192,6 +216,7 @@ public class HomeOrderByVoiceFragment extends Fragment {
 
                     if (!isButtonHeld) {
                         performOnButtonRelease();
+
                     }
 
                     return true;
@@ -226,6 +251,25 @@ public class HomeOrderByVoiceFragment extends Fragment {
         return root;
     }
 
+    private void showOrderToTrackBtmView(ViewGroup root) {
+        View orderView = LayoutInflater.from(requireContext()).inflate(
+                R.layout.bottomview_select_order_to_track, root, false);
+
+        selectOrderToTrackBtmView = new BottomSheetDialog(requireContext());
+        selectOrderToTrackBtmView.setContentView(orderView);
+        Objects.requireNonNull(selectOrderToTrackBtmView.getWindow()).setGravity(Gravity.TOP);
+
+        RecyclerView allOrdersRecycleView = orderView.findViewById(R.id.selectOrderToTrack_recycleView);
+        ProgressBar progressBar = orderView.findViewById(R.id.allPlacedOrder_progressBar);
+        ViewGroup.LayoutParams params = allOrdersRecycleView.getLayoutParams();
+
+        if (selectOrderToTrackBtmView != null && !selectOrderToTrackBtmView.isShowing()) {
+            selectOrderToTrackBtmView.show();
+            progressBar.setVisibility(View.VISIBLE);
+            syncAllOrdersRecycleView(allOrdersRecycleView, progressBar);
+        }
+    }
+
     private JsonArray loadAddressDataFromFile() {
         try {
             File file = new File(requireContext().getFilesDir(), "address_data.json");
@@ -251,6 +295,84 @@ public class HomeOrderByVoiceFragment extends Fragment {
         } else {
             fetchAddressDataFromServer(userId, progressBar);
         }
+    }
+
+    private void updatePlacedOrdersList(AllOrdersModel updatedData) {
+        String orderId = updatedData.getOrder_id();
+        boolean found = false;
+
+        for (int i = 0; i < placedOrdersList.size(); i++) {
+            if (placedOrdersList.get(i).getOrder_id().equals(orderId)) {
+                // Update the existing item
+                placedOrdersList.set(i, updatedData);
+                allOrdersAdapter.notifyItemChanged(i);
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            // Add new item if it doesn't exist
+            placedOrdersList.add(updatedData);
+            allOrdersAdapter.notifyItemInserted(placedOrdersList.size() - 1);
+        }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private void syncAllOrdersRecycleView(RecyclerView allOrdersRecycleView, ProgressBar progressBar) {
+
+        placedOrdersList = new ArrayList<>();
+        allOrdersAdapter = new AllOrdersAdapter(requireActivity(), preferences, placedOrdersList);
+
+        allOrdersRecycleView.setLayoutManager(new LinearLayoutManager(getContext()));
+        allOrdersRecycleView.setAdapter(allOrdersAdapter);
+
+        placedOrderDataRef.addSnapshotListener((value, e) -> {
+            if (e != null) {
+                Log.w(TAG, "Listen failed.", e);
+                return;
+            }
+
+            assert value != null;
+            Log.d(TAG, "VALUES: " + value.getDocuments());
+
+            for (QueryDocumentSnapshot doc : value) {
+                if (doc.exists()) {
+                    Log.d(LOG_TAG, "All orders data: " + doc.getData());
+
+                    String orderType = doc.getString("order_type");
+                    DocumentReference orderDataRef;
+
+                    orderDataRef = doc.getDocumentReference("order_data_payload_reference");
+
+                    if (orderDataRef != null) {
+                        // Add a snapshot listener to the orderDataRef
+                        orderDataRef.addSnapshotListener((additionalDataDoc, innerException) -> {
+                            if (innerException != null) {
+                                Log.e(LOG_TAG, "Error listening to order data changes", innerException);
+                                return;
+                            }
+
+                            if (additionalDataDoc != null && additionalDataDoc.exists()) {
+                                Log.d(LOG_TAG, "Order data updated: " + additionalDataDoc.getData());
+
+                                AllOrdersModel updatedData = additionalDataDoc.toObject(AllOrdersModel.class);
+                                if (updatedData != null) {
+                                    updatePlacedOrdersList(updatedData);
+                                }
+                            } else {
+                                Log.w(LOG_TAG, "No order data found for order: " + doc.getId());
+                            }
+
+                            progressBar.setVisibility(View.GONE);
+                        });
+                    } else {
+                        progressBar.setVisibility(View.GONE);
+                        Log.e(LOG_TAG, "orderDataRef is null");
+                    }
+                }
+            }
+        });
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -286,10 +408,13 @@ public class HomeOrderByVoiceFragment extends Fragment {
 
                         if (isAdded()) {
 //                            Toast.makeText(getContext(), "Address data retrieved successfully", Toast.LENGTH_SHORT).show();
+                            savedAddressStatusTV.setVisibility(View.GONE);
                             Log.d(LOG_TAG, "Address data retrieved successfully");
                         }
                     } else {
                         Log.e(LOG_TAG, "Invalid response format: Missing 'address_data' field");
+                        savedAddressStatusTV.setVisibility(View.VISIBLE);
+                        savedAddressStatusTV.setText("\nUnable to fetch address data, invalid format");
                         if (isAdded()) {
                             Toast.makeText(getContext(), "Failed to fetch address data: Invalid response format", Toast.LENGTH_SHORT).show();
                         }
@@ -298,6 +423,8 @@ public class HomeOrderByVoiceFragment extends Fragment {
                     String errorMessage = "Failed to fetch address data";
                     errorMessage += ": " + response.message();
                     Log.e(LOG_TAG, errorMessage);
+                    savedAddressStatusTV.setVisibility(View.VISIBLE);
+                    savedAddressStatusTV.setText("\nFailed to fetch address data");
                     if (isAdded()) {
                         Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
                     }
@@ -333,7 +460,11 @@ public class HomeOrderByVoiceFragment extends Fragment {
 
             addressNotSelectedView = new BottomSheetDialog(requireContext());
             addressNotSelectedView.setContentView(savedStorePrefView);
+            addressNotSelectedView.setDismissWithAnimation(true);
             Objects.requireNonNull(addressNotSelectedView.getWindow()).setGravity(Gravity.TOP);
+
+            addressNotSelectedView.setOnDismissListener(dialog ->
+                    handler.postDelayed(checkConditionRunnable, 5000));
 
             Button selectAddressBtn = savedStorePrefView.findViewById(R.id.btmviewDeliveryAddressNotSelectedSelectAdressBtn_button);
 //            Button cancelBtn = savedStorePrefView.findViewById(R.id.btmviewStorePrefDataNotSavedCancelBtn_button);
@@ -351,9 +482,13 @@ public class HomeOrderByVoiceFragment extends Fragment {
 
         if (!addressNotSelectedView.isShowing()) {
             if (setDeliveryAddrBtmView == null) {
-                addressNotSelectedView.show();
+                if (!isButtonHeld) {
+                    addressNotSelectedView.show();
+                }
             } else if (!setDeliveryAddrBtmView.isShowing()) {
-                addressNotSelectedView.show();
+                if (!isButtonHeld) {
+                    addressNotSelectedView.show();
+                }
             } else {
                 Toast.makeText(requireContext(), "Select any address.", Toast.LENGTH_SHORT).show();
             }
@@ -376,7 +511,7 @@ public class HomeOrderByVoiceFragment extends Fragment {
         CardView enableLocView = setDefAddrView.findViewById(R.id.enableLocation_cardView);
         CardView setDelToCrntLoc = setDefAddrView.findViewById(R.id.setDeliveryToCurrentLoc_cardView);
 //        ConstraintLayout csl = setDefAddrView.findViewById(R.id.linearLayout2);
-        noAddrFndBnr = setDefAddrView.findViewById(R.id.noAddressFoundBanner_textView);
+        savedAddressStatusTV = setDefAddrView.findViewById(R.id.savedAddressRecycleViewStatusTV_textView);
         ProgressBar progressBar = setDefAddrView.findViewById(R.id.selectAddressForDelivery_progressBar);
 
         if (Utils.isLocationNotEnabled(requireContext())) {
@@ -414,39 +549,6 @@ public class HomeOrderByVoiceFragment extends Fragment {
     }
 
 
-//    private void updateStopwatch() {
-//        long currentTime = System.currentTimeMillis();
-//        long elapsedTime = currentTime - startTime;
-//
-//        long minutes = (elapsedTime % 3600000) / 60000;
-//        long seconds = (elapsedTime % 60000) / 1000;
-//        long milliseconds = (elapsedTime % 1000) / 10;
-//
-//        recordVoiceTimerTV.setText(String.format(Locale.ENGLISH, "%02d:%02d:%02d", minutes, seconds, milliseconds));
-//    }
-
-//    private final Runnable updateStopwatchRunnable = new Runnable() {
-//        @Override
-//        public void run() {
-//            if (isRunning) {
-////                updateStopwatch();
-//                handler.postDelayed(this, 0);
-//            }
-//        }
-//    };
-//
-//    private void startStopwatch() {
-//        isRunning = true;
-//        startTime = System.currentTimeMillis();
-//        handler.postDelayed(updateStopwatchRunnable, 0);
-//        pressHoldTV.setText(R.string.release_to_stop);
-//    }
-//
-//    private void stopStopwatch() {
-//        isRunning = false;
-//        handler.removeCallbacks(updateStopwatchRunnable);
-//    }
-
     private static void startRecording(File AppAudioDir) {
         if (!AppAudioDir.exists()) {
             if (AppAudioDir.mkdirs()) {
@@ -483,6 +585,7 @@ public class HomeOrderByVoiceFragment extends Fragment {
                 mediaRecorder.stop();
                 mediaRecorder.release();
                 mediaRecorder = null;
+                SoundManager.playOnButtonRelease();
             } catch (Exception e) {
                 Log.e(LOG_TAG, e.toString());
                 Toast.makeText(context, "error!", Toast.LENGTH_SHORT).show();
@@ -521,6 +624,7 @@ public class HomeOrderByVoiceFragment extends Fragment {
 
 
         Map<String, Object> voiceOrderFields = new HashMap<>();
+        voiceOrderFields.put("audio_key", key);
         voiceOrderFields.put("audio_storage_url", downloadUrl);
         voiceOrderFields.put("audio_title", Utils.generateTimestamp());
 
@@ -530,7 +634,7 @@ public class HomeOrderByVoiceFragment extends Fragment {
                 if (documentSnapshot.exists()) {
                     orderByVoiceDataRef.update(voiceOrderFields).addOnSuccessListener(var -> {
 //                                Toast.makeText(context, "Item added to cart.", Toast.LENGTH_SHORT).show();
-                                Utils.deleteVoiceOrderFile(context, voiceDocID);
+                                Utils.deleteVoiceOrderCacheFile(context, voiceDocID);
                                 Log.d(LOG_TAG, "Audio url updated to db: success");
                             }
                     ).addOnFailureListener(e ->
@@ -538,7 +642,7 @@ public class HomeOrderByVoiceFragment extends Fragment {
                     Log.d(LOG_TAG, "Audio url update to db: failed!");
                 } else {
                     orderByVoiceDataRef.set(voiceOrderFields).addOnSuccessListener(var -> {
-                                Utils.deleteVoiceOrderFile(context, voiceDocID);
+                                Utils.deleteVoiceOrderCacheFile(context, voiceDocID);
 //                                Toast.makeText(context, "Item added to cart.", Toast.LENGTH_SHORT).show();
                                 Log.d(LOG_TAG, "Audio url uploaded to db: success");
                             }
@@ -557,11 +661,11 @@ public class HomeOrderByVoiceFragment extends Fragment {
         String audioRefID = preferences.getString(PreferenceKeys.HOME_ORDER_BY_VOICE_FRAGMENT_AUDIO_REF_ID, "0");
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference("orderByVoiceData/" + key + "/" + audioRefID);
+        StorageReference storageRef = storage.getReference("orderData/" + orderID + "/orderByVoiceData/" + audioRefID + "/" + key);
 
         File audioFile = new File(audioFileDir, "/" + audioFileName);
 
-        StorageReference audioStorageRef = storageRef.child(Context.AUDIO_SERVICE);
+        StorageReference audioStorageRef = storageRef.child("audio_file_" + key + audioFileName);
 
         UploadTask uploadTask = audioStorageRef.putFile(Uri.fromFile(audioFile));
 
@@ -602,6 +706,7 @@ public class HomeOrderByVoiceFragment extends Fragment {
 
     private final Runnable onButtonHoldRunnable = () -> {
         if (isButtonHeld) {
+            SoundManager.playOnButtonHold();
             performOnButtonHold();
         }
     };
@@ -622,5 +727,6 @@ public class HomeOrderByVoiceFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         handler.removeCallbacksAndMessages(null);
+        SoundManager.release();
     }
 }

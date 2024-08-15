@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".ui.authentication.RegisterFragment">
 
     <!-- Fixed header section -->
@@ -12,315 +11,335 @@
         android:id="@+id/authBanner_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
         android:layout_marginTop="16dp"
         android:drawablePadding="5dp"
         android:fontFamily="@font/archivo_black"
         android:lineSpacingExtra="5dp"
         android:text="@string/register_account"
         android:textAlignment="center"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView8"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginLeft="24dp"
-        android:layout_marginRight="24dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
         android:fontFamily="@font/montserrat"
         android:text="@string/enter_a_new"
         android:textAlignment="center"
-        android:textSize="12sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/authBanner_textView" />
 
-    <!-- Scrollable content section -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="16dp"
-        android:layout_weight="1">
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textView8">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/registration_cardView"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="25dp"
-            app:cardElevation="4dp">
+            android:orientation="vertical">
 
-            <LinearLayout
+            <androidx.cardview.widget.CardView
+                android:id="@+id/registration_cardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#B2FBF7F7"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <!-- Name field -->
-                <TextView
-                    android:id="@+id/textView10"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:fontFamily="@font/montserrat"
-                    android:text="Name:"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <EditText
-                    android:id="@+id/nameFieldRegisterFragment_editTextText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:fontFamily="@font/montserrat"
-                    android:hint="username"
-                    android:inputType="text"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <!-- Email field -->
-                <TextView
-                    android:id="@+id/textView4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:fontFamily="@font/montserrat"
-                    android:text="Email Address:"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <EditText
-                    android:id="@+id/emailFieldRegisterFragment_editTextText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:autofillHints="email"
-                    android:fontFamily="@font/montserrat"
-                    android:hint="email address"
-                    android:inputType="textEmailAddress"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <!-- Password fields -->
-                <TextView
-                    android:id="@+id/textViewPassword"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:fontFamily="@font/montserrat"
-                    android:text="Password:"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <EditText
-                    android:id="@+id/passwordFieldRegisterFragment_editTextText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:fontFamily="@font/montserrat"
-                    android:hint="password"
-                    android:inputType="textPassword"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/textViewReenterPassword"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:fontFamily="@font/montserrat"
-                    android:text="Re-enter Password:"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <EditText
-                    android:id="@+id/reenterPasswordFieldRegisterFragment_editTextText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:fontFamily="@font/montserrat"
-                    android:hint="re-enter password"
-                    android:inputType="textPassword"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <!-- Phone and Pincode fields -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/textViewPhone"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:layout_weight="1"
-                        android:fontFamily="@font/montserrat"
-                        android:text="Phone Number:"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/textViewPincode"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:layout_weight="1"
-                        android:fontFamily="@font/montserrat"
-                        android:text="Pincode:"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
+                android:layout_margin="8dp"
+                app:cardCornerRadius="25dp"
+                app:cardElevation="4dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
+                    android:layout_height="wrap_content"
+                    android:background="#B2FBF7F7"
+                    android:clipToPadding="true"
+                    android:orientation="vertical"
+                    android:padding="8dp">
 
-                    <EditText
-                        android:id="@+id/phoneFieldRegisterFragment_editTextText"
-                        android:layout_width="0dp"
+                    <!-- Name field -->
+                    <TextView
+                        android:id="@+id/textView10"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:layout_weight="1"
+                        android:layout_marginTop="8dp"
                         android:fontFamily="@font/montserrat"
-                        android:hint="phone number"
-                        android:inputType="phone"
+                        android:text="@string/username"
+                        android:textColor="@color/md_theme_primary"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/pincodeFieldRegisterFragment_editTextText"
-                        android:layout_width="0dp"
+                        android:id="@+id/nameFieldRegisterFragment_editTextText"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:layout_weight="1"
                         android:fontFamily="@font/montserrat"
-                        android:hint="pincode"
-                        android:inputType="number"
-                        android:maxLength="6"
+                        android:hint="@string/enter_username"
+                        android:inputType="text"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <!-- Email field -->
+                    <TextView
+                        android:id="@+id/textView4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:fontFamily="@font/montserrat"
+                        android:text="@string/email_address"
+                        android:textColor="@color/md_theme_primary"
                         android:textSize="16sp"
                         android:textStyle="bold" />
-                </LinearLayout>
 
-                <!-- Profile Image -->
-                <ImageView
-                    android:id="@+id/profileImageDeliveryRegisterFragment_imageView"
-                    android:layout_width="match_parent"
-                    android:layout_height="55dp"
-                    android:layout_marginTop="16dp"
-                    android:adjustViewBounds="true"
-                    android:contentDescription="@string/todo"
-                    android:cropToPadding="true"
-                    android:scaleType="centerCrop"
-                    app:srcCompat="@drawable/baseline_image_24" />
+                    <EditText
+                        android:id="@+id/emailFieldRegisterFragment_editTextText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:autofillHints="email"
+                        android:fontFamily="@font/montserrat"
+                        android:hint="@string/email_hint"
+                        android:inputType="textEmailAddress"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
 
-                <!-- Location Spinners -->
-                <TextView
-                    android:id="@+id/textViewLocation"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:fontFamily="@font/montserrat"
-                    android:text="Select Location:"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    <!-- Password fields -->
+                    <TextView
+                        android:id="@+id/textViewPassword"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:fontFamily="@font/montserrat"
+                        android:text="@string/password"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
+                    <EditText
+                        android:id="@+id/passwordFieldRegisterFragment_editTextText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/montserrat"
+                        android:hint="@string/password_hint"
+                        android:inputType="textPassword"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
 
                     <TextView
-                        android:layout_width="0dp"
+                        android:id="@+id/textViewReenterPassword"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_marginTop="16dp"
                         android:fontFamily="@font/montserrat"
-                        android:text="State:"
+                        android:text="@string/reenter_password"
+                        android:textColor="@color/md_theme_primary"
                         android:textSize="16sp"
                         android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/reenterPasswordFieldRegisterFragment_editTextText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/montserrat"
+                        android:hint="@string/reenter_password_hint"
+                        android:inputType="textPassword"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <!-- Phone and Pincode fields -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textViewPhone"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/montserrat"
+                            android:text="@string/phone_number"
+                            android:textColor="@color/md_theme_primary"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/textViewPincode"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/montserrat"
+                            android:text="@string/pincode"
+                            android:textColor="@color/md_theme_primary"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:orientation="horizontal">
+
+                        <EditText
+                            android:id="@+id/phoneFieldRegisterFragment_editTextText"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/montserrat"
+                            android:hint="@string/phone_number_hint"
+                            android:inputType="phone"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <EditText
+                            android:id="@+id/pincodeFieldRegisterFragment_editTextText"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/montserrat"
+                            android:hint="@string/pincode_hint"
+                            android:inputType="number"
+                            android:maxLength="6"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <!-- Profile Image -->
+                    <TextView
+                        android:id="@+id/textViewLocation"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:fontFamily="@font/montserrat"
+                        android:text="@string/select_profile_image"
+                        android:textColor="@color/md_theme_primary"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/profileImageDeliveryRegisterFragment_imageView"
+                        android:layout_width="match_parent"
+                        android:layout_height="75dp"
+                        android:layout_marginTop="16dp"
+                        android:adjustViewBounds="true"
+                        android:contentDescription="@string/todo"
+                        android:scaleType="centerCrop"
+                        app:srcCompat="@drawable/baseline_image_24" />
+
+                    <!-- Location Spinners -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/montserrat"
+                            android:text="@string/state"
+                            android:textColor="@color/md_theme_primary"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/montserrat"
+                            android:text="@string/district"
+                            android:textColor="@color/md_theme_primary"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/linearLayout6"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:orientation="horizontal">
+
+                        <Spinner
+                            android:id="@+id/spinner_state"
+                            style="@android:style/Widget.Material.Spinner.Underlined"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
+
+                        <Spinner
+                            android:id="@+id/spinner_district"
+                            style="@android:style/Widget.Material.Spinner.Underlined"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
+                    </LinearLayout>
 
                     <TextView
-                        android:layout_width="0dp"
+                        android:id="@+id/textViewLocality"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_marginTop="20dp"
                         android:fontFamily="@font/montserrat"
-                        android:text="District:"
+                        android:text="@string/locality"
+                        android:textColor="@color/md_theme_primary"
                         android:textSize="16sp"
                         android:textStyle="bold" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/linearLayout6"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:orientation="horizontal">
 
                     <Spinner
-                        android:id="@+id/spinner_state"
+                        android:id="@+id/spinner_locality"
                         style="@android:style/Widget.Material.Spinner.Underlined"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1" />
+                        android:layout_marginTop="15dp" />
 
-                    <Spinner
-                        android:id="@+id/spinner_district"
-                        style="@android:style/Widget.Material.Spinner.Underlined"
-                        android:layout_width="0dp"
+                    <!-- Status View -->
+                    <TextView
+                        android:id="@+id/statusViewRegisterFragment_editTextText"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_weight="1" />
+                        android:layout_marginTop="15dp"
+                        android:fontFamily="@font/anonymous_pro"
+                        android:textAlignment="center"
+                        android:textStyle="bold" />
+
+                    <!-- Register Button -->
+                    <Button
+                        android:id="@+id/registerRegisterFragment_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:backgroundTint="@color/md_theme_primary"
+                        android:fontFamily="@font/montserrat"
+                        android:text="@string/register"
+                        android:textAllCaps="false"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
-                <TextView
-                    android:id="@+id/textViewLocality"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:fontFamily="@font/montserrat"
-                    android:text="Locality:"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <Spinner
-                    android:id="@+id/spinner_locality"
-                    style="@android:style/Widget.Material.Spinner.Underlined"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp" />
-
-                <!-- Status View -->
-                <TextView
-                    android:id="@+id/statusViewRegisterFragment_editTextText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="15dp"
-                    android:fontFamily="@font/anonymous_pro"
-                    android:textAlignment="center"
-                    android:textStyle="bold" />
-
-                <!-- Register Button -->
-                <Button
-                    android:id="@+id/registerRegisterFragment_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="16dp"
-                    android:backgroundTint="#0F63A5"
-                    android:fontFamily="@font/artifika"
-                    android:text="@string/register"
-                    android:textAllCaps="false"
-                    android:textSize="12sp" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+<!--            <View-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="16dp"-->
+<!--                android:layout_marginBottom="8dp" />-->
+        </LinearLayout>
     </ScrollView>
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

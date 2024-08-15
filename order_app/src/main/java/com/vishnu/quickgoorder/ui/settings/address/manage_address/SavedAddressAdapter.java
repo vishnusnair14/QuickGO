@@ -66,7 +66,7 @@ public class SavedAddressAdapter extends RecyclerView.Adapter<SavedAddressAdapte
                     savedAddressModelList.remove(pos);
                     notifyItemRemoved(pos);
                     notifyItemRangeChanged(pos, getItemCount());
-                    Utils.deleteAddressDataInFile(context);
+                    Utils.deleteAddressDataCacheFile(context);
                 } else {
                     Log.d(LOG_TAG, "No response");
                 }

@@ -23,7 +23,7 @@
         <SwitchPreferenceCompat
             android:defaultValue="false"
             app:key="orderByShopRecommendation_pref"
-            app:summary="When enabled, you can order from recommended nearby shops within 5-10km radius."
+            app:summary="When enabled, you can directly order from nearby recommended shops within 5-10km radius."
             app:title="Order from recommended shops" />
     </PreferenceCategory>
 

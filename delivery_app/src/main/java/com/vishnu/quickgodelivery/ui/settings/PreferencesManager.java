@@ -6,7 +6,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-public class PreferencesManager {
+public   class PreferencesManager {
 
     private static final String LOG_TAG = "PreferenceManager";
     private static final String PREFERENCES_FILE = "com.vishnu.intellicart.ui.settings";
@@ -24,6 +24,6 @@ public class PreferencesManager {
     public static String getBaseUrl(@NonNull Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
         Log.d(LOG_TAG, "Current using url: " + sharedPreferences.getString(BASE_URL_KEY, PRODUCTION_SERVER_URL));
-        return sharedPreferences.getString(BASE_URL_KEY, PRODUCTION_SERVER_URL); // Default to production URL
+        return sharedPreferences.getString(BASE_URL_KEY, TEST_SERVER_URL); // Default to test URL
     }
 }

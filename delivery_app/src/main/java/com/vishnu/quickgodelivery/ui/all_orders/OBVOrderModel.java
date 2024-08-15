@@ -32,6 +32,14 @@ public class OBVOrderModel implements OrderModel {
         return order_delivery_destination_distance;
     }
 
+    public long getOrder_time_millis() {
+        return order_time_millis;
+    }
+
+    public void setOrder_time_millis(long order_time_millis) {
+        this.order_time_millis = order_time_millis;
+    }
+
     @Override
     public String getOrder_id() {
         return order_id;
@@ -103,17 +111,11 @@ public class OBVOrderModel implements OrderModel {
         this.user_phno = user_phno;
     }
 
-    public long getOrder_time_millis() {
-        return order_time_millis;
-    }
 
     public void setOrder_time(String order_time) {
         this.order_time = order_time;
     }
 
-    public void setOrder_time_millis(long order_time_millis) {
-        this.order_time_millis = order_time_millis;
-    }
 
     public void setOrder_type(String order_type) {
         this.order_type = order_type;

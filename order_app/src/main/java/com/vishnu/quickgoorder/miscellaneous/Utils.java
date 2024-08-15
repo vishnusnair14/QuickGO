@@ -3,6 +3,7 @@ package com.vishnu.quickgoorder.miscellaneous;
 import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
+import android.os.Environment;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.provider.Settings;
@@ -13,6 +14,7 @@ import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 
 public class Utils {
@@ -72,7 +74,7 @@ public class Utils {
         return dateFormat.format(new Date());
     }
 
-    public static void deleteAddressDataInFile(Context context) {
+    public static void deleteAddressDataCacheFile(Context context) {
         try {
             File file = new File(context.getFilesDir(), "address_data.json");
             if (file.exists()) {
@@ -90,7 +92,76 @@ public class Utils {
         }
     }
 
-    public static void deleteVoiceOrderFile(Context context, String docID) {
+    public static boolean deleteAllDownloadedVoiceOrderCartFiles(Context context) {
+        // Get the Downloads directory
+        File downloadsDir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+        String subfolderName = "orderByVoice";
+
+        if (downloadsDir != null) {
+            // Create a reference to the subfolder
+            File subfolder = new File(downloadsDir, subfolderName);
+
+            // Check if the subfolder exists
+            if (subfolder.exists() && subfolder.isDirectory()) {
+                // Get all files in the subfolder
+                File[] files = subfolder.listFiles();
+
+                if (files != null) {
+                    boolean allDeleted = true;
+
+                    // Iterate over all files and delete them
+                    for (File file : files) {
+                        if (file.isFile()) {
+                            if (!file.delete()) {
+                                allDeleted = false;
+                                Log.d(LOG_TAG, "Failed to delete file: " + file.getAbsolutePath());
+                            }
+                        }
+                    }
+
+                    // Optionally delete the subfolder itself if it's empty
+                    if (subfolder.listFiles() != null) {
+                        if (Objects.requireNonNull(subfolder.listFiles()).length == 0) {
+                            if (subfolder.delete()) {
+                                Log.d(LOG_TAG, "Subfolder deleted successfully");
+                            } else {
+                                Log.d(LOG_TAG, "Failed to delete subfolder");
+                                allDeleted = false;
+                            }
+                        }
+                    }
+
+                    return allDeleted;
+                } else {
+                    Log.d(LOG_TAG, "No files found in the subfolder");
+                }
+            } else {
+                Log.d(LOG_TAG, "Subfolder does not exist or is not a directory");
+            }
+        }
+        return false; // Return false if subfolder does not exist or deletion failed
+    }
+
+
+    // Method to delete a file from the Downloads directory
+    public static boolean deleteDownloadedVoiceOrderCartFile(String fileName, Context context) {
+        // Get the Downloads directory
+        File downloadsDir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS + "/orderByVoice");
+
+        if (downloadsDir != null) {
+            // Create a file reference to the specific file
+            File fileToDelete = new File(downloadsDir, fileName);
+
+            // Check if the file exists and delete it
+            if (fileToDelete.exists()) {
+                Log.d(LOG_TAG, "Audio file deleted from downloads");
+                return fileToDelete.delete();
+            }
+        }
+        return false; // Return false if file does not exist or deletion failed
+    }
+
+    public static void deleteVoiceOrderCacheFile(Context context, String docID) {
         // Define the file inside the folder
         File file = new File(context.getFilesDir(), "voice_orders/voice_orders_data_" + docID + ".json");
 

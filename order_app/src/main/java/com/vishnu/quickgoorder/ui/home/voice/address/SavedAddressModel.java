@@ -28,8 +28,8 @@ public class SavedAddressModel {
         this.addressType = addressType;
     }
 
-    @SerializedName("city")
-    private String city;
+    @SerializedName("district")
+    private String district;
 
     public String getStreetAddress() {
         return streetAddress;
@@ -88,12 +88,12 @@ public class SavedAddressModel {
         this.addressLon = addressLon;
     }
 
-    public String getCity() {
-        return city;
+    public String getDistrict() {
+        return district;
     }
 
-    public void setCity(String city) {
-        this.city = city;
+    public void setDistrict(String district) {
+        this.district = district;
     }
 
     public String getPincode() {

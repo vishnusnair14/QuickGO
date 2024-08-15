@@ -10,4 +10,6 @@ public interface OrderModel {
     String getDelivery_full_address();
 
     String getOrder_by_voice_audio_ref_id();
+
+    long getOrder_time_millis();
 }

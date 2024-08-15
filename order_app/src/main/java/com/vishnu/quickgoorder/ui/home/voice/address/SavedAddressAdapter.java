@@ -114,7 +114,8 @@ public class SavedAddressAdapter extends RecyclerView.Adapter<SavedAddressAdapte
 
             // Set the values to their respective TextViews
             fullAddressTV.setText(MessageFormat.format("{0}", address.getStreetAddress()));
-            addressCityPincodeTV.setText(MessageFormat.format("{0} | {1}", address.getCity(), address.getPincode()));
+            addressCityPincodeTV.setText(MessageFormat.format("{0}{1} | {2}", address.getDistrict().substring(0, 1).toUpperCase(),
+                    address.getDistrict().substring(1), address.getPincode()));
             addressLocationTV.setText(MessageFormat.format("{0}°N {1}°E", address.getAddressLat(), address.getAddressLon()));
             addressNameViewTV.setText(MessageFormat.format("{0}", address.getName()));
 
@@ -134,7 +135,7 @@ public class SavedAddressAdapter extends RecyclerView.Adapter<SavedAddressAdapte
 //                preferences.edit().putBoolean("isSetToCurrentLoc", false).apply();
 
                 binding.selectedAddressTypeViewTextView.setText(preferences.getString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_TYPE, "Select an address"));
-                binding.selectedFullAddressViewTextView.setText(preferences.getString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_FULL_ADDRESS, "Tap on a delivery address to make it as default"));
+                binding.selectedFullAddressViewTextView.setText(preferences.getString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_FULL_ADDRESS, "Tap on any saved address to make it as default"));
 
                 setDeliveryAddrBtmView.hide();
                 setDeliveryAddrBtmView.dismiss();

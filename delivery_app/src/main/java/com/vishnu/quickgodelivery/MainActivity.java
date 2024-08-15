@@ -24,6 +24,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -54,6 +55,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.JsonObject;
 import com.squareup.picasso.Picasso;
+import com.vishnu.quickgodelivery.callbacks.DutyStatusData;
 import com.vishnu.quickgodelivery.cloud.DbHandler;
 import com.vishnu.quickgodelivery.databinding.ActivityMainBinding;
 import com.vishnu.quickgodelivery.miscellaneous.StartDutyModel;
@@ -115,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
 
+
         sharedDataView = new ViewModelProvider(this).get(SharedDataView.class);
         preferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
 
@@ -165,74 +168,115 @@ public class MainActivity extends AppCompatActivity {
         dutyNotificationManager.createNotificationChannel(dutyChannel);
         dutyNotificationService = new Intent(this, DutyNotification.class);
 
-        // FETCH CURRENT DUTY STATUS
-        if (preferences.getBoolean("isOnDuty", false)) {
-            startLocationService();
-            dutyNotificationService.putExtra("DUTY_NOTIFICATION_TEXT", "You're still on duty");
-            startService(dutyNotificationService);
-            showOnDutyView();
-            locationTV.setVisibility(View.VISIBLE);
-            drawerDutyStatusView.setText(R.string.on_duty);
+//        // FETCH CURRENT DUTY STATUS
+//        if (preferences.getBoolean("isOnDuty", false)) {
+//            startLocationService();
+//            dutyNotificationService.putExtra("DUTY_NOTIFICATION_TEXT", "You're still on duty");
+//            startService(dutyNotificationService);
+//            showOnDutyView();
+//            locationTV.setVisibility(View.VISIBLE);
+//            drawerDutyStatusView.setText(R.string.on_duty);
+//
+//            if (dutyToggle != null) {
+//                if (!dutyToggle.isChecked()) {
+//                    dutyToggle.setChecked(true);
+//                }
+//            }
+//        } else if (!preferences.getBoolean("isOnDuty", false)) {
+//            stopLocationService();
+//            locationTV.setVisibility(View.GONE);
+//            showOffDutyView();
+//            drawerDutyStatusView.setText(R.string.off_duty);
+//
+//            if (dutyToggle != null) {
+//                if (dutyToggle.isChecked()) {
+//                    dutyToggle.setChecked(false);
+//                }
+//            }
+//        }
 
-            if (dutyToggle != null) {
-                if (!dutyToggle.isChecked()) {
-                    dutyToggle.setChecked(true);
-                }
-            }
-        } else if (!preferences.getBoolean("isOnDuty", false)) {
-            stopLocationService();
-            locationTV.setVisibility(View.GONE);
-            showOffDutyView();
-            drawerDutyStatusView.setText(R.string.off_duty);
+//        getCurrentDutyStatusData(data -> {
+//            if (data != null) {
+//                String duty_mode = data.get("duty_mode").getAsString().trim();
+//                if (duty_mode.equals("on_duty")) {
+//                    startLocationService();
+//                    showOnDutyView();
+//                    drawerDutyStatusView.setText(R.string.on_duty);
+//                    locationTV.setVisibility(View.VISIBLE);
+//                    Toast.makeText(this, "You are on duty", Toast.LENGTH_SHORT).show();
+//
+////                    if (dutyToggle != null) {
+////                        if (!dutyToggle.isChecked()) {
+////                            dutyToggle.setChecked(true);
+////                        }
+////                    }
+//                    dutyToggle.setSelected(true);
+//
+//                    if (preferences.getBoolean("isOnDuty", false)) {
+//                        dutyNotificationService.putExtra("DUTY_NOTIFICATION_TEXT", "You're still on duty");
+//                        startService(dutyNotificationService);
+//                    }
+//                } else if (duty_mode.equals("off_duty")) {
+//                    showOffDutyView();
+//                    drawerDutyStatusView.setText(R.string.off_duty);
+//                    locationTV.setVisibility(View.GONE);
+//                    Toast.makeText(this, "You are off duty", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        });
+//
+//        // TODO: clean here make it std.
+//        // DUTY START-STOP BUTTON LISTENER
+//        if (dutyToggle != null) {
+//            dutyToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
+//                if (Utils.isNetworkConnected(MainActivity.this)) {
+//                    if (isChecked) {
+//                        if (Utils.isGPSEnabled(MainActivity.this)) {
+//                            if (dp_lat != 0 && dp_lon != 0) {
+//                                closeLeftDrawer();
+//                                sentDutyStartRequest();
+//                            } else {
+//                                closeLeftDrawer();
+//                                startGpsCheck();
+//                            }
+//                        } else {
+//                            closeLeftDrawer();
+//                            dutyToggle.setChecked(false);
+//                            locationTV.setVisibility(View.GONE);
+//                            showEnableLocationBtmView(true);
+//                        }
+//                    } else {
+//                        sentDutyEndRequest(user.getUid(), preferences.getString("decodedCityForDuty", "0"));
+//                        closeLeftDrawer();
+//                    }
+//                } else {
+//                    Toast.makeText(this, "No internet connection.", Toast.LENGTH_SHORT).show();
+//                    dutyToggle.setChecked(!isChecked);
+//                }
+//            });
+//        } else {
+//            Toast.makeText(this, "Unable to perform action.", Toast.LENGTH_SHORT).show();
+//        }
 
-            if (dutyToggle != null) {
-                if (dutyToggle.isChecked()) {
-                    dutyToggle.setChecked(false);
-                }
-            }
-        }
-
-        // TODO: clean here make it std.
-        // DUTY START-STOP BUTTON LISTENER
-        if (dutyToggle != null) {
-            dutyToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                if (Utils.isNetworkConnected(MainActivity.this)) {
-                    if (isChecked) {
-                        if (Utils.isGPSEnabled(MainActivity.this)) {
-                            if (dp_lat != 0 && dp_lon != 0) {
-                                closeLeftDrawer();
-                                sentDutyStartRequest();
-                            } else {
-                                closeLeftDrawer();
-                                startGpsCheck();
-                            }
-                        } else {
-                            closeLeftDrawer();
-                            dutyToggle.setChecked(false);
-                            locationTV.setVisibility(View.GONE);
-                            showEnableLocationBtmView();
-                        }
-                    } else {
-                        sentDutyEndRequest(user.getUid(), preferences.getString("decodedCityForDuty", "0"));
-                        closeLeftDrawer();
-                    }
-                } else {
-                    Toast.makeText(this, "No internet connection.", Toast.LENGTH_SHORT).show();
-                    dutyToggle.setChecked(!isChecked);
-                }
-            });
-        } else {
-            Toast.makeText(this, "Unable to perform action.", Toast.LENGTH_SHORT).show();
-        }
 
         // Initialize the ActivityResultLauncher
+
+        checkDutyStatus();
+
         gpsActivityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (Utils.isGPSEnabled(MainActivity.this)) {
-                        dutyToggle.setChecked(true);
-                        startLocationService();
-                        Toast.makeText(this, "GPS Enabled, Duty Started", Toast.LENGTH_SHORT).show();
+                        if (dp_lat != 0 && dp_lon != 0) {
+                            closeLeftDrawer();
+                            dutyToggle.setChecked(true);
+                            startLocationService();
+                            startDutyNotificationService();
+                            Toast.makeText(this, "GPS Enabled, Duty Started", Toast.LENGTH_SHORT).show();
+                        } else {
+                            closeLeftDrawer();
+                            startGpsCheck();
+                        }
                     } else {
                         dutyToggle.setChecked(false);
 //                        stopLocationService();
@@ -282,6 +326,99 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+    private void initializeDutyToggle() {
+        // Get the stored duty state and update the UI accordingly
+        boolean isOnDuty = preferences.getBoolean("isOnDuty", false);
+
+        if (isOnDuty) {
+            startLocationService();
+            showOnDutyView();
+            drawerDutyStatusView.setText(R.string.on_duty);
+            locationTV.setVisibility(View.VISIBLE);
+            startDutyNotificationService();
+        } else {
+            showOffDutyView();
+            drawerDutyStatusView.setText(R.string.off_duty);
+            locationTV.setVisibility(View.GONE);
+        }
+
+        // Temporarily remove listener before setting state
+        dutyToggle.setOnCheckedChangeListener(null);
+        dutyToggle.setChecked(isOnDuty);
+        dutyToggle.setSelected(isOnDuty);
+        dutyToggle.setOnCheckedChangeListener(dutyToggleListener);
+
+        // Log the restored state
+        Log.d("DutyToggle", "Restored state: " + (isOnDuty ? "On Duty" : "Off Duty"));
+    }
+
+    // Listener for the duty toggle button
+    private final CompoundButton.OnCheckedChangeListener dutyToggleListener = (buttonView, isChecked) -> {
+        if (Utils.isNetworkConnected(MainActivity.this)) {
+            if (isChecked) {
+                if (Utils.isGPSEnabled(MainActivity.this)) {
+                    if (dp_lat != 0 && dp_lon != 0) {
+                        closeLeftDrawer();
+                        sentDutyStartRequest();
+                        startDutyNotificationService();
+
+                        preferences.edit().putBoolean("isOnDuty", true).apply();
+                        Log.d("DutyToggle", "Duty started.");
+                    } else {
+                        closeLeftDrawer();
+                        startGpsCheck();
+                    }
+                } else {
+                    closeLeftDrawer();
+                    dutyToggle.setChecked(false);
+                    locationTV.setVisibility(View.GONE);
+                    showEnableLocationBtmView(true);
+                }
+            } else {
+                sentDutyEndRequest(user.getUid(), preferences.getString("decodedCityForDuty", "0"));
+                closeLeftDrawer();
+
+                preferences.edit().putBoolean("isOnDuty", false).apply();
+                Log.d("DutyToggle", "Duty ended.");
+            }
+        } else {
+            Toast.makeText(this, "No internet connection.", Toast.LENGTH_SHORT).show();
+            dutyToggle.setChecked(!isChecked);  // Revert the toggle state
+        }
+    };
+
+    private void startDutyNotificationService() {
+        dutyNotificationService.putExtra("DUTY_NOTIFICATION_TEXT", "You're still on duty");
+        startService(dutyNotificationService);
+    }
+
+    // Call this method in onCreate or wherever you need to initialize the UI
+    private void checkDutyStatus() {
+        getCurrentDutyStatusData(data -> {
+            if (data != null) {
+                String duty_mode = data.get("duty_mode").getAsString().trim();
+                if (duty_mode.equals("on_duty")) {
+                    preferences.edit().putBoolean("isOnDuty", true).apply();
+                } else if (duty_mode.equals("off_duty")) {
+                    preferences.edit().putBoolean("isOnDuty", false).apply();
+                } else {
+                    preferences.edit().putBoolean("isOnDuty", false).apply();
+                }
+
+                // Initialize the duty toggle state
+                initializeDutyToggle();
+            }
+        });
+
+        if (dutyToggle != null) {
+            dutyToggle.setOnCheckedChangeListener(dutyToggleListener);
+        } else {
+            Toast.makeText(this, "Unable to perform action.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
     private final BroadcastReceiver gpsStatusReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -297,7 +434,7 @@ public class MainActivity extends AppCompatActivity {
                 } else if (!isGPSEnabled && isGpsEnabled) {
                     Toast.makeText(context, "GPS Disabled", Toast.LENGTH_SHORT).show();
                     if (dutyToggle.isChecked()) {
-                        showEnableLocationBtmView();
+                        showEnableLocationBtmView(false);
                     }
                     isGpsEnabled = false;
                 }
@@ -319,6 +456,38 @@ public class MainActivity extends AppCompatActivity {
         if (drawerLayout != null) {
             new Handler().postDelayed(() -> drawerLayout.close(), 600);
         }
+    }
+
+    private void getCurrentDutyStatusData(DutyStatusData dutyStatusData) {
+        statusTV.setVisibility(View.GONE);
+        APIService apiService = ApiServiceGenerator.getApiService(this);
+        Call<JsonObject> call = apiService.getDutyStatus(user.getUid());
+
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    if (response.body().has("has_data") && response.body().get("has_data").getAsBoolean()) {
+                        if (response.body().has("data")) {
+                            dutyStatusData.data(response.body().get("data").getAsJsonObject());
+                        }
+                        dutyStatusData.data(null);
+                    } else {
+                        dutyStatusData.data(null);
+                        Toast.makeText(MainActivity.this, response.body().get("message").getAsString(), Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    dutyStatusData.data(null);
+                    Toast.makeText(MainActivity.this, "Duty status check failed", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
+                dutyStatusData.data(null);
+                Toast.makeText(MainActivity.this, "Network error. Please try again.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void startGpsCheck() {
@@ -347,8 +516,6 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     // GPS coordinates are not valid, check again after the interval
                     gpsCheckHandler.postDelayed(this, GPS_CHECK_INTERVAL);
-                    gpsCheckBtmDialog.hide();
-                    gpsCheckBtmDialog.dismiss();
                 }
             }
         };
@@ -369,7 +536,7 @@ public class MainActivity extends AppCompatActivity {
         if (!sentDutyStartRequestBtmDialog.isShowing()) {
             sentDutyStartRequestBtmDialog.show();
         }
-        StartDutyModel startDutyData = new StartDutyModel(user.getDisplayName(), user.getUid(), dp_lat, dp_lon, String.valueOf(System.currentTimeMillis()));
+        StartDutyModel startDutyData = new StartDutyModel(user.getDisplayName(), user.getUid(), dp_lat, dp_lon);
 
         APIService apiService = ApiServiceGenerator.getApiService(this);
         Call<JsonObject> call2388 = apiService.startDuty(startDutyData);
@@ -541,12 +708,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void showLocationSettings() {
+    private void showLocationSettings(boolean startDutyOnCallback) {
         Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-        gpsActivityResultLauncher.launch(intent);
+
+        if (startDutyOnCallback) {
+            gpsActivityResultLauncher.launch(intent);
+        } else {
+            startActivity(intent);
+        }
     }
 
-    private void showEnableLocationBtmView() {
+    private void showEnableLocationBtmView(boolean startDutyOnCallback) {
         View enableLocationBottomView = LayoutInflater.from(this).inflate(
                 R.layout.bottomview_enable_location, null, false);
 
@@ -560,7 +732,7 @@ public class MainActivity extends AppCompatActivity {
 
         enableLocationBtn.setOnClickListener(v -> {
             enableLocBtmDialog.hide();
-            showLocationSettings();
+            showLocationSettings(startDutyOnCallback);
         });
 
         if (!enableLocBtmDialog.isShowing()) {
@@ -768,7 +940,7 @@ public class MainActivity extends AppCompatActivity {
         if (Utils.isGPSEnabled(MainActivity.this)) {
             dutyToggle.setEnabled(true);
         } else {
-            showEnableLocationBtmView();
+            showEnableLocationBtmView(false);
         }
     }
 

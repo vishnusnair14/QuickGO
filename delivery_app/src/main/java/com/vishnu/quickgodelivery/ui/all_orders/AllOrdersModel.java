@@ -4,6 +4,7 @@ public class AllOrdersModel {
     private String orderType;
     private OBSOrderModel obsOrderData;
     private OBVOrderModel obvOrderData;
+    private long orderTimeMillis;
 
 
     public String getOrderType() {
@@ -20,6 +21,14 @@ public class AllOrdersModel {
 
     public void setObsOrderData(OBSOrderModel obsOrderData) {
         this.obsOrderData = obsOrderData;
+    }
+
+    public long getOrderTimeMillis() {
+        return orderTimeMillis;
+    }
+
+    public void setOrderTimeMillis(long orderTimeMillis) {
+        this.orderTimeMillis = orderTimeMillis;
     }
 
     public OBVOrderModel getObvOrderData() {

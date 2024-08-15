@@ -29,7 +29,6 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.GeoPoint;
 import com.google.gson.JsonObject;
 import com.vishnu.quickgoorder.R;
 import com.vishnu.quickgoorder.callbacks.PincodeValidation;
@@ -45,8 +44,6 @@ import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.Map;
 
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -231,7 +228,7 @@ public class AddAddressFragment extends Fragment {
                             }
                         } else if (response.body().has("message") && response.body().has("success")) {
                             if (response.body().get("success").getAsBoolean()) {
-                                Utils.deleteAddressDataInFile(requireContext());
+                                Utils.deleteAddressDataCacheFile(requireContext());
                                 Toast.makeText(requireContext(), response.body().get("message").getAsString(), Toast.LENGTH_SHORT).show();
                             }
                         }
@@ -264,7 +261,7 @@ public class AddAddressFragment extends Fragment {
                     if (response.body() != null) {
                         if (response.body().has("success")) {
                             if (response.body().get("success").getAsBoolean()) {
-                                Utils.deleteAddressDataInFile(requireContext());
+                                Utils.deleteAddressDataCacheFile(requireContext());
                                 Toast.makeText(requireContext(), response.body().get("message").getAsString(), Toast.LENGTH_SHORT).show();
                             }
                         }

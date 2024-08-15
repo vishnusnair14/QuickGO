@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.settings.storepreference.address.ChooseAddressFragment">
+    tools:context=".ui.settings.storepreference.choose_address.ChooseAddressFragment">
 
     <ProgressBar
         android:id="@+id/progressBarLoading"
@@ -43,7 +43,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:fontFamily="@font/montserrat"
-            android:text="Tap on any address to add or overwrite store preference data"
+            android:text="@string/tap_on_any_address_to_add_overwrite_or_erase_store_preference_data"
             android:textAlignment="center"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -55,12 +55,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="24dp"
             android:layout_marginRight="8dp"
-            android:layout_marginBottom="8dp"
             android:fontFamily="@font/montserrat"
             android:text="All saved Addresses"
-            android:textAllCaps="true"
+            android:textAllCaps="false"
             android:textSize="16sp"
             android:textStyle="bold" />
 

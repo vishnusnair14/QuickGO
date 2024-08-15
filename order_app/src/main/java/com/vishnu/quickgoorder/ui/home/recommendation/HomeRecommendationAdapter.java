@@ -50,7 +50,7 @@ public class HomeRecommendationAdapter extends RecyclerView.Adapter<HomeRecommen
         Picasso.get().load(shop.getShopImageUrl()).into(holder.shopImageView);
 
         // Bind data to the views
-        holder.shopNameTV.setText(shop.getShopName());
+        holder.shopNameTV.setText(shop.getShopName().toUpperCase());
         if (shop.getDistanceKm() < 1) {
             holder.distanceTV.setText(String.format(Locale.getDefault(), "%.1f mtr", shop.getDistanceKm() * 1000));
         } else {

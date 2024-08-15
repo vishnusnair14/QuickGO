@@ -248,19 +248,18 @@
         app:layout_constraintTop_toTopOf="@+id/tapAndRecordMain_textView" />
 
     <TextView
-        android:id="@+id/noAddressFoundBanner_textView"
+        android:id="@+id/savedAddressRecycleViewStatusTV_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/anonymous_pro"
+        android:layout_margin="24dp"
+        android:fontFamily="@font/montserrat"
         android:text="@string/no_address_found_add_one"
-        android:textColor="#850606"
-        android:textSize="16sp"
         android:textStyle="bold"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/setDefaultDeliveryAddress_recycleView"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/setDefaultDeliveryAddress_recycleView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/setDefaultDeliveryAddress_recycleView" />
+        app:layout_constraintStart_toStartOf="@+id/setDefaultDeliveryAddress_recycleView"
+        app:layout_constraintTop_toBottomOf="@+id/tapAndRecordMain_textView" />
 
     <ProgressBar
         android:id="@+id/selectAddressForDelivery_progressBar"

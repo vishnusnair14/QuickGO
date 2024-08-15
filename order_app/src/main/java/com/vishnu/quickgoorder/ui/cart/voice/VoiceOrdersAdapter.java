@@ -23,31 +23,59 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.gson.JsonObject;
 import com.vishnu.quickgoorder.R;
+import com.vishnu.quickgoorder.miscellaneous.SoundManager;
+import com.vishnu.quickgoorder.miscellaneous.Utils;
+import com.vishnu.quickgoorder.server.models.DeleteVoiceOrderFile;
+import com.vishnu.quickgoorder.server.sapi.APIService;
+import com.vishnu.quickgoorder.server.sapi.ApiServiceGenerator;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 // AudioAdapter.java
 public class VoiceOrdersAdapter extends RecyclerView.Adapter<VoiceOrdersAdapter.ViewHolder> {
+    private final String LOG_TAG = "voiceOrderAdapter";
     private final List<VoiceOrdersModel> voiceOrdersViewModel;
     private final Context context;
     private long CURRENT_PLAYING_REF;
+    private FirebaseUser user;
     private long mDownloadId;
+    private String orderByVoiceDocID;
+    private String orderByVoiceAudioRefID;
     private int CURRENT_PLAY_POS = -1;
+    private TextView statusTV;
     private boolean isPaused = false;
+    private String from;
     public static MediaPlayer mediaPlayer = new MediaPlayer();
 
-    public VoiceOrdersAdapter(Context context, List<VoiceOrdersModel> voiceOrdersViewModel) {
+    public VoiceOrdersAdapter(FirebaseUser user, Context context, String from,
+                              List<VoiceOrdersModel> voiceOrdersViewModel,
+                              String orderByVoiceDocID, String orderByVoiceAudioRefID, TextView statusTV) {
+        this.user = user;
         this.context = context;
+        this.from = from;
         this.voiceOrdersViewModel = voiceOrdersViewModel;
+        this.orderByVoiceDocID = orderByVoiceDocID;
+        this.orderByVoiceAudioRefID = orderByVoiceAudioRefID;
+        this.statusTV = statusTV;
+        SoundManager.initialize(context);
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.srv_voice_order_cart, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.srv_voice_order_cart,
+                parent, false);
 
         return new ViewHolder(view);
     }
@@ -56,13 +84,18 @@ public class VoiceOrdersAdapter extends RecyclerView.Adapter<VoiceOrdersAdapter.
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         VoiceOrdersModel audioModel = voiceOrdersViewModel.get(position);
 
+        holder.audioIDTV.setText(audioModel.getAudio_key());
         holder.audioTitleTV.setText(String.format("%s", audioModel.getAudio_title()));
 
         setAction(holder.audioActionButton, audioModel.getAudio_title());
 
         holder.audioActionButton.setOnClickListener(v -> {
-            downloadAndPlayAudio(audioModel.getAudio_storage_url(), audioModel.getAudio_title(), holder.audioFeedbackTV, holder.audioActionButton);
+            downloadAndPlayAudio(audioModel.getAudio_storage_url(), audioModel.getAudio_title(),
+                    holder.audioFeedbackTV, holder.audioActionButton);
+        });
 
+        holder.audioDeleteButton.setOnClickListener(v -> {
+            sendDeleteVoiceOrderFileRequest(audioModel.getAudio_key(), audioModel.getAudio_title(), false, null);
         });
     }
 
@@ -80,8 +113,9 @@ public class VoiceOrdersAdapter extends RecyclerView.Adapter<VoiceOrdersAdapter.
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView audioTitleTV, audioFeedbackTV, audioTimerTV;
-        ImageButton audioActionButton;
+        TextView audioTitleTV, audioFeedbackTV, audioTimerTV, audioIDTV;
+        FloatingActionButton audioActionButton;
+        FloatingActionButton audioDeleteButton;
         ConstraintLayout constItemLayout;
 
         public ViewHolder(View itemView) {
@@ -91,7 +125,78 @@ public class VoiceOrdersAdapter extends RecyclerView.Adapter<VoiceOrdersAdapter.
             audioFeedbackTV = itemView.findViewById(R.id.audioFeedback_textView);
             constItemLayout = itemView.findViewById(R.id.item_layout);
             audioTimerTV = itemView.findViewById(R.id.audioTimer_textView);
+            audioIDTV = itemView.findViewById(R.id.voiceOrderID_textView);
+            audioDeleteButton = itemView.findViewById(R.id.voiceOrderDeleteBtn_imageButton);
         }
+    }
+
+    public void sendDeleteVoiceOrderFileRequest(String audio_key, String audioTitle, boolean _s, BottomSheetDialog bottomSheetDialog) {
+        DeleteVoiceOrderFile deleteVoiceOrderFileModel = new DeleteVoiceOrderFile(this.from, user.getUid(),
+                orderByVoiceDocID, orderByVoiceAudioRefID, audio_key, _s);
+
+        APIService apiService = ApiServiceGenerator.getApiService(context);
+        Call<JsonObject> call = apiService.deleteVoiceOrderFromCart(deleteVoiceOrderFileModel);
+
+        call.enqueue(new Callback<>() {
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    JsonObject responseBody = response.body();
+
+                    if (responseBody.has("is_success") && responseBody.get("is_success").getAsBoolean()) {
+
+                        if (bottomSheetDialog != null) {
+                            bottomSheetDialog.hide();
+                            bottomSheetDialog.dismiss();
+                        }
+                        SoundManager.playOnDelete();
+
+                        Utils.deleteVoiceOrderCacheFile(context, orderByVoiceDocID);
+
+                        if (_s) {
+                            Utils.deleteAllDownloadedVoiceOrderCartFiles(context);
+                            voiceOrdersViewModel.clear();
+                            notifyDataSetChanged();
+                        } else {
+                            Utils.deleteDownloadedVoiceOrderCartFile(audioTitle + ".mp3", context);
+                        }
+
+                        // Find and remove the deleted item from the list
+                        for (int i = 0; i < voiceOrdersViewModel.size(); i++) {
+                            if (voiceOrdersViewModel.get(i).getAudio_key().equals(audio_key)) {
+                                voiceOrdersViewModel.remove(i);
+                                notifyItemRemoved(i);
+                                break;
+                            }
+                        }
+
+                        if (voiceOrdersViewModel.isEmpty()) {
+                            statusTV.setText(R.string.no_voice_orders_recorded_yet);
+                        }
+
+                        Toast.makeText(context, responseBody.get("message").getAsString(), Toast.LENGTH_SHORT).show();
+                        Log.d(LOG_TAG, "File deleted successfully");
+                    } else {
+                        Toast.makeText(context, responseBody.get("message").getAsString(), Toast.LENGTH_SHORT).show();
+                        Log.e(LOG_TAG, "Unable to delete file, at the moment");
+                    }
+                } else {
+                    String errorMessage = "Failed to delete voice data";
+                    errorMessage += ": " + response.message();
+                    Log.e(LOG_TAG, errorMessage);
+                    Log.e(LOG_TAG, errorMessage);
+                    Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+
+            @Override
+            public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
+                Toast.makeText(context, "Failed to delete voice data", Toast.LENGTH_SHORT).show();
+                Log.e(LOG_TAG, "Failed to delete voice data", t);
+            }
+        });
     }
 
 
@@ -101,14 +206,14 @@ public class VoiceOrdersAdapter extends RecyclerView.Adapter<VoiceOrdersAdapter.
 
         DownloadManager.Request request = new DownloadManager.Request(uri);
         request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
-        request.setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS, fileName + ".mp3");
+        request.setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS + "/orderByVoice", fileName + ".mp3");
         request.setTitle("Downloading Audio");
         request.setDescription("Order voice" + fileName);
 
         fdbk.setText(R.string.downloading);
         Toast.makeText(context, "Downloading audio...", Toast.LENGTH_SHORT).show();
 
-        File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS),
+        File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS + "/orderByVoice"),
                 fileName + ".mp3");
 
         mDownloadId = downloadManager.enqueue(request);
@@ -118,9 +223,9 @@ public class VoiceOrdersAdapter extends RecyclerView.Adapter<VoiceOrdersAdapter.
         playMusic(file.getAbsolutePath(), fdbk, actionBtn);
     }
 
-    public void downloadAndPlayAudio(String audioUrl, String fileName, TextView fdbkTV, ImageButton actionBtn) {
+    private void downloadAndPlayAudio(String audioUrl, String fileName, TextView fdbkTV, ImageButton actionBtn) {
         // Check if file exists
-        File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS),
+        File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS + "/orderByVoice"),
                 fileName + ".mp3");
 //        Toast.makeText(mContext, file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
         if (file.exists()) {
@@ -132,7 +237,7 @@ public class VoiceOrdersAdapter extends RecyclerView.Adapter<VoiceOrdersAdapter.
     }
 
     private void setAction(ImageButton btn, String fn) {
-        File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS),
+        File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS + "/orderByVoice"),
                 fn + ".mp3");
         if (file.exists()) {
             btn.setImageResource(R.drawable.baseline_play_arrow_24);

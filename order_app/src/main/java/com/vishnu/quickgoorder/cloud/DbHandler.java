@@ -204,7 +204,7 @@ public class DbHandler {
                 if (documentSnapshot.exists()) {
                     orderByVoiceDataRef.update(voiceOrderFields).addOnSuccessListener(var -> {
 //                                Toast.makeText(context, "Item added to cart.", Toast.LENGTH_SHORT).show();
-                                Utils.deleteVoiceOrderFile(context, docID);
+                                Utils.deleteVoiceOrderCacheFile(context, docID);
                                 Log.d(LOG_TAG, "Audio url updated to db: success");
                             }
                     ).addOnFailureListener(e ->
@@ -212,7 +212,7 @@ public class DbHandler {
                     Log.d(LOG_TAG, "Audio url update to db: failed!");
                 } else {
                     orderByVoiceDataRef.set(voiceOrderFields).addOnSuccessListener(var -> {
-                                Utils.deleteVoiceOrderFile(context, docID);
+                                Utils.deleteVoiceOrderCacheFile(context, docID);
 //                                Toast.makeText(context, "Item added to cart.", Toast.LENGTH_SHORT).show();
                                 Log.d(LOG_TAG, "Audio url uploaded to db: success");
                             }

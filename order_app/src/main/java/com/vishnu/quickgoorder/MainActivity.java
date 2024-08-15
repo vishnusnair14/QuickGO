@@ -40,23 +40,27 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.gson.JsonObject;
+import com.vishnu.quickgoorder.callbacks.AccountDeletion;
 import com.vishnu.quickgoorder.cloud.DbHandler;
 import com.vishnu.quickgoorder.databinding.ActivityMainBinding;
 import com.vishnu.quickgoorder.miscellaneous.PreferenceKeys;
 import com.vishnu.quickgoorder.miscellaneous.SharedDataView;
 import com.vishnu.quickgoorder.miscellaneous.Utils;
+import com.vishnu.quickgoorder.server.sapi.APIService;
+import com.vishnu.quickgoorder.server.sapi.ApiServiceGenerator;
 import com.vishnu.quickgoorder.service.GPSProviderService;
 import com.vishnu.quickgoorder.service.LocationService;
 import com.vishnu.quickgoorder.ui.home.recommendation.HomeRecommendationFragment;
 
 import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
 public class MainActivity extends AppCompatActivity {
@@ -273,13 +277,13 @@ public class MainActivity extends AppCompatActivity {
                 }
                 case "storage" -> {
 
-                    headingTxt.setText("Storage permission required");
+                    headingTxt.setText(R.string.storage_permission_required);
                     subHeadingTxt1.setText(R.string.storage_permission_consent_1);
                     subHeadingTxt2.setText(R.string.storage_permission_consent_2);
                     subHeadingTxt3.setText(R.string.go_to_app_settings_app_permission);
                 }
                 case "audio" -> {
-                    headingTxt.setText("Audio record permission required");
+                    headingTxt.setText(R.string.audio_record_permission_required);
                     subHeadingTxt1.setText(R.string.storage_permission_consent_1);
                     subHeadingTxt2.setText(R.string.storage_permission_consent_2);
                     subHeadingTxt3.setText(R.string.go_to_app_settings_app_permission);
@@ -293,12 +297,12 @@ public class MainActivity extends AppCompatActivity {
                     subHeadingTxt2.setText(R.string.location_permission_consent_2);
                 }
                 case "storage" -> {
-                    headingTxt.setText("Storage permission required");
+                    headingTxt.setText(R.string.storage_permission_required);
                     subHeadingTxt1.setText(R.string.storage_permission_consent_1);
                     subHeadingTxt2.setText(R.string.storage_permission_consent_2);
                 }
                 case "audio" -> {
-                    headingTxt.setText("Audio record permission required");
+                    headingTxt.setText(R.string.audio_record_permission_required);
                     subHeadingTxt1.setText(R.string.storage_permission_consent_1);
                     subHeadingTxt2.setText(R.string.storage_permission_consent_2);
                 }
@@ -434,50 +438,98 @@ public class MainActivity extends AppCompatActivity {
         stopService(serviceIntent);
     }
 
+    private void sendAccountDeletionRequest(String userId, AccountDeletion accountDeletion) {
+        APIService apiService = ApiServiceGenerator.getApiService(this);
+        Call<JsonObject> call = apiService.deleteUserAccount(userId, "order");
+
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    JsonObject responseBody = response.body();
+
+                    if (responseBody.has("response")) {
+                        JsonObject resp = responseBody.getAsJsonObject("response");
+
+                        if (resp.has("is_deleted") && resp.get("is_deleted").getAsBoolean()) {
+                            accountDeletion.onSuccess(true);
+                            Log.d(LOG_TAG, "Accounted successfully");
+                        } else {
+                            accountDeletion.onSuccess(false);
+                            Toast.makeText(MainActivity.this, "Failed to delete user account", Toast.LENGTH_SHORT).show();
+                        }
+
+                    } else {
+                        accountDeletion.onSuccess(false);
+                        Log.e(LOG_TAG, "Invalid response format: Missing 'is_success' field");
+                        Toast.makeText(MainActivity.this, "Failed to delete user account: Invalid response format", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    String errorMessage = "Failed to delete account";
+                    errorMessage += ": " + response.message();
+                    accountDeletion.onSuccess(false);
+                    Log.e(LOG_TAG, errorMessage);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
+                accountDeletion.onSuccess(false);
+                Toast.makeText(MainActivity.this, "Failed to delete user account", Toast.LENGTH_SHORT).show();
+                Log.e(LOG_TAG, "Failed to delete user account", t);
+            }
+        });
+    }
 
     private void executeDelAccPrefs() {
-        Map<String, Object> updates = new HashMap<>();
+//        Map<String, Object> updates = new HashMap<>();
+//
+//        assert user != null;
+//        updates.put(user.getUid().trim(), FieldValue.delete());
 
-        assert user != null;
-        updates.put(user.getUid().trim(), FieldValue.delete());
+//        user.delete()
+//                .addOnCompleteListener(task -> {
+//                    if (task.isSuccessful()) {
+//                        preferences.edit().clear().apply();
+//                        Toast.makeText(this, "Account deleted successfully", Toast.LENGTH_LONG).show();
+//                        finish();
+//                    } else {
+//                        Toast.makeText(this, "Failed to delete account" +
+//                                task.getException(), Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//
+//
+//        /* Delete user credentials from "RegisteredUsersCredentials" db bucket */
+//        RegisteredUsersCredentialsRef.update(updates)
+//                .addOnSuccessListener(aVoid -> Log.d(LOG_TAG, "Credentials deleted successfully"))
+//                .addOnFailureListener(e -> Log.w(LOG_TAG, "Error deleting credentials", e));
+//
+//        /* Delete registered email from "RegisteredUsersEmail" db bucket */
+//        RegisteredUsersEmailRef.get().addOnSuccessListener(documentSnapshot -> {
+//            if (documentSnapshot.exists()) {
+//                List<String> emailAddresses = (List<String>) documentSnapshot.get("email_addresses");
+//
+//                if (emailAddresses != null) {
+//                    emailAddresses.remove(user.getEmail());
+//
+//                    updates.put("email_addresses", emailAddresses);
+//
+//        Perform the update operation
+//                    RegisteredUsersEmailRef.update(updates)
+//                            .addOnSuccessListener(aVoid -> Log.d(LOG_TAG, "Email removed successfully"))
+//                            .addOnFailureListener(e -> Log.w(LOG_TAG, "Error removing email", e));
+//                } else {
+//                    Log.d(LOG_TAG, "Array field 'email_addresses' is null");
+//                }
+//            } else {
+//                Log.d(LOG_TAG, "Document does not exist");
+//            }
+//        });
 
-        user.delete()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        preferences.edit().clear().apply();
-                        Toast.makeText(this, "Account deleted successfully", Toast.LENGTH_LONG).show();
-                        finish();
-                    } else {
-                        Toast.makeText(this, "Failed to delete account" +
-                                task.getException(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-
-        /* Delete user credentials from "RegisteredUsersCredentials" db bucket */
-        RegisteredUsersCredentialsRef.update(updates)
-                .addOnSuccessListener(aVoid -> Log.d(LOG_TAG, "Credentials deleted successfully"))
-                .addOnFailureListener(e -> Log.w(LOG_TAG, "Error deleting credentials", e));
-
-        /* Delete registered email from "RegisteredUsersEmail" db bucket */
-        RegisteredUsersEmailRef.get().addOnSuccessListener(documentSnapshot -> {
-            if (documentSnapshot.exists()) {
-                List<String> emailAddresses = (List<String>) documentSnapshot.get("email_addresses");
-
-                if (emailAddresses != null) {
-                    emailAddresses.remove(user.getEmail());
-
-                    updates.put("email_addresses", emailAddresses);
-
-                    // Perform the update operation
-                    RegisteredUsersEmailRef.update(updates)
-                            .addOnSuccessListener(aVoid -> Log.d(LOG_TAG, "Email removed successfully"))
-                            .addOnFailureListener(e -> Log.w(LOG_TAG, "Error removing email", e));
-                } else {
-                    Log.d(LOG_TAG, "Array field 'email_addresses' is null");
-                }
-            } else {
-                Log.d(LOG_TAG, "Document does not exist");
+        sendAccountDeletionRequest(user.getUid(), _status -> {
+            if (_status) {
+                Toast.makeText(MainActivity.this, "Account deleted successfully", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -503,7 +555,7 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             HomeRecommendationFragment.writeShopDataToFile(this, "{}");
-            Utils.deleteAddressDataInFile(this);
+            Utils.deleteAddressDataCacheFile(this);
             Utils.deleteVoiceOrdersFolder(this);
         } catch (Exception e) {
             Log.e(LOG_TAG, e.toString());
@@ -549,7 +601,7 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             HomeRecommendationFragment.writeShopDataToFile(this, "{}");
-            Utils.deleteAddressDataInFile(this);
+            Utils.deleteAddressDataCacheFile(this);
             Utils.deleteVoiceOrdersFolder(this);
         } catch (Exception e) {
             Log.e(LOG_TAG, e.toString());
