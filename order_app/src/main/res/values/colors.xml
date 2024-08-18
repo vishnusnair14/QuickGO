@@ -49,6 +49,10 @@
 
     <color name="checkoutBtnFg2">#DDDADA</color>
     <color name="checkoutBtnBg2">#98999A</color>
+    <color name="partner_not_assigned">#C62828</color>
+    <color name="partner_assigned">#AEABAB</color>
+    <color name="primary">#283593</color>
+    <color name="order_status_icon_disabled">#817F7F</color>
 
     />
 </resources>

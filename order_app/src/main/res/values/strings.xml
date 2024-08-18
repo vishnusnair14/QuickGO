@@ -246,7 +246,7 @@
     <string name="track_order">Track Order</string>
     <string name="order_accepted">Order accepted</string>
     <string name="decrypt_amp_send"><![CDATA[Decrypt & Send]]></string>
-    <string name="order_status">ORDER STATUS</string>
+    <string name="order_status"><u>ORDER STATUS</u></string>
     <string name="order_id">$(order_id)</string>
     <string name="unknown">Unknown</string>
     <string name="_connected">connected</string>
@@ -318,5 +318,9 @@
     <string name="quickgo_order_app">QuickGO Order App</string>
     <string name="erase">Erase</string>
     <string name="tap_on_any_address_to_add_overwrite_or_erase_store_preference_data">Tap on any address to add, overwrite or erase store preference data</string>
+    <string name="unable_to_check_data_at_the_moment_the_server_">Unable to check data at the moment. The server is busy. Please try again later.</string>
+    <string name="try_again">Try again</string>
+    <string name="hide_detailed_update">Hide details</string>
+    <string name="view_detailed_update">View details</string>
 
 </resources>

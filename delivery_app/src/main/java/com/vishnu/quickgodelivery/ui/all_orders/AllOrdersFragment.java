@@ -82,7 +82,8 @@ public class AllOrdersFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        com.vishnu.quickgodelivery.databinding.FragmentAllOrdersBinding binding = com.vishnu.quickgodelivery.databinding.FragmentAllOrdersBinding.inflate(inflater, container, false);
+        com.vishnu.quickgodelivery.databinding.FragmentAllOrdersBinding binding = com.vishnu.quickgodelivery.
+                databinding.FragmentAllOrdersBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         bind = binding;
 
@@ -102,7 +103,7 @@ public class AllOrdersFragment extends Fragment {
         if (!permissionsToRequest.isEmpty()) {
             ActivityCompat.requestPermissions(requireActivity(), permissionsToRequest.toArray(new String[0]), 1);
         }
-// TODO
+
         // Init. audio download directory
         appExternalDirectory = Environment.getExternalStoragePublicDirectory("Android/vishnu/" + requireContext().getPackageName() + "/files");
         AppDwnAudioDir = new File(appExternalDirectory, "audio_dir");
@@ -163,7 +164,7 @@ public class AllOrdersFragment extends Fragment {
 
         ProgressBar loadingProgressBar = root.findViewById(R.id.loadingProgressBar);
         TextView serverStatusTV = root.findViewById(R.id.serverStatusFeedbackOrders_textView);
-        loadingProgressBar.setVisibility(View.VISIBLE); // Show loading indicator
+        loadingProgressBar.setVisibility(View.VISIBLE);
 
         String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         CollectionReference ordersRef = FirebaseFirestore.getInstance()
@@ -173,7 +174,7 @@ public class AllOrdersFragment extends Fragment {
         ordersRef.addSnapshotListener((value, e) -> {
             if (e != null) {
                 Log.w(TAG, "Listen failed.", e);
-                loadingProgressBar.setVisibility(View.GONE); // Hide loading indicator on error
+                loadingProgressBar.setVisibility(View.GONE);
                 return;
             }
 
@@ -225,7 +226,7 @@ public class AllOrdersFragment extends Fragment {
                 }
 
                 Tasks.whenAllComplete(tasks).addOnCompleteListener(task -> {
-                    orderList.sort(Comparator.comparingLong(AllOrdersModel::getOrderTimeMillis));
+                    orderList.sort(Comparator.comparingLong(AllOrdersModel::getOrderTimeMillis).reversed());
 
                     orderAdapter.notifyDataSetChanged();
                     loadingProgressBar.setVisibility(View.GONE);

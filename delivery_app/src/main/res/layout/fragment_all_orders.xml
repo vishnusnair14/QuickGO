@@ -10,66 +10,12 @@
         android:id="@+id/serverStatusFeedbackOrders_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/anonymous_pro"
-        android:textColor="#000000"
-        android:textSize="16sp"
+        android:fontFamily="@font/montserrat"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/allOrders_recycleView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/allOrders_recycleView" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/allOrders_recycleView"
-        style="material3r"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/locationView_textView"
-        app:layout_constraintVertical_bias="0.0"
-        tools:listitem="@layout/srv_obs_order_list" />
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="25dp"
-        android:elevation="1dp"
-        android:fontFamily="@font/architects_daughter"
-        android:text="All Orders"
-        android:textSize="26sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/onDutyView_textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
-        android:background="#03A9F4"
-        android:backgroundTint="#116D97"
-        android:fontFamily="@font/anonymous_pro"
-        android:foregroundGravity="center"
-        android:gravity="center"
-        android:paddingLeft="3dp"
-        android:paddingTop="1dp"
-        android:paddingRight="3dp"
-        android:paddingBottom="1dp"
-        android:text="@string/on_duty"
-        android:textAlignment="center"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/textView3"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/textView3"
-        app:layout_constraintTop_toTopOf="@+id/textView3" />
 
     <TextView
         android:id="@+id/offDutyView_textView"
@@ -97,6 +43,31 @@
         app:layout_constraintTop_toTopOf="@+id/textView3" />
 
     <TextView
+        android:id="@+id/onDutyView_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:background="#03A9F4"
+        android:backgroundTint="#116D97"
+        android:fontFamily="@font/anonymous_pro"
+        android:foregroundGravity="center"
+        android:gravity="center"
+        android:paddingLeft="3dp"
+        android:paddingTop="1dp"
+        android:paddingRight="3dp"
+        android:paddingBottom="1dp"
+        android:text="@string/on_duty"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/textView3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/textView3"
+        app:layout_constraintTop_toTopOf="@+id/textView3" />
+
+    <TextView
         android:id="@+id/locationView_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -104,10 +75,37 @@
         android:layout_marginEnd="10dp"
         android:fontFamily="@font/anonymous_pro"
         android:text="@string/_0_0000000_n_n0_0000000_e"
-        android:textColor="#AAA7A7"
+        android:textColor="#C8C3C3"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/onDutyView_textView" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="25dp"
+        android:elevation="1dp"
+        android:fontFamily="@font/architects_daughter"
+        android:text="@string/all_orders"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/allOrders_recycleView"
+        style="material3r"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/locationView_textView"
+        app:layout_constraintVertical_bias="0.0"
+        tools:listitem="@layout/srv_obs_order_list" />
 
     <TextView
         android:id="@+id/tempView_textView"

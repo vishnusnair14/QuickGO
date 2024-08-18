@@ -153,6 +153,9 @@ public class AddressDataAdapter extends RecyclerView.Adapter<AddressDataAdapter.
                 try {
                     checkIsPrefSavedForAddress(addressData.getPhoneNo(), hasData -> {
                         if (hasData == 1) {
+                            cancelBtn.setVisibility(View.VISIBLE);
+                            actionBtn.setVisibility(View.VISIBLE);
+
                             mainTitle.setText(R.string.data_already_exists);
                             subTitle.setText(R.string.store_preference_data_already_exists_for_this_phone);
 
@@ -167,25 +170,37 @@ public class AddressDataAdapter extends RecyclerView.Adapter<AddressDataAdapter.
                                 } catch (Exception e) {
                                     throw new RuntimeException(e);
                                 }
-
                             });
 
                         } else if (hasData == 0) {
+                            cancelBtn.setVisibility(View.VISIBLE);
+                            actionBtn.setVisibility(View.VISIBLE);
+
                             mainTitle.setText(R.string.store_preference);
                             subTitle.setText(R.string.no_store_preference_data_exists_for_this_phone);
 
                             actionBtn.setText(R.string.add_new);
 
+                        } else if (hasData == -1) {
+                            actionBtn.setText(R.string.try_again);
+
+                            mainTitle.setText(R.string.server_offline);
+                            subTitle.setText(R.string.unable_to_check_data_at_the_moment_the_server_);
+
+                            cancelBtn.setVisibility(View.VISIBLE);
+                            actionBtn.setVisibility(View.VISIBLE);
+
+                            actionBtn.setOnClickListener(v -> {
+                                savedStorePrefBtmView.dismiss();
+                                showCheckStorePrefDataExistenceBtmView(addressData);
+                            });
                         }
-                        cancelBtn.setVisibility(View.VISIBLE);
-                        actionBtn.setVisibility(View.VISIBLE);
                         progressBar.setVisibility(View.INVISIBLE);
                     });
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
-            }, 650);
-
+            }, 450);
         }
 
         private void overwriteStorePrefData(@NonNull AddressData addressData) {

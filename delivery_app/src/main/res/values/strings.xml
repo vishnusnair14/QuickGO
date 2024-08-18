@@ -219,4 +219,5 @@
     <string name="email_address">Enter email address</string>
     <string name="email_hint">email address</string>
     <string name="username">Enter username</string>
+    <string name="turn_on_duty_to_receive_orders">Turn on duty to receive orders</string>
 </resources>

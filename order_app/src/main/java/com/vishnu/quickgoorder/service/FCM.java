@@ -3,7 +3,9 @@ package com.vishnu.quickgoorder.service;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.util.Log;
 
@@ -15,6 +17,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.vishnu.quickgoorder.MainActivity;
 import com.vishnu.quickgoorder.R;
 import com.vishnu.quickgoorder.cloud.DbHandler;
 
@@ -28,22 +31,32 @@ public class FCM extends FirebaseMessagingService {
     public FCM() {
     }
 
-    private void showFCMNotification(String title, String body) {
+    private void showForegroundFCMNotification(String title, String body) {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        NotificationChannel channel = new NotificationChannel("FCM_CHANNEL", "Order accepted",
-                NotificationManager.IMPORTANCE_DEFAULT);
+        long[] vibrationPattern = {0, 500, 1000, 500};
 
+        NotificationChannel channel = new NotificationChannel(
+                "FCM_CHANNEL",
+                "FCM Notification",
+                NotificationManager.IMPORTANCE_HIGH);
+
+        channel.setDescription("This channel is used for fcm message notifications.");
+        channel.setVibrationPattern(vibrationPattern);
         notificationManager.createNotificationChannel(channel);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "FCM_CHANNEL")
                 .setSmallIcon(R.drawable.ic_launcher_order_app_icon_foreground)
                 .setContentTitle(title)
                 .setContentText(body)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+                .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setVibrate(vibrationPattern)
+                .setAutoCancel(true);
 
         Notification notification = builder.build();
         notificationManager.notify(0, notification);
+
     }
 
 
@@ -58,9 +71,6 @@ public class FCM extends FirebaseMessagingService {
         }
     }
 
-    private String generateTimestamp() {
-        return LocalDateTime.now().format(DateTimeFormatter.ofPattern("ddMMyyyy_HHmmss"));
-    }
 
     @Override
     public void onNewToken(@NonNull String token) {
@@ -87,11 +97,13 @@ public class FCM extends FirebaseMessagingService {
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
         if (!remoteMessage.getData().isEmpty()) {
+
 //            FCMNotificationStorageHelper.saveNotificationPayload(getApplicationContext(),
 //                    remoteMessage.getData().get("user_id"), remoteMessage.getData().get("shop_id"));
 //            EventBus.getDefault().post(new OrderReceiveService(remoteMessage.getData().get("user_id"),
 //            remoteMessage.getData().get("shop_id"), remoteMessage.getData().get("shop_loc"),
 //            remoteMessage.getData().get("order_time")));
+
             Log.i(LOG_TAG, "Data Payload: " + remoteMessage.getData());
         }
 
@@ -103,7 +115,7 @@ public class FCM extends FirebaseMessagingService {
             Log.i(LOG_TAG, "Notification Body: " + body);
 
             // Display notification if app is in the foreground
-            showFCMNotification(title, body);
+            showForegroundFCMNotification(title, body);
         }
     }
 

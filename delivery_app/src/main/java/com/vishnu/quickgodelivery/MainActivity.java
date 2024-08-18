@@ -362,7 +362,7 @@ public class MainActivity extends AppCompatActivity {
                         closeLeftDrawer();
                         sentDutyStartRequest();
                         startDutyNotificationService();
-
+                        statusTV.setVisibility(View.VISIBLE);
                         preferences.edit().putBoolean("isOnDuty", true).apply();
                         Log.d("DutyToggle", "Duty started.");
                     } else {
@@ -378,7 +378,8 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 sentDutyEndRequest(user.getUid(), preferences.getString("decodedCityForDuty", "0"));
                 closeLeftDrawer();
-
+                statusTV.setVisibility(View.VISIBLE);
+                statusTV.setText(R.string.turn_on_duty_to_receive_orders);
                 preferences.edit().putBoolean("isOnDuty", false).apply();
                 Log.d("DutyToggle", "Duty ended.");
             }
@@ -459,7 +460,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getCurrentDutyStatusData(DutyStatusData dutyStatusData) {
-        statusTV.setVisibility(View.GONE);
         APIService apiService = ApiServiceGenerator.getApiService(this);
         Call<JsonObject> call = apiService.getDutyStatus(user.getUid());
 
@@ -548,6 +548,7 @@ public class MainActivity extends AppCompatActivity {
                     if (response.body() != null) {
                         if (response.body().has("isDutyStarted") && response.body().get("isDutyStarted").getAsBoolean()) {
                             locationTV.setVisibility(View.VISIBLE);
+                            statusTV.setVisibility(View.VISIBLE);
                             statusTV.setText(R.string.waiting_for_orders);
 
                             showOnDutyView();
@@ -939,6 +940,9 @@ public class MainActivity extends AppCompatActivity {
 
         if (Utils.isGPSEnabled(MainActivity.this)) {
             dutyToggle.setEnabled(true);
+            if (preferences.getBoolean("isOnDuty", false)) {
+                showOnDutyView();
+            }
         } else {
             showEnableLocationBtmView(false);
         }

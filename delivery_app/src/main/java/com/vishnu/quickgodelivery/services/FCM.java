@@ -37,15 +37,25 @@ public class FCM extends FirebaseMessagingService {
 
     private void showFCMNotification(String title, String body) {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        long[] vibrationPattern = {0, 500, 1000, 500};
 
-        NotificationChannel channel = new NotificationChannel("FCM_CHANNEL", "New Order Received", NotificationManager.IMPORTANCE_DEFAULT);
+        NotificationChannel channel = new NotificationChannel(
+                "FCM_CHANNEL",
+                "FCM Notification",
+                NotificationManager.IMPORTANCE_HIGH);
+
+        channel.setDescription("This channel is used for fcm message notifications.");
+        channel.setVibrationPattern(vibrationPattern);
         notificationManager.createNotificationChannel(channel);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "FCM_CHANNEL")
-                .setSmallIcon(R.drawable.baseline_delivery_dining_24)
+                .setSmallIcon(R.drawable.ic_launcher_delivery_app_icon_foreground)
                 .setContentTitle(title)
                 .setContentText(body)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+                .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setVibrate(vibrationPattern)
+                .setAutoCancel(true);
 
         Notification notification = builder.build();
         notificationManager.notify(0, notification);

@@ -1,5 +1,7 @@
 package com.vishnu.quickgoorder.ui.track;
 
+import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,16 +13,20 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -38,51 +44,55 @@ import com.vishnu.quickgoorder.miscellaneous.Utils;
 import com.vishnu.quickgoorder.server.sse.SSEClient;
 import com.vishnu.quickgoorder.server.sse.SSEModel;
 import com.vishnu.quickgoorder.server.ws.ChatAdapter;
-import com.vishnu.quickgoorder.server.ws.ChatModel;
 import com.vishnu.quickgoorder.server.ws.ChatClient;
+import com.vishnu.quickgoorder.server.ws.ChatModel;
 import com.vishnu.quickgoorder.server.ws.DeliveryPartnerStatusListener;
+import com.vishnu.quickgoorder.ui.track.orderstatus.OrderStatusAdapter;
 
+import java.text.MessageFormat;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class OrderTrackActivity extends AppCompatActivity implements DeliveryPartnerStatusListener {
     private final String LOG_TAG = "OrderTrackActivity";
     private FirebaseFirestore db;
     private FirebaseUser user;
-    private SharedPreferences preferences;
     TextView orderIDTV;
     TextView orderTimeTV;
     TextView updatedTimeTV;
     Button chatSendBtn;
     EditText messageET;
+    private CardView orderDetailsCardView;
+    private LinearLayout orderStatusUpdateLayout;
     FloatingActionButton chatFab;
     private RecyclerView chatRecyclerView;
     private ChatAdapter chatAdapter;
     private List<ChatModel> chatMessageList;
     BottomSheetDialog setDeliveryAddrBtmView;
     private ChatClient chatClient;
+    private RecyclerView orderStatusRecyclerView;
+    private ConstraintLayout mainLayout;
     private TextView chatViewBtmStatusTV;
     private TextView chatViewStatusTV;
     private TextView chatClearAllBtnTV;
     private TextView sseViewTV;
-    private TextView updateStatusTV;
+    private OrderStatusAdapter orderStatusAdapter;
     private SSEClient sseClient;
-    private TextView step1, step2, step3, step4, step5, step6;
-    private View progressLine;
-    private View verticalLine;
-    private ProgressBar orderUpdatePB;
     private ProgressBar chatViewPB;
-    private int currentStatusNo = 1;
-    private boolean isOrderStatusAlreadyShownOnce = false;
-    private boolean flag = true;
-    private final int[] stepHeights = new int[6];
-    TextView[] statusTVArray;
+    private List<Map<String, String>> statusList = new ArrayList<>();
+    private Map<String, Map<String, String>> initialData;
+    TextView orderStatusTV;
     private String orderToTrackOrderID;
-
+    private boolean isOrderStatusCardViewExpanded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,37 +101,26 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
 
         db = FirebaseFirestore.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
-        preferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+        SharedPreferences preferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
 
         orderIDTV = findViewById(R.id.orderTrackOrderIDView_textView);
         orderTimeTV = findViewById(R.id.orderTrackOrderTimeView_textView);
         updatedTimeTV = findViewById(R.id.orderTrackOrderUpdatedTimeView_textView);
         chatFab = findViewById(R.id.chat_floatingActionButton);
         sseViewTV = findViewById(R.id.sseView_textView);
-        updateStatusTV = findViewById(R.id.fetchingUpdates_textView);
-        orderUpdatePB = findViewById(R.id.fetchingUpdates_progressBar);
+        orderDetailsCardView = findViewById(R.id.trackOrderDetails_cardView);
+        orderStatusUpdateLayout = findViewById(R.id.orderStatusUpdate_linearLayout);
+        orderStatusTV = findViewById(R.id.trackOrderStatusTV_textView);
+        orderStatusRecyclerView = findViewById(R.id.orderStatusUpdate_recycleView);
+        TextView dropDownIV = findViewById(R.id.dropDownView_textView);
+        mainLayout = findViewById(R.id.orderTrackMain_Layout_constraintLayout);
         FloatingActionButton gotoMap = findViewById(R.id.gotoMap_floatingActionButton);
 
-        chatFab.setVisibility(View.INVISIBLE);
-        chatFab.setEnabled(false);
-
-        step1 = findViewById(R.id.step1);
-        step2 = findViewById(R.id.step2);
-        step3 = findViewById(R.id.step3);
-        step4 = findViewById(R.id.step4);
-        step5 = findViewById(R.id.step5);
-        step6 = findViewById(R.id.step6);
-        verticalLine = findViewById(R.id.vertical_line);
-        progressLine = findViewById(R.id.progress_line);
-
-        statusTVArray = new TextView[]{step1, step2, step3, step4, step5, step6};
-
-        step1.post(() -> stepHeights[0] = step1.getHeight());
-        step2.post(() -> stepHeights[1] = step2.getHeight());
-        step3.post(() -> stepHeights[2] = step3.getHeight());
-        step4.post(() -> stepHeights[3] = step4.getHeight());
-        step5.post(() -> stepHeights[4] = step5.getHeight());
-        step6.post(() -> stepHeights[5] = step6.getHeight());
+        int collapsedHeight = getResources().getDimensionPixelSize(R.dimen.cardview_collapsed_height);
+        // Set the CardView height to the collapsed height initially
+        ViewGroup.LayoutParams params = orderStatusUpdateLayout.getLayoutParams();
+        params.height = collapsedHeight;
+        orderStatusUpdateLayout.setLayoutParams(params);
 
         ViewGroup rootViewGroup = findViewById(android.R.id.content);
         Intent mainActivityIntent = new Intent(this, MainActivity.class);
@@ -129,6 +128,21 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
         Intent intent = getIntent();
         orderToTrackOrderID = intent.getStringExtra("orderToTrackOrderID");
         preferences.edit().putInt("orderStatus", 0).apply();
+
+        // Initialize the adapter with an empty list
+        statusList = new ArrayList<>();
+        orderStatusAdapter = new OrderStatusAdapter(statusList, orderToTrackOrderID, this);
+
+        orderStatusRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+//        orderStatusRecyclerView.setItemAnimator(new ItemAnimatorOrderStatusUpdates());
+        orderStatusRecyclerView.setAdapter(orderStatusAdapter);
+
+        // Load initial data (this should be done with your actual data fetching logic)
+        Map<String, Map<String, String>> initialData = getInitialOrderStatusData();
+        updateOrderStatus(initialData);
+
+        chatFab.setVisibility(View.INVISIBLE);
+        chatFab.setEnabled(false);
 
         if (orderToTrackOrderID != null && !orderToTrackOrderID.isEmpty()) {
             fetchData(orderToTrackOrderID);
@@ -151,6 +165,15 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
 
         });
 
+        mainLayout.setOnClickListener(v -> {
+            if (isOrderStatusCardViewExpanded) {
+                toggleCardView(dropDownIV);
+            }
+        });
+
+        dropDownIV.setOnClickListener(v -> toggleCardView(dropDownIV));
+
+
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -164,33 +187,94 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
         getOnBackPressedDispatcher().addCallback(this, callback);
     }
 
-    private void syncOrderStatusUI(int _no) {
-        if (isOrderStatusAlreadyShownOnce) {
-            if (currentStatusNo != _no) {
-                if (currentStatusNo > _no) {
-                    for (int i = _no; i <= 5; i++) {
-                        statusTVArray[i].setVisibility(View.GONE);
-                    }
-                }
-                animateStep(_no);
-                currentStatusNo = _no;
-            } else {
-                if (flag) {
-                    for (int i = 1; i <= _no; i++) {
-                        animateStep(i);
-                        currentStatusNo = i;
-                    }
-                    flag = false;
-                }
+    public void updateOrderStatus(Map<String, Map<String, String>> newOrderStatusData) {
+        // Convert new status data to a sorted list
+        List<Map<String, String>> newStatusList = new ArrayList<>(newOrderStatusData.entrySet())
+                .stream()
+                .sorted(Comparator.comparingInt(entry -> Integer.parseInt(entry.getKey())))
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toList());
+
+        // Create a set to keep track of existing status keys
+        Set<String> existingKeys = statusList.stream()
+                .map(status -> status.get("key"))
+                .collect(Collectors.toSet());
+
+        // Filter out already existing statuses
+        List<Map<String, String>> filteredNewStatusList = newStatusList.stream()
+                .filter(status -> !existingKeys.contains(status.get("key")))
+                .collect(Collectors.toList());
+
+        // Proceed only if there are new items
+        if (!filteredNewStatusList.isEmpty()) {
+            // Create a list to hold both existing and new statuses
+            List<Map<String, String>> combinedStatusList = new ArrayList<>(statusList);
+            combinedStatusList.addAll(filteredNewStatusList);
+
+            // Update the adapter with the new combined list
+            if (orderStatusAdapter != null) {
+                int previousSize = statusList.size();
+                statusList.addAll(filteredNewStatusList);
+
+                orderStatusAdapter.notifyItemRangeInserted(previousSize, filteredNewStatusList.size());
+
+                orderStatusAdapter.notifyItemInserted(orderStatusAdapter.getItemCount() - 1);
+                orderStatusRecyclerView.scrollToPosition(combinedStatusList.size() - 1);
+
             }
+
+            orderDetailsCardView.setVisibility(View.VISIBLE);
         } else {
-            isOrderStatusAlreadyShownOnce = true;
-            flag = false;
-            for (int i = 1; i <= _no; i++) {
-                animateStep(i);
-                currentStatusNo = i;
-            }
+            Log.d(LOG_TAG, "No new unique status data to update.");
         }
+    }
+
+    private void toggleCardView(TextView tv) {
+        ValueAnimator animator;
+
+        if (isOrderStatusCardViewExpanded) {
+            animator = ValueAnimator.ofInt(orderStatusUpdateLayout.getHeight(), getResources().getDimensionPixelSize(R.dimen.cardview_collapsed_height));
+        } else {
+            orderStatusUpdateLayout.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+            animator = ValueAnimator.ofInt(orderStatusUpdateLayout.getHeight(), orderStatusUpdateLayout.getMeasuredHeight());
+        }
+        animator.setInterpolator(new AccelerateDecelerateInterpolator());
+        animator.setDuration(300);
+
+        animator.addUpdateListener(animation -> {
+            orderStatusUpdateLayout.getLayoutParams().height = (Integer) animation.getAnimatedValue();
+            orderStatusUpdateLayout.requestLayout();
+
+            if (isOrderStatusCardViewExpanded) {
+                tv.setText(R.string.hide_detailed_update);
+                tv.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null,
+                        ContextCompat.getDrawable(OrderTrackActivity.this, R.drawable.baseline_arrow_drop_up_24), null);
+            } else {
+                tv.setText(R.string.view_detailed_update);
+                tv.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null,
+                        ContextCompat.getDrawable(OrderTrackActivity.this, R.drawable.baseline_arrow_drop_down_24), null);
+            }
+        });
+
+        animator.start();
+        isOrderStatusCardViewExpanded = !isOrderStatusCardViewExpanded;
+    }
+
+    public Map<String, Map<String, String>> getInitialOrderStatusData() {
+        initialData = new LinkedHashMap<>();
+
+        initialData.put("1", new HashMap<>() {{
+            put("key", "1");
+            put("title", "Order placed");
+            put("sub_title", "You have successfully placed your order.");
+        }});
+
+        return initialData;
+    }
+
+    private void setInitialOrderStatusData(Map<String, Map<String, String>> data) {
+        initialData.clear();
+        this.initialData = data;
     }
 
     private void initSSE(String orderID) {
@@ -217,27 +301,44 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
         sseClient.start(message -> {
             // Handle incoming SSE messages
             runOnUiThread(() -> {
-                updateStatusTV.setVisibility(View.GONE);
-                orderUpdatePB.setVisibility(View.GONE);
-                verticalLine.setVisibility(View.VISIBLE);
-
                 // Update UI or perform necessary actions
                 SSEModel data = new Gson().fromJson(message, SSEModel.class);
                 boolean isPartnerAssigned = data.getIs_partner_assigned();
 
                 onPartnerStatusChanged(isPartnerAssigned);
 
-                orderIDTV.setText(data.getOrder_id());
-                orderTimeTV.setText(data.getOrder_time());
-                sseViewTV.setText(data.getOrder_status_label());
-                updatedTimeTV.setText(data.getTime());
-
-                if (isPartnerAssigned) {
-                    step2.setText(R.string.delivery_partner_assigned);
+                if ("None".equals(data.getDp_name())) {
+                    orderStatusTV.setText(R.string.delivery_partner_not_assigned);
+                    orderStatusTV.setTextColor(getColor(R.color.partner_not_assigned));
                 } else {
-                    step2.setText(R.string.delivery_partner_not_assigned);
+                    if (data.getDp_name() != null) {
+                        orderStatusTV.setText(MessageFormat.format("{0} is your delivery partner",
+                                data.getDp_name().toUpperCase()));
+                        orderStatusTV.setTextColor(getColor(R.color.partner_assigned));
+                    }
                 }
-                syncOrderStatusUI(data.getOrder_status_no());
+
+                if (data.getOrder_id() != null) {
+                    orderIDTV.setText(data.getOrder_id().substring(6));
+                }
+                if (data.getOrder_time() != null) {
+                    orderTimeTV.setText(data.getOrder_time());
+                }
+                if (data.getOrder_status_label() != null) {
+                    sseViewTV.setText(data.getOrder_status_label());
+                }
+                if (data.getTime() != null) {
+                    updatedTimeTV.setText(data.getTime());
+                }
+
+                // Update order status in RecyclerView
+                if (data.getOrder_status_data() != null) {
+                    updateOrderStatus(data.getOrder_status_data());
+                } else {
+                    Log.e(LOG_TAG, "Order status data is null");
+                }
+
+//                syncOrderStatusUI(data.getOrder_status_no());
                 Log.d(LOG_TAG, message);
             });
         });
@@ -253,7 +354,6 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
 
         setDeliveryAddrBtmView = new BottomSheetDialog(this);
         setDeliveryAddrBtmView.setContentView(chatView);
-        setDeliveryAddrBtmView.setCanceledOnTouchOutside(false);
         Objects.requireNonNull(setDeliveryAddrBtmView.getWindow()).setGravity(Gravity.TOP);
 
         messageET = chatView.findViewById(R.id.chaViewtMsgET_editTextText);
@@ -330,9 +430,7 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
                     if (data != null && !data.isEmpty()) {
 
                         if (data.get("order_id") != null && data.get("order_time") != null) {
-
-                            orderIDTV.setText(Objects.requireNonNull(data.get("order_id"))
-                                    .toString().substring(6));
+                            orderIDTV.setText(Objects.requireNonNull(data.get("order_id")).toString().substring(6));
                             orderTimeTV.setText((String) data.get("order_time"));
                         }
                     }
@@ -345,60 +443,6 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
         });
     }
 
-    private void animateStep(int step) {
-        TextView stepView = null;
-        int stepHeight = 0;
-        int delay = 1200 * (step - 1);
-
-        stepHeight = switch (step) {
-            case 1 -> {
-                stepView = step1;
-                yield stepHeights[0];
-            }
-            case 2 -> {
-                stepView = step2;
-                yield stepHeights[1];
-            }
-            case 3 -> {
-                stepView = step3;
-                yield stepHeights[2];
-            }
-            case 4 -> {
-                stepView = step4;
-                yield stepHeights[3];
-            }
-            case 5 -> {
-                stepView = step5;
-                yield stepHeights[4];
-            }
-            case 6 -> {
-                stepView = step6;
-                yield stepHeights[5];
-            }
-            default -> stepHeight;
-        };
-
-        if (stepView != null) {
-            final int finalStepHeight = stepHeight;
-            final TextView finalStepView = stepView;
-
-            stepView.postDelayed(() -> {
-                finalStepView.setVisibility(View.VISIBLE);
-                Animation slideIn = AnimationUtils.loadAnimation(this, R.anim.slide_in_right);
-                finalStepView.startAnimation(slideIn);
-
-                int previousStepsHeight = 0;
-                for (int i = 0; i < step; i++) {
-                    previousStepsHeight += stepHeights[i];
-                }
-
-                progressLine.animate()
-                        .scaleY((float) (previousStepsHeight + finalStepHeight) / verticalLine.getHeight())
-                        .setDuration(500)
-                        .start();
-            }, delay);
-        }
-    }
 
     @Override
     protected void onResume() {
@@ -413,12 +457,6 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
     @Override
     protected void onStop() {
         super.onStop();
-
-        isOrderStatusAlreadyShownOnce = false;
-        step1.setVisibility(View.GONE);
-        step2.setVisibility(View.GONE);
-        step3.setVisibility(View.GONE);
-        step4.setVisibility(View.GONE);
     }
 
     @Override
@@ -444,7 +482,6 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
             setDeliveryAddrBtmView.dismiss();
         }
 
-        isOrderStatusAlreadyShownOnce = false;
     }
 
     @Override
@@ -468,16 +505,5 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
             }
         });
     }
-
-
-//    @Override
-//    public void onBackPressed() {
-//        // Navigate to Main Activity (home page)
-//        super.onBackPressed();
-//        Intent intent = new Intent(this, MainActivity.class);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-//        startActivity(intent);
-//        finish(); // Optional: close the current activity to remove it from the stack
-//    }
 
 }

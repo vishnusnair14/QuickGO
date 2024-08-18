@@ -35,7 +35,7 @@ public class FCMNotification extends Service {
     private void showFCMNotification() {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "FCM_CHANNEL")
-                .setSmallIcon(R.drawable.baseline_cloud_24)
+                .setSmallIcon(R.drawable.ic_launcher_order_app_icon_foreground)
                 .setContentTitle("New Order Received")
                 .setContentText(fcmNotificationText)
                 .setPriority(NotificationCompat.PRIORITY_HIGH);

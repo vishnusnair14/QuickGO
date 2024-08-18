@@ -6,11 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -80,7 +82,11 @@ public class MainActivity extends AppCompatActivity {
     boolean isCoarseLocationGranted = false;
     boolean isWriteExternalStorageGranted = false;
     boolean isReadExternalStorageGranted = false;
+    boolean isManageExternalStorageGranted = false;
+    boolean isReadMediaImagesGranted = false;
+    boolean isReadMediaVideoGranted = false;
     boolean isPostNotificationGranted = false;
+    boolean isReadMediaAudioGranted = false;
     boolean isRecordAudioGranted = false;
     ActivityResultLauncher<String[]> locationPermissionRequest;
     ActivityResultLauncher<String[]> storagePermissionRequest;
@@ -182,14 +188,20 @@ public class MainActivity extends AppCompatActivity {
     private void setPermissionStatusView(String type, boolean show) {
         TextView permissionStatusTV = findViewById(R.id.permissionStatusTV_textView);
         if (show) {
-            permissionStatusTV.setVisibility(View.VISIBLE);
-            switch (type) {
-                case "loc" -> permissionStatusTV.setText("ENABLE LOCATION PERMISSION");
-                case "storage" -> permissionStatusTV.setText("ENABLE STORAGE PERMISSION");
-                case "audio" -> permissionStatusTV.setText("ENABLE AUDIO PERMISSION");
+            if (permissionStatusTV != null) {
+                permissionStatusTV.setVisibility(View.VISIBLE);
+                switch (type) {
+                    case "loc" -> permissionStatusTV.setText("ENABLE LOCATION PERMISSION");
+                    case "storage" -> permissionStatusTV.setText("ENABLE STORAGE PERMISSION");
+                    case "audio" -> permissionStatusTV.setText("ENABLE AUDIO PERMISSION");
+                }
+                permissionStatusTV.setVisibility(View.GONE);
             }
         } else {
-            permissionStatusTV.setVisibility(View.GONE);
+            if (permissionStatusTV != null) {
+                permissionStatusTV.setVisibility(View.GONE);
+
+            }
         }
 
     }
@@ -202,12 +214,12 @@ public class MainActivity extends AppCompatActivity {
                     Boolean coarseLocationGranted = result.getOrDefault(
                             Manifest.permission.ACCESS_COARSE_LOCATION, false);
 
-                    if (fineLocationGranted != null && fineLocationGranted) {
-                        // Precise location access granted.
-                        showProminentDisclosure("storage");
-                        Log.d(LOG_TAG, "Precise location access granted!");
-                    } else if (coarseLocationGranted != null && coarseLocationGranted) {
-                        Log.d(LOG_TAG, "approximate location access granted!");
+                    if (fineLocationGranted != null && coarseLocationGranted != null) {
+                        if (fineLocationGranted || coarseLocationGranted) {
+                            // Precise location access granted.
+                            showProminentDisclosure("storage");
+                            Log.d(LOG_TAG, "Precise location access granted!");
+                        }
                     } else {
                         setPermissionStatusView("loc", true);
                         Log.d(LOG_TAG, "No location access granted!");
@@ -216,6 +228,40 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
+//    private void registerStoragePermissionResult() {
+//        storagePermissionRequest = registerForActivityResult(new ActivityResultContracts
+//                .RequestMultiplePermissions(), result -> {
+//            Boolean manageExternalStorageGranted = result.getOrDefault(
+//                    Manifest.permission.MANAGE_EXTERNAL_STORAGE, false);
+//            Boolean readImagesGranted = result.getOrDefault(
+//                    Manifest.permission.READ_MEDIA_IMAGES, false);
+//            Boolean readVideoGranted = result.getOrDefault(
+//                    Manifest.permission.READ_MEDIA_VIDEO, false);
+//            Boolean readAudioGranted = result.getOrDefault(
+//                    Manifest.permission.READ_MEDIA_AUDIO, false);
+//
+//            if (manageExternalStorageGranted != null && manageExternalStorageGranted) {
+//                Log.d(LOG_TAG, "Manage external storage access granted!");
+//                setPermissionStatusView("None", false);
+//                showProminentDisclosure("audio");
+//            } else if (readImagesGranted != null && readImagesGranted) {
+//                Log.d(LOG_TAG, "Read images access granted!");
+//                setPermissionStatusView("None", false);
+////                showProminentDisclosure("storage");
+//            } else if (readVideoGranted != null && readVideoGranted) {
+//                Log.d(LOG_TAG, "Read video access granted!");
+//                setPermissionStatusView("None", false);
+////                showProminentDisclosure("storage");
+//            } else if (readAudioGranted != null && readAudioGranted) {
+//                Log.d(LOG_TAG, "Read audio access granted!");
+//                setPermissionStatusView("None", false);
+////                showProminentDisclosure("storage");
+//            } else {
+//                setPermissionStatusView("storage", true);
+//                Log.d(LOG_TAG, "No storage access granted!");
+//            }
+//        });
+//    }
     private void registerStoragePermissionResult() {
         storagePermissionRequest = registerForActivityResult(new ActivityResultContracts
                         .RequestMultiplePermissions(), result -> {
@@ -223,8 +269,14 @@ public class MainActivity extends AppCompatActivity {
                             Manifest.permission.WRITE_EXTERNAL_STORAGE, false);
                     Boolean readExternalStorageGranted = result.getOrDefault(
                             Manifest.permission.READ_EXTERNAL_STORAGE, false);
+                    Boolean manageExternalStorageGranted = result.getOrDefault(
+                            Manifest.permission.MANAGE_EXTERNAL_STORAGE, false);
 
-                    if (readExternalStorageGranted != null && readExternalStorageGranted) {
+                    if (manageExternalStorageGranted != null && manageExternalStorageGranted) {
+                        Log.d(LOG_TAG, "Manage external storage access granted!");
+                        setPermissionStatusView("None", false);
+                        showProminentDisclosure("audio");
+                    } else if (readExternalStorageGranted != null && readExternalStorageGranted) {
                         Log.d(LOG_TAG, "Read external storage access granted!");
                         setPermissionStatusView("None", false);
                         showProminentDisclosure("audio");
@@ -326,13 +378,19 @@ public class MainActivity extends AppCompatActivity {
                                 Manifest.permission.ACCESS_FINE_LOCATION,
                                 Manifest.permission.ACCESS_COARSE_LOCATION,
                         });
-                        case "storage" -> storagePermissionRequest.launch(new String[]{
-                                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                Manifest.permission.READ_EXTERNAL_STORAGE
-                        });
+                        case "storage" -> {
+                            storagePermissionRequest.launch(new String[]{
+                                    Manifest.permission.MANAGE_EXTERNAL_STORAGE,
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                    Manifest.permission.READ_EXTERNAL_STORAGE,
+
+//                            intent.setData(Uri.parse("package:" + getPackageName()));
+//                            startActivity(intent);
+                            });
+                        }
                         case "audio" -> audioPermissionRequest.launch(new String[]{
                                 Manifest.permission.RECORD_AUDIO,
-                                Manifest.permission.READ_MEDIA_AUDIO
+                                Manifest.permission.READ_MEDIA_AUDIO,
                         });
                     }
                 }).show();
@@ -359,8 +417,33 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(LOG_TAG, "All permissions granted");
             }
         }
-
     }
+
+    // Check for permissions
+//    private void checkForPermissions() {
+//        Log.d(LOG_TAG, "checking permissions");
+//        isFineLocationGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+//        isCoarseLocationGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+//        isManageExternalStorageGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.MANAGE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+//        isReadMediaImagesGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED;
+//        isReadMediaVideoGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_VIDEO) == PackageManager.PERMISSION_GRANTED;
+//        isReadMediaAudioGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_AUDIO) == PackageManager.PERMISSION_GRANTED;
+//        isRecordAudioGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
+//        isPostNotificationGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED;
+//
+//        if (!isFineLocationGranted && !isCoarseLocationGranted) {
+//            showProminentDisclosure("loc");
+//        } else if (isFineLocationGranted && isCoarseLocationGranted) {
+//            if (!isManageExternalStorageGranted ||
+//                    !isReadMediaImagesGranted || !isReadMediaVideoGranted || !isReadMediaAudioGranted) {
+//                showProminentDisclosure("storage");
+//            } else if (!isRecordAudioGranted) {
+//                showProminentDisclosure("audio");
+//            } else {
+//                Log.d(LOG_TAG, "All permissions granted");
+//            }
+//        }
+//    }
 
 //    setPermissionStatusView("None", false);
 //                Toast.makeText(this, "All permission granted", Toast.LENGTH_SHORT).show();
