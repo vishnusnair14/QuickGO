@@ -1,11 +1,12 @@
 package com.vishnu.quickgoorder.ui.track;
 
-import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.VibrationEffect;
 import android.text.TextUtils;
 import android.util.Log;
@@ -14,15 +15,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.CycleInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -74,6 +77,7 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
     private CardView orderDetailsCardView;
     private LinearLayout orderStatusUpdateLayout;
     FloatingActionButton chatFab;
+    private boolean isAnimationShown = false;
     private RecyclerView chatRecyclerView;
     private ChatAdapter chatAdapter;
     private List<ChatModel> chatMessageList;
@@ -92,7 +96,11 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
     private Map<String, Map<String, String>> initialData;
     TextView orderStatusTV;
     private String orderToTrackOrderID;
+    ImageView[] statusIconViews;
+    ProgressBar[] statusProgressBarViews;
+    private int orderStatusNo = 0;
     private boolean isOrderStatusCardViewExpanded = false;
+    private boolean isDeliveryPartnerAssigned = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,6 +123,24 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
         TextView dropDownIV = findViewById(R.id.dropDownView_textView);
         mainLayout = findViewById(R.id.orderTrackMain_Layout_constraintLayout);
         FloatingActionButton gotoMap = findViewById(R.id.gotoMap_floatingActionButton);
+
+        statusIconViews = new ImageView[]{
+                findViewById(R.id.imageView11),
+                findViewById(R.id.imageView12),
+                findViewById(R.id.imageView16),
+                findViewById(R.id.imageView15),
+                findViewById(R.id.imageView13),
+                findViewById(R.id.imageView14)
+        };
+
+        statusProgressBarViews = new ProgressBar[]{
+                findViewById(R.id.orderStatus2_progressBar),
+                findViewById(R.id.orderStatus3_progressBar),
+                findViewById(R.id.orderStatus4_progressBar),
+                findViewById(R.id.orderStatus5_progressBar),
+                findViewById(R.id.orderStatus6_progressBar)
+        };
+
 
         int collapsedHeight = getResources().getDimensionPixelSize(R.dimen.cardview_collapsed_height);
         // Set the CardView height to the collapsed height initially
@@ -186,6 +212,105 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
 
         getOnBackPressedDispatcher().addCallback(this, callback);
     }
+
+    private void animateOrderStatus(int step, boolean isDeliveryPartnerAssigned) {
+
+        if (step > 2) {
+            statusIconViews[1].setImageResource(R.drawable.account_circle_24px_diabled);
+        }
+
+        // Reset all progress bars and image views
+        for (ProgressBar progressBar : statusProgressBarViews) {
+            progressBar.setProgress(0);
+        }
+
+        // Start the animation sequence
+        animateStep(0, step, statusIconViews, statusProgressBarViews, isDeliveryPartnerAssigned);
+    }
+
+    private void animateStep(final int currentStep, final int maxStep,
+                             final ImageView[] imageViews,
+                             final ProgressBar[] progressBars, boolean isDeliveryPartnerAssigned) {
+        if (currentStep >= maxStep) {
+            return;
+        }
+
+        // Fade in the image view
+        if (isDeliveryPartnerAssigned) {
+            animateImageViewResourceChange(imageViews[currentStep], getNewResourceForStep1(currentStep));
+        } else {
+            animateImageViewResourceChange(imageViews[currentStep], getNewResourceForStep0(currentStep));
+        }
+
+        // If there is a progress bar to animate
+        if (currentStep < maxStep - 1 && currentStep < progressBars.length) {
+            // Add a delay to start animating the progress bar after the image has faded in
+            new Handler().postDelayed(() -> {
+                animateProgressBar(progressBars[currentStep]);
+
+                // After the progress bar has animated, move to the next step
+                new Handler().postDelayed(() -> {
+                    animateStep(currentStep + 1, maxStep, imageViews, progressBars, isDeliveryPartnerAssigned);
+                }, 1500); // Adjust this delay to match the progress bar animation duration
+
+            }, 750); // Delay to allow image fade-in to complete
+        }
+    }
+
+    private void animateImageViewResourceChange(final ImageView imageView, final int newResource) {
+        // Fade out the current image
+        imageView.animate()
+                .alpha(0f)
+                .setDuration(500) // Adjust the duration as needed
+                .withEndAction(() -> {
+                    // Change the image resource once fade out is complete
+                    imageView.setImageResource(newResource);
+
+                    // Fade in the new image
+                    imageView.animate()
+                            .alpha(1f)
+                            .setDuration(500) // Adjust the duration as needed
+                            .start();
+                })
+                .start();
+    }
+
+    // Method to animate a ProgressBar
+    private void animateProgressBar(ProgressBar progressBar) {
+        ObjectAnimator progressAnimator = ObjectAnimator.ofInt(progressBar, "progress", 0, 100);
+        progressAnimator.setDuration(1500); // Duration of progress animation
+        progressAnimator.setInterpolator(new DecelerateInterpolator());
+        progressAnimator.start();
+
+    }
+
+
+    // Method to get the new image resource for the given step
+    private int getNewResourceForStep0(int step) {
+        return switch (step) {
+            case 0 -> R.drawable.order_approve_24px;
+            case 1 -> R.drawable.account_circle_off_24px;
+            case 2 -> R.drawable.check_circle_24px;
+            case 3 -> R.drawable.orders_24px;
+            case 4 -> R.drawable.route_24px;
+            case 5 -> R.drawable.door_front_24px;
+            default -> R.drawable.baseline_broken_image_24;
+        };
+    }
+
+    // Method to get the new image resource for the given step
+    private int getNewResourceForStep1(int step) {
+        return switch (step) {
+            case 0 -> R.drawable.order_approve_24px;
+            case 1 -> R.drawable.account_circle_24px;
+            case 2 -> R.drawable.check_circle_24px;
+            case 3 -> R.drawable.orders_24px;
+            case 4 -> R.drawable.route_24px;
+            case 5 -> R.drawable.door_front_24px;
+            default -> R.drawable.baseline_broken_image_24;
+        };
+    }
+
 
     public void updateOrderStatus(Map<String, Map<String, String>> newOrderStatusData) {
         // Convert new status data to a sorted list
@@ -319,7 +444,7 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
                 }
 
                 if (data.getOrder_id() != null) {
-                    orderIDTV.setText(data.getOrder_id().substring(6));
+                    orderIDTV.setText(MessageFormat.format(getText(R.string.order_ID) + ": {0}", data.getOrder_id().substring(6)));
                 }
                 if (data.getOrder_time() != null) {
                     orderTimeTV.setText(data.getOrder_time());
@@ -331,6 +456,18 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
                     updatedTimeTV.setText(data.getTime());
                 }
 
+                if (!isAnimationShown) {
+                    animateOrderStatus(data.getOrder_status_no(), isPartnerAssigned);
+                    orderStatusNo = data.getOrder_status_no();
+                    isAnimationShown = true;
+                }
+
+                if (orderStatusNo != data.getOrder_status_no()) {
+                    animateOrderStatus(data.getOrder_status_no(), isPartnerAssigned);
+                    orderStatusNo = data.getOrder_status_no();
+                    isAnimationShown = true;
+                }
+
                 // Update order status in RecyclerView
                 if (data.getOrder_status_data() != null) {
                     updateOrderStatus(data.getOrder_status_data());
@@ -338,11 +475,20 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
                     Log.e(LOG_TAG, "Order status data is null");
                 }
 
-//                syncOrderStatusUI(data.getOrder_status_no());
                 Log.d(LOG_TAG, message);
             });
         });
     }
+
+
+    private void wobbleAnimation(EditText editText) {
+        // Define the wobble animation
+        ObjectAnimator wobbleAnimator = ObjectAnimator.ofFloat(editText, "translationX", 0f, 5f, -5f, 10f, -10f, 5f, -5f, 0f);
+        wobbleAnimator.setDuration(500);
+        wobbleAnimator.setInterpolator(new CycleInterpolator(1));
+        wobbleAnimator.start();
+    }
+
 
     @SuppressLint("NotifyDataSetChanged")
     private void initChatBtmView(ViewGroup root) {
@@ -383,9 +529,11 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
                 messageET.setText("");
                 chatViewStatusTV.setText("");
             } else {
+                wobbleAnimation(messageET);
                 Utils.vibrate(this, 0, VibrationEffect.DEFAULT_AMPLITUDE);
             }
         });
+
         chatClearAllBtnTV.setOnClickListener(v -> {
             chatMessageList.clear();
             chatAdapter.notifyDataSetChanged();
@@ -430,7 +578,8 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
                     if (data != null && !data.isEmpty()) {
 
                         if (data.get("order_id") != null && data.get("order_time") != null) {
-                            orderIDTV.setText(Objects.requireNonNull(data.get("order_id")).toString().substring(6));
+                            orderIDTV.setText(MessageFormat.format(getText(R.string.order_ID) + ": {0}",
+                                    Objects.requireNonNull(data.get("order_id")).toString().substring(6)));
                             orderTimeTV.setText((String) data.get("order_time"));
                         }
                     }
@@ -441,6 +590,32 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
                 Log.d(LOG_TAG, "Error fetching document: " + task.getException());
             }
         });
+    }
+
+    private void resetAnimations() {
+        // Array of default image resources for each ImageView
+        int[] defaultImages = new int[]{
+                R.drawable.order_approve_24px_disabled,
+                R.drawable.account_circle_off_24px_disabled,
+                R.drawable.orders_24px_disabled,
+                R.drawable.route_24px_disabed,
+                R.drawable.check_circle_24px_disabled
+        };
+
+        // Reset all ProgressBars to 0 progress
+        for (ProgressBar progressBar : statusProgressBarViews) {
+            progressBar.setProgress(0);
+        }
+
+        try {
+            // Reset each ImageView with its corresponding default image resource
+            for (int i = 0; i < statusIconViews.length; i++) {
+                statusIconViews[i].setAlpha(1f);
+                statusIconViews[i].setImageResource(defaultImages[i]);
+            }
+        } catch (Exception e) {
+            Log.e(LOG_TAG, e.toString());
+        }
     }
 
 
@@ -457,11 +632,17 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
     @Override
     protected void onStop() {
         super.onStop();
+
+        resetAnimations();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        if (orderStatusNo != 0) {
+            animateOrderStatus(orderStatusNo, isDeliveryPartnerAssigned);
+            isAnimationShown = true;
+        }
     }
 
     @Override
@@ -490,6 +671,10 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
             if (isAssigned) {
                 chatSendBtn.setEnabled(true);
                 messageET.setEnabled(true);
+                isDeliveryPartnerAssigned = true;
+//                ImageView iv = findViewById(R.id.imageView12);
+//                iv.setImageResource(R.drawable.account_circle_24px_diabled);
+
                 if (chatMessageList.isEmpty()) {
                     chatViewStatusTV.setText(R.string.ready_to_chat);
                     chatViewStatusTV.setTextColor(getColor(R.color.wsc_connected));

@@ -46,7 +46,7 @@ public class OrderStatusAdapter extends RecyclerView.Adapter<OrderStatusAdapter.
 
         if (status.containsKey("key") && Objects.equals(status.get("key"), "1")) {
             holder.statusSubTitleTextView.setText(MessageFormat.format("{0}\n{1}",
-                    orderID, status.get("sub_title")));
+                    orderID.substring(6), status.get("sub_title")));
         } else {
             holder.statusSubTitleTextView.setText(status.get("sub_title"));
         }

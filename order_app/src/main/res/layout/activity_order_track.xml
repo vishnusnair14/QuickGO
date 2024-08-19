@@ -77,69 +77,76 @@
                             android:textStyle="bold" />
 
                         <TextView
-                            android:id="@+id/textView21"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:layout_marginEnd="16dp"
-                            android:fontFamily="@font/archivo"
-                            android:text="Order ID"
-                            android:textStyle="bold" />
-
-                        <TextView
                             android:id="@+id/orderTrackOrderIDView_textView"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
                             android:layout_marginStart="16dp"
-                            android:layout_marginTop="3dp"
-                            android:layout_marginEnd="16dp"
-                            android:fontFamily="@font/montserrat"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/textView22"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:layout_marginTop="8dp"
-                            android:layout_marginEnd="16dp"
-                            android:fontFamily="@font/archivo"
-                            android:text="Order Time"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/orderTrackOrderTimeView_textView"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:layout_marginTop="3dp"
-                            android:layout_marginEnd="16dp"
-                            android:fontFamily="@font/montserrat"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/textView43"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:layout_marginTop="8dp"
-                            android:layout_marginEnd="16dp"
-                            android:fontFamily="@font/archivo"
-                            android:text="Current Order Status"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/sseView_textView"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:layout_marginTop="3dp"
                             android:layout_marginEnd="16dp"
                             android:layout_marginBottom="8dp"
+                            android:layout_weight="3"
                             android:fontFamily="@font/montserrat"
-                            android:textAllCaps="true"
-                            android:textColor="#2E7D32"
+                            android:text="@string/order_id"
+                            android:textSize="12sp"
                             android:textStyle="bold" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginEnd="16dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/textView14"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:fontFamily="@font/archivo"
+                                android:text="Order Time: "
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/orderTrackOrderTimeView_textView"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/montserrat"
+                                android:textStyle="bold" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginBottom="8dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/textView43"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:fontFamily="@font/archivo"
+                                android:text="Current Status: "
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/sseView_textView"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/montserrat"
+                                android:gravity="center"
+                                android:textAlignment="textStart"
+                                android:textAllCaps="true"
+                                android:textColor="#2E7D32"
+                                android:textStyle="bold" />
+                        </LinearLayout>
 
                         <TextView
                             android:id="@+id/orderTrackOrderUpdatedTimeView_textView"
@@ -189,15 +196,15 @@
                         android:paddingStart="8dp"
                         android:paddingTop="16dp"
                         android:paddingEnd="8dp"
-                        android:paddingBottom="16dp">
+                        android:paddingBottom="8dp">
 
                         <ImageView
                             android:id="@+id/imageView11"
-                            android:layout_width="32dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="32dp"
                             android:layout_gravity="center"
                             android:layout_weight="1"
-                            app:srcCompat="@drawable/order_approve_24px" />
+                            app:srcCompat="@drawable/order_approve_24px_disabled" />
 
                         <ProgressBar
                             android:id="@+id/orderStatus2_progressBar"
@@ -206,12 +213,11 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_weight="1"
-                            android:progress="50"
                             android:progressTint="#034478" />
 
                         <ImageView
                             android:id="@+id/imageView12"
-                            android:layout_width="32dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="32dp"
                             android:layout_gravity="center"
                             android:layout_weight="1"
@@ -223,14 +229,15 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:layout_weight="1" />
+                            android:layout_weight="1"
+                            android:progressTint="#034478" />
 
                         <ImageView
                             android:id="@+id/imageView16"
-                            android:layout_width="32dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="32dp"
                             android:layout_weight="1"
-                            app:srcCompat="@drawable/orders_24px_disabled" />
+                            app:srcCompat="@drawable/check_circle_24px_disabled" />
 
                         <ProgressBar
                             android:id="@+id/orderStatus4_progressBar"
@@ -238,18 +245,47 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:layout_weight="1" />
+                            android:layout_weight="1"
+                            android:progressTint="#034478"
+                            android:visibility="gone" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:paddingStart="8dp"
+                        android:paddingTop="8dp"
+                        android:paddingEnd="8dp"
+                        android:paddingBottom="8dp">
+
+                        <ImageView
+                            android:id="@+id/imageView15"
+                            android:layout_width="wrap_content"
+                            android:layout_height="32dp"
+                            android:layout_weight="1"
+                            app:srcCompat="@drawable/orders_24px_disabled" />
+
+                        <ProgressBar
+                            android:id="@+id/orderStatus5_progressBar"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:progressTint="#034478" />
 
                         <ImageView
                             android:id="@+id/imageView13"
-                            android:layout_width="32dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="32dp"
                             android:layout_gravity="center"
                             android:layout_weight="1"
                             app:srcCompat="@drawable/route_24px_disabed" />
 
                         <ProgressBar
-                            android:id="@+id/orderStatus5_progressBar"
+                            android:id="@+id/orderStatus6_progressBar"
                             style="?android:attr/progressBarStyleHorizontal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -258,12 +294,11 @@
 
                         <ImageView
                             android:id="@+id/imageView14"
-                            android:layout_width="32dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="32dp"
                             android:layout_gravity="center"
                             android:layout_weight="1"
-                            app:srcCompat="@drawable/check_circle_24px_disabled" />
-
+                            app:srcCompat="@drawable/door_front_24px_disabled" />
                     </LinearLayout>
 
                     <TextView
@@ -277,6 +312,7 @@
                         android:fontFamily="@font/montserrat"
                         android:gravity="start|center"
                         android:paddingStart="16dp"
+                        android:paddingTop="8dp"
                         android:paddingEnd="16dp"
                         android:paddingBottom="8dp"
                         android:text="@string/view_detailed_update"
@@ -297,7 +333,7 @@
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/orderStatusUpdate_recycleView"
                         android:layout_width="0dp"
-                        android:layout_height="126dp"
+                        android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="#FCF8F3"
                         tools:listitem="@layout/srv_order_status" />

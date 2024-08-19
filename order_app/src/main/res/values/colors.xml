@@ -12,6 +12,9 @@
     <color name="colorPrimary">#FF6200EE</color>
     <color name="colorPrimaryDark">#FF3700B3</color>
     <color name="colorSecondary">#FF03DAC5</color>
+    <color name="glowing_color">#FF4081</color>
+    <color name="disabled_color">#BDBDBD</color>
+
     <color name="colorSecondaryVariant">#FF018786</color>
     <color name="toolbar_background">#EEEEEE</color>
     <color name="ic_launcher_background">#FFFFFF</color>

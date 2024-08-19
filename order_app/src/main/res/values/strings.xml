@@ -322,5 +322,6 @@
     <string name="try_again">Try again</string>
     <string name="hide_detailed_update">Hide details</string>
     <string name="view_detailed_update">View details</string>
+    <string name="order_ID"><b>Order ID</b></string>
 
 </resources>
