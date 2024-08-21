@@ -74,6 +74,7 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
     TextView updatedTimeTV;
     Button chatSendBtn;
     EditText messageET;
+    TextView dropDownIV;
     private CardView orderDetailsCardView;
     private LinearLayout orderStatusUpdateLayout;
     FloatingActionButton chatFab;
@@ -120,7 +121,7 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
         orderStatusUpdateLayout = findViewById(R.id.orderStatusUpdate_linearLayout);
         orderStatusTV = findViewById(R.id.trackOrderStatusTV_textView);
         orderStatusRecyclerView = findViewById(R.id.orderStatusUpdate_recycleView);
-        TextView dropDownIV = findViewById(R.id.dropDownView_textView);
+        dropDownIV = findViewById(R.id.dropDownView_textView);
         mainLayout = findViewById(R.id.orderTrackMain_Layout_constraintLayout);
         FloatingActionButton gotoMap = findViewById(R.id.gotoMap_floatingActionButton);
 
@@ -193,11 +194,11 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
 
         mainLayout.setOnClickListener(v -> {
             if (isOrderStatusCardViewExpanded) {
-                toggleCardView(dropDownIV);
+                toggleCardView();
             }
         });
 
-        dropDownIV.setOnClickListener(v -> toggleCardView(dropDownIV));
+        dropDownIV.setOnClickListener(v -> toggleCardView());
 
 
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
@@ -214,6 +215,9 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
     }
 
     private void animateOrderStatus(int step, boolean isDeliveryPartnerAssigned) {
+        if (!isOrderStatusCardViewExpanded) {
+            toggleCardView();
+        }
 
         if (step > 2) {
             statusIconViews[1].setImageResource(R.drawable.account_circle_24px_diabled);
@@ -354,7 +358,7 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
         }
     }
 
-    private void toggleCardView(TextView tv) {
+    private void toggleCardView() {
         ValueAnimator animator;
 
         if (isOrderStatusCardViewExpanded) {
@@ -371,12 +375,12 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
             orderStatusUpdateLayout.requestLayout();
 
             if (isOrderStatusCardViewExpanded) {
-                tv.setText(R.string.hide_detailed_update);
-                tv.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null,
+                dropDownIV.setText(R.string.hide_detailed_update);
+                dropDownIV.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null,
                         ContextCompat.getDrawable(OrderTrackActivity.this, R.drawable.baseline_arrow_drop_up_24), null);
             } else {
-                tv.setText(R.string.view_detailed_update);
-                tv.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null,
+                dropDownIV.setText(R.string.view_detailed_update);
+                dropDownIV.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null,
                         ContextCompat.getDrawable(OrderTrackActivity.this, R.drawable.baseline_arrow_drop_down_24), null);
             }
         });

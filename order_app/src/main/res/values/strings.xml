@@ -323,5 +323,6 @@
     <string name="hide_detailed_update">Hide details</string>
     <string name="view_detailed_update">View details</string>
     <string name="order_ID"><b>Order ID</b></string>
+    <string name="add_a_new_delivery_address">Add a new delivery address</string>
 
 </resources>

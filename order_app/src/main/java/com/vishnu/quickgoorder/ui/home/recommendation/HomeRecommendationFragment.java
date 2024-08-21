@@ -31,6 +31,7 @@ import androidx.annotation.RequiresApi;
 import androidx.cardview.widget.CardView;
 import androidx.core.view.GestureDetectorCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -89,7 +90,6 @@ import retrofit2.Response;
 public class HomeRecommendationFragment extends Fragment {
     private final String LOG_TAG = "HomeRecommendationFragment";
     FirebaseAuth mAuth;
-    JsonObject shopData;
     TextView recommendedForYouTV;
     TextView serverStatusFeedbackTV;
     ProgressBar shopsRecycleViewPB;
@@ -103,7 +103,6 @@ public class HomeRecommendationFragment extends Fragment {
     private double latitude;
     private double longitude;
     private GestureDetectorCompat gestureDetector;
-    private int serverContactFlag;
     private final DecimalFormat decimalFormat = new DecimalFormat("#.##########");
     private SavedAddressAdapter savedAddressAdapter;
     private AllOrdersAdapter allOrdersAdapter;
@@ -456,6 +455,7 @@ public class HomeRecommendationFragment extends Fragment {
 //        ConstraintLayout csl = setDefAddrView.findViewById(R.id.linearLayout2);
         noAddrFndBnr = setDefAddrView.findViewById(R.id.savedAddressRecycleViewStatusTV_textView);
         ProgressBar progressBar = setDefAddrView.findViewById(R.id.selectAddressForDelivery_progressBar);
+        TextView addNewDeliveryAddressTV = setDefAddrView.findViewById(R.id.setDefaultDeliveryAddressAddNewAddress_textView);
 
         if (isLocationNotEnabled(requireContext())) {
             enableLocView.setVisibility(View.VISIBLE);
@@ -487,10 +487,17 @@ public class HomeRecommendationFragment extends Fragment {
             preferences.edit().putString("currentLocLon", String.valueOf(longitude)).apply();
         });
 
-        /* Retrieve data from Firebase Firestore */
-//        syncSavedAddressView(setDeliveryAddressVA, progressBar);
 
         getSavedAddressData(user.getUid(), progressBar);
+
+        addNewDeliveryAddressTV.setOnClickListener(v -> {
+            setDeliveryAddrBtmView.dismiss();
+            new Handler().postDelayed(() -> {
+                NavHostFragment.findNavController(this)
+                        .navigate(R.id.action_nav_recommendation_to_nav_addAddress);
+            }, 350);
+
+        });
 
         if (setDeliveryAddrBtmView != null && !setDeliveryAddrBtmView.isShowing()) {
             setDeliveryAddrBtmView.show();

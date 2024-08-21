@@ -271,12 +271,30 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/setDefaultDeliveryAddress_recycleView" />
 
+    <TextView
+        android:id="@+id/setDefaultDeliveryAddressAddNewAddress_textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="10dp"
+        android:fontFamily="@font/archivo"
+        android:gravity="center"
+        android:text="@string/add_a_new_delivery_address"
+        android:textAlignment="textStart"
+        android:textColor="#004D40"
+        android:textStyle="bold"
+        app:drawableLeftCompat="@drawable/baseline_add_24_black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tapAndRecordMain_textView" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/setDefaultDeliveryAddress_recycleView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="5dp"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
@@ -285,7 +303,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_max="225dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tapAndRecordMain_textView"
+        app:layout_constraintTop_toBottomOf="@+id/setDefaultDeliveryAddressAddNewAddress_textView"
         tools:listitem="@layout/srv_address_list" />
 
     <ImageView

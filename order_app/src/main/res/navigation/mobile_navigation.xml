@@ -124,6 +124,9 @@
         <action
             android:id="@+id/action_nav_shop_to_nav_mcart"
             app:destination="@id/nav_mcart" />
+        <action
+            android:id="@+id/action_nav_recommendation_to_nav_addAddress"
+            app:destination="@id/nav_addAddress" />
     </fragment>
 
     <activity

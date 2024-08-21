@@ -113,7 +113,6 @@
                     android:hint="@string/street_address"
                     android:inputType="textMultiLine"
                     android:singleLine="false"
-                    android:text="vishnu vihar, kaithakuzhi, erattukulam PO, (via) elappulli"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 

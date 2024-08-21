@@ -18,10 +18,10 @@
       </SelectionState>
       <SelectionState runConfigName="order_app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-08-19T18:42:33.354345700Z">
+        <DropdownSelection timestamp="2024-08-19T19:38:19.495818600Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="PhysicalDevice" identifier="serial=e90e3305" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\Vishnu\.android\avd\Xiaomi-Redmi-Note-9-Pro-Max_API_29.avd" />
             </handle>
           </Target>
         </DropdownSelection>
