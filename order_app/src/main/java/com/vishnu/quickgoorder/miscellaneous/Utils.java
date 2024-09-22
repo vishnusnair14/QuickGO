@@ -3,11 +3,14 @@ package com.vishnu.quickgoorder.miscellaneous;
 import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Environment;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.provider.Settings;
 import android.util.Log;
+
+import androidx.annotation.RequiresApi;
 
 import java.io.File;
 import java.security.SecureRandom;
@@ -161,9 +164,15 @@ public class Utils {
         return false; // Return false if file does not exist or deletion failed
     }
 
-    public static void deleteVoiceOrderCacheFile(Context context, String docID) {
+    public static void deleteVoiceOrderCacheFile(Context context, String docID, String shopID) {
         // Define the file inside the folder
-        File file = new File(context.getFilesDir(), "voice_orders/voice_orders_data_" + docID + ".json");
+        File file;
+
+        if (shopID == null) {
+            file = new File(context.getFilesDir(), "voice_orders/" + docID + "/0/voice_orders_data_" + docID + ".json");
+        } else {
+            file = new File(context.getFilesDir(), "voice_orders/" + docID + "/" + shopID + "/voice_orders_data_" + docID + ".json");
+        }
 
         if (file.exists()) {
             boolean deleted = file.delete();
@@ -215,10 +224,13 @@ public class Utils {
         context.startActivity(intent);
     }
 
-
     public static void vibrate(Context context, int millis, int amplitude) {
         if (millis == 0) {
             millis = 150;
+        }
+
+        if (amplitude == 0) {
+            amplitude = 2;
         }
 
         if (vibrator == null) {

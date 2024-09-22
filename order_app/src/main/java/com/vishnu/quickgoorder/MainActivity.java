@@ -6,13 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -228,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
-//    private void registerStoragePermissionResult() {
+    //    private void registerStoragePermissionResult() {
 //        storagePermissionRequest = registerForActivityResult(new ActivityResultContracts
 //                .RequestMultiplePermissions(), result -> {
 //            Boolean manageExternalStorageGranted = result.getOrDefault(
@@ -618,6 +616,7 @@ public class MainActivity extends AppCompatActivity {
 
         preferences.edit().putString("username", null).apply();
         preferences.edit().putString("password", null).apply();
+        preferences.edit().putBoolean("isRememberedPhoneAuth", false).apply();
         preferences.edit().putBoolean("isRemembered", false).apply();
         preferences.edit().putBoolean("isInitialLogin", true).apply();
         preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_KEY, "None").apply();
@@ -625,15 +624,17 @@ public class MainActivity extends AppCompatActivity {
         preferences.edit().putString("selectedDeliveryAddressKey", "").apply();
         preferences.edit().putString("selectedDeliveryAddressLat", "").apply();
         preferences.edit().putString("selectedDeliveryAddressLon", "").apply();
-        preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_TYPE, "Select an address for delivery").apply();
+        preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_TYPE, "Select an address").apply();
+        preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_STREET_ADDRESS, "").apply();
         preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_FULL_ADDRESS, "").apply();
+        preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_FULL_ADDRESS, "").apply();
         preferences.edit().putBoolean(PreferenceKeys.IS_SET_TO_CURRENT_LOCATION, false).apply();
         preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_CURRENT_SHOP_PINCODE, "0").apply();
         preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_FRAGMENT_ORDER_ID, "0").apply();
         preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_FRAGMENT_AUDIO_REF_ID, "0").apply();
         preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_FRAGMENT_AUDIO_REF_ID, "0").apply();
         preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_TYPE, "Select an address").apply();
-        preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_FULL_ADDRESS, "Tap on a delivery address to make it as default").apply();
+        preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_STREET_ADDRESS, "Tap on a delivery address to make it as default").apply();
         preferences.edit().putBoolean("setRecommendationAsDefaultHomeView", false).apply();
 
         try {
@@ -665,20 +666,23 @@ public class MainActivity extends AppCompatActivity {
         preferences.edit().putString("password", null).apply();
         preferences.edit().putBoolean("isRemembered", false).apply();
         preferences.edit().putBoolean("isAlreadyScanned", false).apply();
+        preferences.edit().putBoolean("isRememberedPhoneAuth", false).apply();
         preferences.edit().putBoolean("isInitialLogin", true).apply();
         preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_KEY, "None").apply();
         preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_KEY, "None").apply();
         preferences.edit().putString("selectedDeliveryAddressKey", "").apply();
         preferences.edit().putString("selectedDeliveryAddressLat", "").apply();
         preferences.edit().putString("selectedDeliveryAddressLon", "").apply();
-        preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_TYPE, "Select an address for delivery").apply();
-        preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_FULL_ADDRESS, "").apply();
+        preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_TYPE, "Select an address").apply();
+        preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_STREET_ADDRESS, "Tap on a delivery address to make it as default").apply();
+        preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_FULL_ADDRESS, "Tap on a delivery address to make it as default").apply();
         preferences.edit().putBoolean(PreferenceKeys.IS_SET_TO_CURRENT_LOCATION, false).apply();
         preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_CURRENT_SHOP_PINCODE, "0").apply();
         preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_FRAGMENT_ORDER_ID, "0").apply();
         preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_FRAGMENT_AUDIO_REF_ID, "0").apply();
         preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_FRAGMENT_AUDIO_REF_ID, "0").apply();
         preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_TYPE, "Select an address").apply();
+        preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_STREET_ADDRESS, "Tap on a delivery address to make it as default").apply();
         preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_FULL_ADDRESS, "Tap on a delivery address to make it as default").apply();
         preferences.edit().putBoolean("setRecommendationAsDefaultHomeView", false).apply();
 

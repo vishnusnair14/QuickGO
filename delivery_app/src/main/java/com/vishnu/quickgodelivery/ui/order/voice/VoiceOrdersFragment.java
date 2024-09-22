@@ -22,8 +22,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.vishnu.quickgodelivery.R;
 import com.vishnu.quickgodelivery.databinding.FragmentVoiceOrdersBinding;
-import com.vishnu.quickgodelivery.server.APIService;
-import com.vishnu.quickgodelivery.server.ApiServiceGenerator;
+import com.vishnu.quickgodelivery.server.sapi.APIService;
+import com.vishnu.quickgodelivery.server.sapi.ApiServiceGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,13 +36,12 @@ public class VoiceOrdersFragment extends Fragment {
     private FragmentVoiceOrdersBinding binding;
     RecyclerView voiceOrderRecycleView;
     private TextView statusTV;
-//    private String shopName;
-//    private String shopID;
+    //    private String shopName;
     private String userID;
+    private String shopID;
     private String orderByVoiceAudioRefID;
     private String orderByVoiceType;
     private String orderByVoiceDocID;
-    private FirebaseFirestore db;
     private List<VoiceOrdersModel> voiceOrderItemList;
     private final String LOG_TAG = "VoiceOrdersFragment";
     ProgressBar progressBar;
@@ -52,13 +51,13 @@ public class VoiceOrdersFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        db = FirebaseFirestore.getInstance();
 
         // Retrieve arguments from bundle
         Bundle arguments = getArguments();
         if (arguments != null) {
             userID = arguments.getString("user_id");
             orderByVoiceType = arguments.getString("order_by_voice_type");
+            shopID = arguments.getString("shop_id");
             orderByVoiceDocID = arguments.getString("order_by_voice_doc_id");
             orderByVoiceAudioRefID = arguments.getString("order_by_voice_audio_ref_id");
         } else {
@@ -93,8 +92,10 @@ public class VoiceOrdersFragment extends Fragment {
         progressBar.setVisibility(View.VISIBLE);
 
         APIService apiService = ApiServiceGenerator.getApiService(requireContext());
+
         Call<JsonObject> call8400 = apiService.getVoiceOrderData(userID, orderByVoiceType,
-                orderByVoiceDocID, orderByVoiceAudioRefID);
+                orderByVoiceDocID, orderByVoiceAudioRefID,
+                orderByVoiceType.equals("obv") ? "0" : shopID);
 
         call8400.enqueue(new Callback<>() {
             @SuppressLint("NotifyDataSetChanged")

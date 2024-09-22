@@ -1,4 +1,4 @@
-package com.vishnu.quickgodelivery.server;
+package com.vishnu.quickgodelivery.server.ws;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,11 +13,11 @@ import com.vishnu.quickgodelivery.R;
 
 import java.util.List;
 
-public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
+public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHolder> {
 
-    private final List<MessageModel> messageList;
+    private final List<ChatModel> messageList;
 
-    public MessageAdapter(List<MessageModel> messageList) {
+    public ChatAdapter(List<ChatModel> messageList) {
         this.messageList = messageList;
     }
 
@@ -35,7 +35,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
     @Override
     public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
-        MessageModel message = messageList.get(position);
+        ChatModel message = messageList.get(position);
         holder.messageTV.setText(message.content());
         holder.messageNameTV.setText(message.messageId());
         holder.messageTimeTV.setText(message.messageTime());

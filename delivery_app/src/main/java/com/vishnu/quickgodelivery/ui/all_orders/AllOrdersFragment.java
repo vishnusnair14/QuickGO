@@ -12,6 +12,8 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +24,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -46,7 +49,9 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class AllOrdersFragment extends Fragment {
@@ -57,6 +62,7 @@ public class AllOrdersFragment extends Fragment {
     TextView onDutyTV, offDutyTV;
     TextView locationTV;
     SharedPreferences preferences;
+    UnifiedOrderAdapter orderAdapter;
     RecyclerView ordersListRecycleView;
     private List<OBSOrderModel> orderItemList;
     DecimalFormat coordinateFormat = new DecimalFormat("#.##########");
@@ -130,7 +136,7 @@ public class AllOrdersFragment extends Fragment {
 
     private final BroadcastReceiver locationReceiver = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, @NonNull Intent intent) {
             if (LocationService.ACTION_LOCATION_BROADCAST.equals(intent.getAction())) {
                 double latitude = intent.getDoubleExtra(LocationService.EXTRA_LATITUDE, 0.00);
                 double longitude = intent.getDoubleExtra(LocationService.EXTRA_LONGITUDE, 0.00);
@@ -141,6 +147,7 @@ public class AllOrdersFragment extends Fragment {
         }
     };
 
+    @Nullable
     private String getUserId() {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
@@ -154,9 +161,9 @@ public class AllOrdersFragment extends Fragment {
 
 
     @SuppressLint("NotifyDataSetChanged")
-    private void syncAllOrdersRecycleView(View root) {
+    private void syncAllOrdersRecycleView(@NonNull View root) {
         List<AllOrdersModel> orderList = new ArrayList<>();
-        UnifiedOrderAdapter orderAdapter = new UnifiedOrderAdapter((ViewGroup) root, requireContext(), preferences, orderList);
+        orderAdapter = new UnifiedOrderAdapter((ViewGroup) root, requireContext(), preferences, orderList);
 
         RecyclerView ordersRecyclerView = root.findViewById(R.id.allOrders_recycleView);
         ordersRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -179,26 +186,28 @@ public class AllOrdersFragment extends Fragment {
             }
 
             if (value != null && !value.isEmpty()) {
+                Log.d(TAG, "pendingOrders snapshot updated: " + value.size() + " documents.");
                 serverStatusTV.setText("");
-                orderList.clear();
 
-                List<Task<DocumentSnapshot>> tasks = new ArrayList<>();
+                Map<String, AllOrdersModel> tempOrderMap = new HashMap<>();
 
                 for (QueryDocumentSnapshot doc : value) {
                     if (doc.exists()) {
-                        Log.d(LOG_TAG, "All orders data: " + doc.getData());
                         String orderType = doc.getString("order_type");
                         DocumentReference dataRef = doc.getDocumentReference("order_data_payload_reference");
 
                         if (dataRef != null) {
-                            Task<DocumentSnapshot> task = dataRef.get();
-                            tasks.add(task);
-                            task.addOnSuccessListener(additionalDataDoc -> {
-                                if (additionalDataDoc.exists()) {
+                            // Add a snapshot listener for field changes in each document
+                            dataRef.addSnapshotListener((additionalDataDoc, exception) -> {
+                                if (exception != null) {
+                                    Log.e(LOG_TAG, "Error fetching order data", exception);
+                                    return;
+                                }
+
+                                if (additionalDataDoc != null && additionalDataDoc.exists()) {
                                     AllOrdersModel allOrdersModel = new AllOrdersModel();
                                     allOrdersModel.setOrderType(orderType);
 
-                                    // Fetch the order timestamp in milliseconds
                                     Long orderTimeMillis = doc.getLong("order_time_millis");
 
                                     if ("obs".equals(orderType)) {
@@ -214,37 +223,41 @@ public class AllOrdersFragment extends Fragment {
                                             allOrdersModel.setOrderTimeMillis(0);
                                         }
                                     }
-                                    orderList.add(allOrdersModel);
+                                    tempOrderMap.put(doc.getId(), allOrdersModel);
+
+                                    // Update the orderList and notify adapter of the change
+                                    orderList.clear();
+                                    orderList.addAll(tempOrderMap.values());
+                                    orderList.sort(Comparator.comparingLong(AllOrdersModel::getOrderTimeMillis).reversed());
+
+                                    // Ensure UI update on the main thread
+                                    new Handler(Looper.getMainLooper()).post(() -> {
+                                        orderAdapter.notifyDataSetChanged();
+                                        loadingProgressBar.setVisibility(View.GONE);
+                                    });
                                 } else {
                                     Log.w(LOG_TAG, "No data found for order: " + doc.getId());
                                 }
-                            }).addOnFailureListener(exception -> {
-                                Log.e(LOG_TAG, "Error fetching order data", exception);
                             });
                         }
                     }
                 }
-
-                Tasks.whenAllComplete(tasks).addOnCompleteListener(task -> {
-                    orderList.sort(Comparator.comparingLong(AllOrdersModel::getOrderTimeMillis).reversed());
-
-                    orderAdapter.notifyDataSetChanged();
-                    loadingProgressBar.setVisibility(View.GONE);
-                });
             } else {
+                Log.d(TAG, "No pending orders found.");
                 orderList.clear();
                 preferences.edit().putString("currentDeliveryOrderID", "0").apply();
-                orderAdapter.notifyDataSetChanged();
-                serverStatusTV.setText(R.string.no_orders_on_queue);
-
-                startTVBlink(serverStatusTV);
-                loadingProgressBar.setVisibility(View.GONE);
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    orderAdapter.notifyDataSetChanged();
+                    serverStatusTV.setText(R.string.no_orders_on_queue);
+                    startTVBlink(serverStatusTV);
+                    loadingProgressBar.setVisibility(View.GONE);
+                });
             }
         });
     }
 
 
-    private void startTVBlink(TextView tv) {
+    private void startTVBlink(@NonNull TextView tv) {
         Animation blinkAnimation = new AlphaAnimation(1, 0);
         blinkAnimation.setDuration(450);
         blinkAnimation.setRepeatMode(Animation.REVERSE);
@@ -279,9 +292,11 @@ public class AllOrdersFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-//        if (allOrdersAdapter != null) {
-//            allOrdersAdapter.notifyDataSetChanged();
-//        }
+
+        if (orderAdapter != null) {
+            orderAdapter.notifyDataSetChanged();
+        }
+
         IntentFilter filter = new IntentFilter(LocationService.ACTION_LOCATION_BROADCAST);
         requireContext().registerReceiver(locationReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
     }

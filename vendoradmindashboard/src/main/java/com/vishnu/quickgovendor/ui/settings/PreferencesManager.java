@@ -11,7 +11,7 @@ public class PreferencesManager {
     private static final String LOG_TAG = "PreferenceManager";
     private static final String PREFERENCES_FILE = "com.vishnu.intellicart.ui.settings";
     private static final String BASE_URL_KEY = "base_url";
-    private static final String TEST_SERVER_URL = "https://orca-positive-lightly.ngrok-free.app";
+    private static final String TEST_SERVER_URL = "https://big-terminally-lacewing.ngrok-free.app";
     private static final String PRODUCTION_SERVER_URL = "https://alright-gwendolen-intellicart-343c167c.koyeb.app/";
 
     public static void setBaseUrl(@NonNull Context context, boolean useTestServer) {
@@ -28,3 +28,5 @@ public class PreferencesManager {
         return sharedPreferences.getString(BASE_URL_KEY, TEST_SERVER_URL); // Default to base URL
     }
 }
+
+

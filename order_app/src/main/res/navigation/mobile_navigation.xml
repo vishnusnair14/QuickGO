@@ -108,6 +108,12 @@
         <action
             android:id="@+id/action_nav_orderbyvoice_to_nav_mcart"
             app:destination="@id/nav_mcart" />
+        <action
+            android:id="@+id/action_nav_orderbyvoice_to_nav_addAddress"
+            app:destination="@id/nav_addAddress" />
+        <deepLink
+            android:id="@+id/deepLink2"
+            app:uri="orderapp://homeOrderByVoiceFragment" />
     </fragment>
 
     <fragment
@@ -145,4 +151,11 @@
         android:name="com/vishnu/intellicart/ui/settings/SettingsFragment.java"
         android:label="fragment_test"
         tools:layout="@layout/fragment_test" />
+
+    <activity
+        android:id="@+id/orderTrackActivity"
+        android:name="com.vishnu.quickgoorder.ui.track.OrderTrackActivity"
+        android:label="activity_order_track"
+        tools:layout="@layout/activity_order_track">
+    </activity>
 </navigation>

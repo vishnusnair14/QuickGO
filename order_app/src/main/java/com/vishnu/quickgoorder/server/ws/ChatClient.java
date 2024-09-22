@@ -93,16 +93,17 @@ public class ChatClient extends WebSocketListener {
 
     @Override
     public void onOpen(@NotNull WebSocket webSocket, @NotNull okhttp3.Response response) {
-        retryCount = 0; // Reset retry count on successful connection
+        retryCount = 0;
+
         mainHandler.post(() -> {
             chatBtmStatusTV.setTextColor(activity.getColor(R.color.wsc_connected));
+            chatStatusTV.setTextColor(activity.getColor(R.color.wsc_connected));
             chatBtmStatusTV.setText(R.string._connected);
-            chatStatusTV.setText("");
+            chatStatusTV.setText(R.string.you_are_ready_to_chat);
             chatViewPB.setVisibility(View.GONE);
-//            chatSendBtn.setEnabled(true);
-//            msgET.setEnabled(true);
             chatRecycleView.setVisibility(View.VISIBLE);
         });
+
         Log.d(LOG_TAG, "WebSocket Connection opened");
     }
 

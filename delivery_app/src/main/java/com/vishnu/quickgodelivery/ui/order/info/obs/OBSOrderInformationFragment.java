@@ -26,7 +26,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -36,11 +35,11 @@ import com.vishnu.quickgodelivery.R;
 import com.vishnu.quickgodelivery.callbacks.ChatID;
 import com.vishnu.quickgodelivery.databinding.FragmentOrderInformationObsBinding;
 import com.vishnu.quickgodelivery.miscellaneous.Utils;
-import com.vishnu.quickgodelivery.server.APIService;
-import com.vishnu.quickgodelivery.server.ApiServiceGenerator;
-import com.vishnu.quickgodelivery.server.ChatWSC;
-import com.vishnu.quickgodelivery.server.MessageAdapter;
-import com.vishnu.quickgodelivery.server.MessageModel;
+import com.vishnu.quickgodelivery.server.sapi.APIService;
+import com.vishnu.quickgodelivery.server.sapi.ApiServiceGenerator;
+import com.vishnu.quickgodelivery.server.ws.ChatClient;
+import com.vishnu.quickgodelivery.server.ws.ChatAdapter;
+import com.vishnu.quickgodelivery.server.ws.ChatModel;
 
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
@@ -71,7 +70,7 @@ public class OBSOrderInformationFragment extends Fragment {
     private String userID;
     private String userPhno;
     SharedPreferences preferences;
-    MessageAdapter messageAdapter;
+    ChatAdapter chatAdapter;
     FragmentOrderInformationObsBinding binding;
     DecimalFormat decimalFormat = new DecimalFormat("#.#######");
     private View root;
@@ -82,10 +81,10 @@ public class OBSOrderInformationFragment extends Fragment {
     ProgressBar chatStatusPB;
     Button chatFab;
     private RecyclerView recyclerView;
-    private List<MessageModel> messageList;
+    private List<ChatModel> chatMessageList;
     BottomSheetDialog chatBtmDialogView;
     BottomSheetDialog callConfirmBtmDialogView;
-    private ChatWSC chatWSC;
+    private ChatClient chatClient;
     BottomSheetDialog allDeliveryOptionsBtmView;
     private String orderType;
     private String orderByVoiceAudioRefID;
@@ -129,9 +128,9 @@ public class OBSOrderInformationFragment extends Fragment {
         showShopLocOnMapBtn = binding.showShopDestnOnMapButton;
         chatFab = binding.chatFloatingActionButton;
 
-        messageList = new ArrayList<>();
-        messageAdapter = new MessageAdapter(messageList);
-        messageAdapter = new MessageAdapter(messageList);
+        chatMessageList = new ArrayList<>();
+        chatAdapter = new ChatAdapter(chatMessageList);
+        chatAdapter = new ChatAdapter(chatMessageList);
 
         showLoadingUI();
 
@@ -140,7 +139,7 @@ public class OBSOrderInformationFragment extends Fragment {
         fetchData(orderKey, chatId -> {
             if (chatId != null) {
                 // TODO: migrate to base activity
-                chatWSC = new ChatWSC(requireActivity(), this, user, chatId, chatStatusTV,
+                chatClient = new ChatClient(requireActivity(), this, user, chatId, chatStatusTV,
                         chatStatusPB, chatBtmStatusTV, messageET, chatSendBtn);
             } else {
                 Toast.makeText(requireContext(), "No channel for chat found!",
@@ -180,6 +179,7 @@ public class OBSOrderInformationFragment extends Fragment {
         return root;
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void initChatBtmView(ViewGroup root) {
         View chatView = LayoutInflater.from(requireContext()).inflate(
                 R.layout.bottomview_chat_with_partner, root, false);
@@ -195,11 +195,11 @@ public class OBSOrderInformationFragment extends Fragment {
         chatBtmStatusTV = chatView.findViewById(R.id.chatViewBtmStatusTV_textView);
         chatStatusTV = chatView.findViewById(R.id.chatViewStatusTV_textView);
         chatStatusPB = chatView.findViewById(R.id.chatView_progressBar);
-
+        TextView clearAllChatBtn = chatView.findViewById(R.id.clearAllChat_textView);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        recyclerView.setAdapter(messageAdapter);
+        recyclerView.setAdapter(chatAdapter);
 
         chatSendBtn.setOnClickListener(v -> {
             String message = messageET.getText().toString();
@@ -207,6 +207,12 @@ public class OBSOrderInformationFragment extends Fragment {
                 sendMessage(message);
                 messageET.setText("");
             }
+        });
+
+        clearAllChatBtn.setOnClickListener(v -> {
+            chatMessageList.clear();
+            chatAdapter.notifyDataSetChanged();
+            chatStatusTV.setText(R.string.ready_to_chat);
         });
     }
 
@@ -254,28 +260,28 @@ public class OBSOrderInformationFragment extends Fragment {
 
     // Method to send a message via WebSocket
     public void sendMessage(String message) {
-        if (chatWSC != null) {
+        if (chatClient != null) {
             String messageTime = LocalTime.now().format(DateTimeFormatter.ofPattern("h:mm a")).toUpperCase();
-            chatWSC.sendMessage(message, messageTime);
+            chatClient.sendMessage(message, messageTime);
         }
     }
 
     @SuppressLint("NotifyDataSetChanged")
     public void addMessage(String messageId, String message, String messageTime) {
-        if (messageList != null) {
-            messageList.add(new MessageModel(messageId, message, messageTime, false));
-            messageAdapter.notifyItemInserted(messageList.size() - 1);
+        if (chatMessageList != null) {
+            chatMessageList.add(new ChatModel(messageId, message, messageTime, false));
+            chatAdapter.notifyItemInserted(chatMessageList.size() - 1);
             if (recyclerView != null) {
-                recyclerView.scrollToPosition(messageList.size() - 1);
+                recyclerView.scrollToPosition(chatMessageList.size() - 1);
             }
         }
     }
 
     public void addSentMessage(String message, String messageTime) {
-        messageList.add(new MessageModel("Me", message, messageTime, true));
-        messageAdapter.notifyItemInserted(messageList.size() - 1);
+        chatMessageList.add(new ChatModel("Me", message, messageTime, true));
+        chatAdapter.notifyItemInserted(chatMessageList.size() - 1);
         if (recyclerView != null) {
-            recyclerView.scrollToPosition(messageList.size() - 1);
+            recyclerView.scrollToPosition(chatMessageList.size() - 1);
         }
     }
 
@@ -567,8 +573,8 @@ public class OBSOrderInformationFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         // Close WebSocket connection when activity is destroyed
-        if (chatWSC != null) {
-            chatWSC.webSocket.close(1000, "client disconnected");
+        if (chatClient != null) {
+            chatClient.webSocket.close(1000, "client disconnected");
             chatBtmDialogView.dismiss();
             chatBtmDialogView = null;
         }

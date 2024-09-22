@@ -2,11 +2,14 @@ package com.vishnu.quickgoorder.ui.settings.address.manage_address;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Build;
+import android.os.VibrationEffect;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,6 +18,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.JsonObject;
 import com.vishnu.quickgoorder.R;
+import com.vishnu.quickgoorder.miscellaneous.SoundManager;
 import com.vishnu.quickgoorder.miscellaneous.Utils;
 import com.vishnu.quickgoorder.server.sapi.APIService;
 import com.vishnu.quickgoorder.server.sapi.ApiServiceGenerator;
@@ -36,6 +40,7 @@ public class SavedAddressAdapter extends RecyclerView.Adapter<SavedAddressAdapte
     public SavedAddressAdapter(Context context, List<SavedAddressModel> savedAddressModelList) {
         this.context = context;
         this.savedAddressModelList = savedAddressModelList;
+        SoundManager.initialize(context);
     }
 
     @NonNull
@@ -67,6 +72,13 @@ public class SavedAddressAdapter extends RecyclerView.Adapter<SavedAddressAdapte
                     notifyItemRemoved(pos);
                     notifyItemRangeChanged(pos, getItemCount());
                     Utils.deleteAddressDataCacheFile(context);
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        Utils.vibrate(context, 0, VibrationEffect.EFFECT_TICK);
+                    }
+
+                    SoundManager.playOnDelete();
+
                 } else {
                     Log.d(LOG_TAG, "No response");
                 }
@@ -90,6 +102,7 @@ public class SavedAddressAdapter extends RecyclerView.Adapter<SavedAddressAdapte
         private final TextView pincodeTV;
         private final TextView fullAddressTV;
         private final TextView deleteAddressTV;
+        private final TextView locCordsTV;
         private SavedAddressAdapter adapter;
         private FirebaseUser user;
 
@@ -101,6 +114,7 @@ public class SavedAddressAdapter extends RecyclerView.Adapter<SavedAddressAdapte
             phoneNoTv = itemView.findViewById(R.id.phoneNoView_textView);
             pincodeTV = itemView.findViewById(R.id.pincodeView_textView);
             deleteAddressTV = itemView.findViewById(R.id.deleteAddressView_textView);
+            locCordsTV = itemView.findViewById(R.id.locationCoordinatesView_textView);
         }
 
         public void bind(SavedAddressModel address, int pos) {
@@ -109,9 +123,14 @@ public class SavedAddressAdapter extends RecyclerView.Adapter<SavedAddressAdapte
             pincodeTV.setText(MessageFormat.format("{0}{1} | {2}",
                     address.getDistrict().substring(0, 1).toUpperCase(),
                     address.getDistrict().substring(1), address.getPincode()));
+            locCordsTV.setText(MessageFormat.format("{0}°N {1}°E", address.getAddressLat(), address.getAddressLon()));
 
-            deleteAddressTV.setOnClickListener(v -> {
+            deleteAddressTV.setOnClickListener(v ->
+                    Toast.makeText(adapter.context, "Long press to delete...", Toast.LENGTH_SHORT).show());
+
+            deleteAddressTV.setOnLongClickListener(v -> {
                 adapter.deleteAddress(user.getUid(), address.getPhoneNo(), pos);
+                return false;
             });
 
         }

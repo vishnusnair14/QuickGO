@@ -23,10 +23,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.JsonObject;
 import com.vishnu.quickgodelivery.R;
-import com.vishnu.quickgodelivery.server.APIService;
-import com.vishnu.quickgodelivery.server.ApiServiceGenerator;
+import com.vishnu.quickgodelivery.miscellaneous.SoundManager;
+import com.vishnu.quickgodelivery.server.sapi.APIService;
+import com.vishnu.quickgodelivery.server.sapi.ApiServiceGenerator;
 import com.vishnu.quickgodelivery.ui.order.OrderDetailsMainActivity;
 
+import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Locale;
@@ -44,6 +46,7 @@ public class UnifiedOrderAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     static SharedPreferences preferences;
     private final FirebaseUser user;
     private final Intent callIntent;
+    DecimalFormat dformat = new DecimalFormat("#.###");
     private final ViewGroup root;
     private BottomSheetDialog acceptOrderBtmView;
     private BottomSheetDialog declineOrKeepItOrderBtmView;
@@ -52,13 +55,15 @@ public class UnifiedOrderAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     private List<AllOrdersModel> orderList;
 
-    public UnifiedOrderAdapter(ViewGroup root, Context context, SharedPreferences preferences, List<AllOrdersModel> orderList) {
+    public UnifiedOrderAdapter(ViewGroup root, Context context,
+                               SharedPreferences preferences, List<AllOrdersModel> orderList) {
         this.context = context;
         this.preferences = preferences;
         this.orderList = orderList;
         this.root = root;
         callIntent = new Intent(Intent.ACTION_CALL);
         user = FirebaseAuth.getInstance().getCurrentUser();
+        SoundManager.initialize(context);
     }
 
     @Override
@@ -119,19 +124,20 @@ public class UnifiedOrderAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             selectedViewTV = itemView.findViewById(R.id.srvObsOrderCurrentSelected_textView);
         }
 
-        public void bind(UnifiedOrderAdapter adapter, OBSOrderModel obsOrder, int position) {
+        public void bind(UnifiedOrderAdapter adapter, @NonNull OBSOrderModel obsOrder, int position) {
             // Bind data to views
             orderNoTV.setText(MessageFormat.format("ORDER #{0}", position + 1));
 
             // Null check for orderID
             String orderID = obsOrder.getOrder_id();
             if (orderID != null && orderID.length() >= 29) {
-                orderIDTV.setText(orderID.substring(6, 29));
+                orderIDTV.setText(MessageFormat.format("ORDER ID: {0}", orderID.substring(6, 29)));
             } else {
                 orderIDTV.setText(R.string.invalid_order_id);
             }
 
             orderType.setText(obsOrder.getOrder_type());
+
             // Null check for shopName
             String shopName = obsOrder.getShop_name();
             if (shopName != null) {
@@ -140,9 +146,10 @@ public class UnifiedOrderAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 shopNameTV.setText(R.string.unknown_shop);
             }
 
-            TIDTV.setText(obsOrder.getOrder_time());
+            TIDTV.setText(MessageFormat.format("TIME: {0}", obsOrder.getOrder_time()));
 
-            if ("Order Saved".equals(obsOrder.getOrder_saved_status())) {
+
+            if ("order_saved".equals(obsOrder.getOrder_saved_status())) {
                 orderSavedIV.setVisibility(View.VISIBLE);
             } else {
                 orderSavedIV.setVisibility(View.GONE);
@@ -172,12 +179,12 @@ public class UnifiedOrderAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                     obsOrder.getDelivery_full_address(),
                                     obsOrder.getPickup_destination_distance(),
                                     obsOrder.getOrder_delivery_destination_distance(),
-                                    obsOrder);
+                                    obsOrder, "obs");
                         } else {
                             Intent intent = getIntent(adapter, obsOrder);
                             adapter.context.startActivity(intent);
                         }
-                    } else if ("Order Saved".equals(obsOrder.getOrder_saved_status())) {
+                    } else if ("order_saved".equals(obsOrder.getOrder_saved_status())) {
                         adapter.showNextDeliveryOrderBtmView();
                     } else {
                         adapter.showDeclineOrKeepItOrderBtmView(obsOrder.getUser_id(), orderID,
@@ -216,23 +223,23 @@ public class UnifiedOrderAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             selectedViewTV = itemView.findViewById(R.id.srvObvCurrentSelectedOrderView_textView);
         }
 
-        public void bind(UnifiedOrderAdapter adapter, OBVOrderModel obvOrder, int position) {
+        public void bind(UnifiedOrderAdapter adapter, @androidx.annotation.NonNull OBVOrderModel obvOrder, int position) {
             // Bind data to views
 
             orderNoTV.setText(MessageFormat.format("ORDER #{0}", position + 1));
 
             String orderID = obvOrder.getOrder_id();
             if (orderID != null && orderID.length() >= 29) {
-                orderIDTV.setText(orderID.substring(6, 29));
+                orderIDTV.setText(MessageFormat.format("ORDER ID: {0}", orderID.substring(6, 29)));
             } else {
                 orderIDTV.setText(R.string.invalid_order_id);
             }
 
             orderType.setText(obvOrder.getOrder_type());
-            TIDTV.setText(obvOrder.getOrder_time());
-            shopNameTV.setText("Purchase by store preference");
+            TIDTV.setText(MessageFormat.format("TIME: {0}", obvOrder.getOrder_time()));
+            shopNameTV.setText(R.string.purchase_by_store_preference);
 
-            if ("Order Saved".equals(obvOrder.getOrder_saved_status())) {
+            if ("order_saved".equals(obvOrder.getOrder_saved_status())) {
                 orderSavedIV.setVisibility(View.VISIBLE);
             } else {
                 orderSavedIV.setVisibility(View.GONE);
@@ -252,7 +259,6 @@ public class UnifiedOrderAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             itemView.setOnClickListener(v -> {
                 if (preferences.getBoolean("isOnDuty", false)) {
                     String cdoID = preferences.getString("currentDeliveryOrderID", "0");
-//                    Toast.makeText(adapter.context, cdoID, Toast.LENGTH_SHORT).show();
 
                     if (cdoID.equals(orderID) || cdoID.equals("0")) {
                         if (!cdoID.equals(orderID)) {
@@ -263,12 +269,12 @@ public class UnifiedOrderAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                     obvOrder.getDelivery_full_address(),
                                     obvOrder.getPickup_destination_distance(),
                                     obvOrder.getOrder_delivery_destination_distance(),
-                                    obvOrder);
+                                    obvOrder, "obv");
                         } else {
                             Intent intent = getIntent(adapter, obvOrder);
                             adapter.context.startActivity(intent);
                         }
-                    } else if ("Order Saved".equals(obvOrder.getOrder_saved_status())) {
+                    } else if ("order_saved".equals(obvOrder.getOrder_saved_status())) {
                         adapter.showNextDeliveryOrderBtmView();
                     } else {
                         adapter.showDeclineOrKeepItOrderBtmView(obvOrder.getUser_id(), orderID,
@@ -284,7 +290,7 @@ public class UnifiedOrderAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     @androidx.annotation.NonNull
-    private static Intent getIntent(UnifiedOrderAdapter adapter, OrderModel listModel) {
+    private static Intent getIntent(@androidx.annotation.NonNull UnifiedOrderAdapter adapter, @androidx.annotation.NonNull OrderModel listModel) {
         Intent intent = new Intent(adapter.context, OrderDetailsMainActivity.class);
         intent.putExtra("user_id", listModel.getUser_id());
         intent.putExtra("order_id", listModel.getOrder_id());
@@ -299,7 +305,7 @@ public class UnifiedOrderAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private void showAcceptOrderBtmView(UnifiedOrderAdapter adapter, String userId, String orderID, String shopID,
                                         String orderByVoiceDocID, String orderByVoiceAudioRefID,
                                         String shopName, String shopPhone, String deliveryAddress,
-                                        double pdd, double oddd, OrderModel listModel) {
+                                        double pdd, double oddd, OrderModel listModel, String orderType) {
         View orderView = LayoutInflater.from(context).inflate(
                 R.layout.bottomview_accept_order_confirm, root, false);
 
@@ -321,17 +327,21 @@ public class UnifiedOrderAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         ProgressBar btmViewStatusPB = orderView.findViewById(R.id.btmViewOrderAcceptStatusPB_progressBar);
         btmViewStatusPB.setVisibility(View.GONE);
 
-        if (oddd < 1) {
-            odddTV.setText(MessageFormat.format("DELIVERY DISTANCE: {0} mtr", oddd * 1000));
+        String deliveryText, pickupText;
+
+        if (orderType.equals("obv")) {
+            deliveryText = oddd < 1 ? "DELIVERY DISTANCE: " + (oddd * 1000) + " mtr" : "DELIVERY DISTANCE: " + oddd + " km";
+            pickupText = pdd < 1 ? "PICKUP DISTANCE: (Total travel) " + dformat.format(pdd * 1000) + " mtr" : "PICKUP DISTANCE: (Total travel) " + dformat.format(pdd) + " km";
+        } else if (orderType.equals("obs")) {
+            deliveryText = oddd < 1 ? "DELIVERY DISTANCE: (From shop) " + oddd * 1000 + " mtr" : "DELIVERY DISTANCE: (From shop) " + dformat.format(oddd) + " km";
+            pickupText = pdd < 1 ? "PICKUP DISTANCE: " + pdd * 1000 + " mtr" : "PICKUP DISTANCE: " + dformat.format(pdd) + " km";
         } else {
-            odddTV.setText(MessageFormat.format("DELIVERY DISTANCE: {0} km", oddd));
+            deliveryText = context.getString(R.string.delivery_distance_unknown);
+            pickupText = context.getString(R.string.pickup_distance_unknown);
         }
 
-        if (pdd < 1) {
-            pddTV.setText(MessageFormat.format("PICKUP DISTANCE: (total travel) {0} mtr", pdd * 1000));
-        } else {
-            pddTV.setText(MessageFormat.format("PICKUP DISTANCE: (total travel) {0} km", pdd));
-        }
+        odddTV.setText(deliveryText);
+        pddTV.setText(pickupText);
 
         shopNameTV.setText(MessageFormat.format("{0}", shopName.toUpperCase(Locale.ROOT)));
         shopPlaceKmTV.setText(shopID);
@@ -378,7 +388,7 @@ public class UnifiedOrderAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                                  String orderByVoiceDocID,
                                                  String orderByVoiceAudioRefID, String shopName) {
         View orderView = LayoutInflater.from(context).inflate(
-                R.layout.bottomview_decline_order_confirm, root, false);
+                R.layout.bottomview_confirm_or_decline_order, root, false);
 
         declineOrKeepItOrderBtmView = new BottomSheetDialog(context);
         declineOrKeepItOrderBtmView.setContentView(orderView);
@@ -408,7 +418,7 @@ public class UnifiedOrderAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         declineOrKeepItOrderBtmView.show();
     }
 
-    private void orderDeclineRequest(String dpIdd, String userId, String orderID, ProgressBar progressBar) {
+    private void orderDeclineRequest(String dpIdd, String userId, String orderID, @androidx.annotation.NonNull ProgressBar progressBar) {
         progressBar.setVisibility(View.VISIBLE);
 
         APIService apiService = ApiServiceGenerator.getApiService(context);
@@ -437,7 +447,7 @@ public class UnifiedOrderAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     private void orderKeepItRequest(String dBoyID, String userId, String orderID,
-                                    String voiceOrderID, String shopName, ProgressBar progressBar) {
+                                    String voiceOrderID, String shopName, @androidx.annotation.NonNull ProgressBar progressBar) {
         progressBar.setVisibility(View.VISIBLE);
 
         JsonObject jsonObject = new JsonObject();
@@ -452,11 +462,12 @@ public class UnifiedOrderAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         Call<JsonObject> call = apiService.keepItDeliveryOrder(dBoyID, userId, orderID);
         call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(@androidx.annotation.NonNull Call<JsonObject> call, @androidx.annotation.NonNull Response<JsonObject> response) {
+            public void onResponse(@androidx.annotation.NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     JsonObject jsonObject1 = response.body();
                     String msg = jsonObject1.get("message").getAsString();
 
+                    SoundManager.playOnOrderSavedForNext();
                     progressBar.setVisibility(View.INVISIBLE);
 
                     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
@@ -494,6 +505,7 @@ public class UnifiedOrderAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             }
 
                             preferences.edit().putString("currentDeliveryOrderID", orderID).apply();
+                            SoundManager.playOnOrderAccepted();
 
                             // START ORDER DETAILS MAIN ACTIVITY:
                             Intent intent = getIntent(adapter, listModel);

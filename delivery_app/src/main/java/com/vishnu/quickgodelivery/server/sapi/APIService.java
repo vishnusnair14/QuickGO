@@ -1,4 +1,4 @@
-package com.vishnu.quickgodelivery.server;
+package com.vishnu.quickgodelivery.server.sapi;
 
 import com.google.gson.JsonObject;
 import com.vishnu.quickgodelivery.miscellaneous.StartDutyModel;
@@ -23,8 +23,7 @@ public interface APIService {
     @POST("register-delivery-account")
     Call<JsonObject> registerUser(
             @Part MultipartBody.Part image,
-            @Part("account_data") RequestBody accountData
-    );
+            @Part("account_data") RequestBody accountData);
 
     @POST("start-duty/")
     Call<JsonObject> startDuty(@Body StartDutyModel startDutyModel);
@@ -75,12 +74,13 @@ public interface APIService {
             @Path("order_by_voice_audio_ref_id") String orderByVoiceAudioRefID,
             @Path("order_id") String orderID);
 
-    @GET("get-voice-order-data/{user_id}/{order_by_voice_type}/{order_by_voice_doc_id}/{order_by_voice_audio_ref_id}")
+    @GET("get-voice-order-data/{user_id}/{order_by_voice_type}/{order_by_voice_doc_id}/{order_by_voice_audio_ref_id}/{shop_id}")
     Call<JsonObject> getVoiceOrderData(
             @Path("user_id") String userId,
             @Path("order_by_voice_type") String orderByVoiceType,
             @Path("order_by_voice_doc_id") String orderByVoiceDocID,
-            @Path("order_by_voice_audio_ref_id") String orderByVoiceAudioRefID);
+            @Path("order_by_voice_audio_ref_id") String orderByVoiceAudioRefID,
+            @Path("shop_id") String shopID);
 
     @FormUrlEncoded
     @POST("fetch-order-data/")

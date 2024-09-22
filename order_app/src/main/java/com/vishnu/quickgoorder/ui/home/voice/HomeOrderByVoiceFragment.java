@@ -513,6 +513,7 @@ public class HomeOrderByVoiceFragment extends Fragment {
 //        ConstraintLayout csl = setDefAddrView.findViewById(R.id.linearLayout2);
         savedAddressStatusTV = setDefAddrView.findViewById(R.id.savedAddressRecycleViewStatusTV_textView);
         ProgressBar progressBar = setDefAddrView.findViewById(R.id.selectAddressForDelivery_progressBar);
+        TextView addNewDeliveryAddressTV = setDefAddrView.findViewById(R.id.setDefaultDeliveryAddressAddNewAddress_textView);
 
         if (Utils.isLocationNotEnabled(requireContext())) {
             enableLocView.setVisibility(View.VISIBLE);
@@ -541,6 +542,13 @@ public class HomeOrderByVoiceFragment extends Fragment {
             preferences.edit().putString("currentLocLon", String.valueOf("75.1212")).apply();
         });
 
+        addNewDeliveryAddressTV.setOnClickListener(v -> {
+            setDeliveryAddrBtmView.dismiss();
+            new Handler().postDelayed(() -> NavHostFragment.findNavController(this)
+                    .navigate(R.id.action_nav_orderbyvoice_to_nav_addAddress), 350);
+
+        });
+
         getSavedAddressData(user.getUid(), progressBar);
 
         if (setDeliveryAddrBtmView != null && !setDeliveryAddrBtmView.isShowing()) {
@@ -549,7 +557,7 @@ public class HomeOrderByVoiceFragment extends Fragment {
     }
 
 
-    private static void startRecording(File AppAudioDir) {
+    private static void startRecording(@NonNull File AppAudioDir) {
         if (!AppAudioDir.exists()) {
             if (AppAudioDir.mkdirs()) {
                 Log.d(ContentValues.TAG, "AppAudioDir: dir created successful");
@@ -634,7 +642,7 @@ public class HomeOrderByVoiceFragment extends Fragment {
                 if (documentSnapshot.exists()) {
                     orderByVoiceDataRef.update(voiceOrderFields).addOnSuccessListener(var -> {
 //                                Toast.makeText(context, "Item added to cart.", Toast.LENGTH_SHORT).show();
-                                Utils.deleteVoiceOrderCacheFile(context, voiceDocID);
+                                Utils.deleteVoiceOrderCacheFile(context, voiceDocID, null);
                                 Log.d(LOG_TAG, "Audio url updated to db: success");
                             }
                     ).addOnFailureListener(e ->
@@ -642,7 +650,7 @@ public class HomeOrderByVoiceFragment extends Fragment {
                     Log.d(LOG_TAG, "Audio url update to db: failed!");
                 } else {
                     orderByVoiceDataRef.set(voiceOrderFields).addOnSuccessListener(var -> {
-                                Utils.deleteVoiceOrderCacheFile(context, voiceDocID);
+                                Utils.deleteVoiceOrderCacheFile(context, voiceDocID, null);
 //                                Toast.makeText(context, "Item added to cart.", Toast.LENGTH_SHORT).show();
                                 Log.d(LOG_TAG, "Audio url uploaded to db: success");
                             }

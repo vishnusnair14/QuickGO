@@ -175,7 +175,7 @@
     <string name="enter_your_email_address">Enter your email address</string>
     <string name="email">Email</string>
     <string name="enter_your_password">Enter your password</string>
-    <string name="password">password</string>
+    <string name="password">Password</string>
     <string name="remember_me">Remember me</string>
     <string name="register_account">REGISTER ACCOUNT</string>
     <string name="set_a_new_password">Set a new password</string>
@@ -324,5 +324,18 @@
     <string name="view_detailed_update">View details</string>
     <string name="order_ID"><b>Order ID</b></string>
     <string name="add_a_new_delivery_address">Add a new delivery address</string>
+    <string name="you_are_ready_to_chat">You are ready to chat.</string>
+    <string name="proceed_anyway">PROCEED ANYWAY</string>
+    <string name="full_address">full_address</string>
+    <string name="verify_your_account">Verify your account</string>
+    <string name="verify_otp">Verify OTP</string>
+    <string name="enter_your_otp">Enter your OTP</string>
+    <string name="otp">OTP</string>
+    <string name="send_otp">Send OTP</string>
+    <string name="phone_number">Phone number</string>
+    <string name="enter_your_phone_number">Enter your phone number</string>
+    <string name="login_using_phone_number"><u>Login with phone number</u></string>
+    <string name="change_store_preference"><u>Change store preference</u></string>
+    <string name="set_store_preference">Set store preference</string>
 
 </resources>

@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -31,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -40,17 +42,25 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.vishnu.quickgoorder.R;
 import com.vishnu.quickgoorder.cloud.DbHandler;
 import com.vishnu.quickgoorder.databinding.FragmentItemsBinding;
 import com.vishnu.quickgoorder.miscellaneous.PreferenceKeys;
+import com.vishnu.quickgoorder.miscellaneous.SoundManager;
 import com.vishnu.quickgoorder.miscellaneous.Utils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -64,20 +74,19 @@ public class ItemFragment extends Fragment {
     private static MediaRecorder mediaRecorder;
     private DbHandler dbHandler;
     private boolean isButtonHeld = false;
-    TextView recordingStatusTV, recordVoiceTimerTV;
+    TextView recordingStatusTV;
     TextView pressAndRecMainTV;
-    private boolean isRunning = false;
     File AppAudioDir;
     private SharedPreferences preferences;
     TextView shopBannerTV;
     private final Handler handler = new Handler();
     List<ItemModel> itemList = new ArrayList<>();
-    private long startTime = 0;
     private static Vibrator vibrator;
     TextView gotoCartBtn;
+    static String audioFileName = "_voice.mp3";
     private String shopID;
-    private String shopDistrict;
     private Chronometer chronometer;
+    private FirebaseUser user;
 
     String[] permissions = {
             Manifest.permission.RECORD_AUDIO,
@@ -93,25 +102,43 @@ public class ItemFragment extends Fragment {
     public ItemFragment() {
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        db = FirebaseFirestore.getInstance();
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        preferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        vibrator = (Vibrator) requireActivity().getSystemService(Context.VIBRATOR_SERVICE);
+
+        dbHandler = new DbHandler();
+
+        File externalFilesDir = requireContext().getExternalFilesDir(Context.AUDIO_SERVICE);
+        SoundManager.initialize(requireContext());
+
+        // Check if the directory exists; if not, create it
+        if (externalFilesDir != null && !externalFilesDir.exists()) {
+            boolean isDirCreated = externalFilesDir.mkdirs();
+            if (!isDirCreated) {
+                // Handle the error - directory creation failed
+                Log.e("DirectoryError", "Failed to create the directory: " + externalFilesDir.getAbsolutePath());
+            }
+        }
+
+        AppAudioDir = new File(externalFilesDir, "orderByVoice");
+
+    }
+
     @SuppressLint({"ClickableViewAccessibility", "NotifyDataSetChanged"})
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         com.vishnu.quickgoorder.databinding.FragmentItemsBinding binding = FragmentItemsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-
-        db = FirebaseFirestore.getInstance();
-        preferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-        vibrator = (Vibrator) requireActivity().getSystemService(Context.VIBRATOR_SERVICE);
+        Bundle bundle = new Bundle();
 
         showRecFab = binding.showRecViewFloatingActionButton;
         shopBannerTV = binding.shopNameBannerViewTextView;
         gotoCartBtn = binding.homeItemsFragmentGotoCartButton;
-
-        Bundle bundle = new Bundle();
-        dbHandler = new DbHandler();
-
-        File externalFilesDir = requireContext().getExternalFilesDir(null);
-        AppAudioDir = new File(externalFilesDir, "Voice-order-Recordings");
 
         // OnCreate permission request
         List<String> permissionsToRequest = new ArrayList<>();
@@ -128,9 +155,9 @@ public class ItemFragment extends Fragment {
         itemList.clear();
 
         if (getArguments() != null) {
-            shopBannerTV.setText(getArguments().getString("shop_name"));
+            shopBannerTV.setText(requireArguments().getString("shop_name".toUpperCase()));
             shopID = getArguments().getString("shop_id");
-            shopDistrict = getArguments().getString("shop_district");
+            String shopDistrict = getArguments().getString("shop_district");
 
             bundle.putBoolean("fromHomeRecommendationFragment", true);
             bundle.putString("shop_id", shopID);
@@ -164,7 +191,7 @@ public class ItemFragment extends Fragment {
         // Create a BottomSheetDialog with TOP gravity
         BottomSheetDialog recordVoiceOrderBtmView = new BottomSheetDialog(requireContext());
         recordVoiceOrderBtmView.setContentView(orderByVoiceView);
-        recordVoiceOrderBtmView.setCanceledOnTouchOutside(false);
+        recordVoiceOrderBtmView.setCanceledOnTouchOutside(true);
         Objects.requireNonNull(recordVoiceOrderBtmView.getWindow()).setGravity(Gravity.TOP);
 
         recordBtn = orderByVoiceView.findViewById(R.id.recordVoice_imageButton);
@@ -185,16 +212,15 @@ public class ItemFragment extends Fragment {
                     isButtonHeld = true;
                     recIcon.setVisibility(View.VISIBLE);
                     recIcon.setAnimation(blinkAnimation);
-
-                    onButtonHoldRunnable.run();
+                    recordVoiceOrderBtmView.setCanceledOnTouchOutside(false);
                     recordVoiceOrderBtmView.setCancelable(false);
+                    onButtonHoldRunnable.run();
                     return true;
                 }
                 case MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                     isButtonHeld = false;
                     handler.removeCallbacks(onButtonHoldRunnable);
                     stopChronometer();
-                    recordVoiceOrderBtmView.setCancelable(true);
                     recordingStatusTV.setText("");
                     pressAndRecMainTV.setText(R.string.send_your_voice_orders);
                     pressAndRecMainTV.setTextColor(requireActivity().getColor(R.color.default_textview));
@@ -202,7 +228,7 @@ public class ItemFragment extends Fragment {
                     recIcon.setAnimation(null);
 
                     if (!isButtonHeld) {
-                        performOnButtonRelease();
+                        performOnButtonRelease(recordVoiceOrderBtmView);
                     }
                     return true;
                 }
@@ -292,19 +318,18 @@ public class ItemFragment extends Fragment {
         Log.d(TAG, "testButtonUI: onButtonHold");
     }
 
-    private void performOnButtonRelease() {
+    private void performOnButtonRelease(@NonNull BottomSheetDialog recordVoiceOrderBtmView) {
         stopRecording(requireContext());
+
         recordBtn.setEnabled(false);
+        recordVoiceOrderBtmView.setCancelable(true);
 
         recordingStatusTV.setText(R.string.uploading_to_db);
 
-        // uploads order-voice audio file to storage
-        dbHandler.uploadAudioToStorageRec(requireContext(), String.valueOf(AppAudioDir), shopID,
-                preferences.getString(
-                        PreferenceKeys.HOME_RECOMMENDATION_FRAGMENT_AUDIO_REF_ID, "0"), recordBtn, recordingStatusTV);
+        uploadAudioToStorageRec(requireContext(), String.valueOf(AppAudioDir));
     }
 
-    private static void startRecording(File AppAudioDir) {
+    private static void startRecording(@NonNull File AppAudioDir) {
         if (!AppAudioDir.exists()) {
             if (AppAudioDir.mkdirs()) {
                 Log.d(ContentValues.TAG, "AppAudioDir: dir created successful");
@@ -315,7 +340,6 @@ public class ItemFragment extends Fragment {
             Log.d(ContentValues.TAG, "AppAudioDir: already exists!");
         }
 
-        String audioFileName = "voiceOrderAudio.mp3";
         mediaRecorder = new MediaRecorder();
         File audioFile = new File(AppAudioDir, audioFileName);
 
@@ -346,6 +370,88 @@ public class ItemFragment extends Fragment {
                 Toast.makeText(context, "error!", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private void addVoiceOrderToDB(String key, Context context, String downloadUrl,
+                                   String voiceDocID, String voiceOrderID) {
+
+        DocumentReference orderByVoiceDataRef = db.collection("Users")
+                .document(user.getUid()).collection("voiceOrdersData")
+                .document("obs").collection(voiceDocID)
+                .document(voiceOrderID).collection(shopID).document(key);
+
+
+        Map<String, Object> voiceOrderFields = new HashMap<>();
+        voiceOrderFields.put("audio_key", key);
+        voiceOrderFields.put("audio_storage_url", downloadUrl);
+        voiceOrderFields.put("audio_title", Utils.generateTimestamp());
+
+        orderByVoiceDataRef.get().addOnCompleteListener(task2 -> {
+            if (task2.isSuccessful()) {
+                DocumentSnapshot documentSnapshot = task2.getResult();
+                if (documentSnapshot.exists()) {
+                    orderByVoiceDataRef.update(voiceOrderFields).addOnSuccessListener(var -> {
+//                                Toast.makeText(context, "Item added to cart.", Toast.LENGTH_SHORT).show();
+                                Utils.deleteVoiceOrderCacheFile(context, voiceDocID, shopID);
+                                Log.d(LOG_TAG, "Audio url updated to db: success");
+                            }
+                    ).addOnFailureListener(e ->
+                            Toast.makeText(context, "url server update failed!", Toast.LENGTH_SHORT).show());
+                    Log.d(LOG_TAG, "Audio url update to db: failed!");
+                } else {
+                    orderByVoiceDataRef.set(voiceOrderFields).addOnSuccessListener(var -> {
+                                Utils.deleteVoiceOrderCacheFile(context, voiceDocID, shopID);
+//                                Toast.makeText(context, "Item added to cart.", Toast.LENGTH_SHORT).show();
+                                Log.d(LOG_TAG, "Audio url uploaded to db: success");
+                            }
+                    ).addOnFailureListener(e -> {
+                        Toast.makeText(context, "url server upload failed!", Toast.LENGTH_SHORT).show();
+                        Log.d(LOG_TAG, "Audio url uploaded to db: failed");
+                    });
+                }
+            }
+        });
+    }
+
+    private void uploadAudioToStorageRec(Context context, String audioFileDir) {
+        String key = Utils.generateRandomKey();
+
+        String orderID = preferences.getString(PreferenceKeys.HOME_RECOMMENDATION_FRAGMENT_ORDER_ID, "0");
+        String audioRefID = preferences.getString(PreferenceKeys.HOME_RECOMMENDATION_FRAGMENT_AUDIO_REF_ID, "0");
+
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference("orderData/" + orderID + "/orderByVoiceData/" + audioRefID + "/" + key);
+
+        File audioFile = new File(audioFileDir, "/" + audioFileName);
+
+        StorageReference audioStorageRef = storageRef.child("audio_file_" + key + audioFileName);
+
+        UploadTask uploadTask = audioStorageRef.putFile(Uri.fromFile(audioFile));
+
+        uploadTask.addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                audioStorageRef.getDownloadUrl().addOnCompleteListener(task1 -> {
+                    if (task1.isSuccessful()) {
+                        Uri downloadUri = task1.getResult();
+                        String downloadURL = downloadUri.toString();
+
+                        // update the audio url to db
+                        addVoiceOrderToDB(key, context, downloadURL, orderID, audioRefID);
+                        recordBtn.setEnabled(true);
+                        recordingStatusTV.setText("");
+                        Toast.makeText(context, "Upload success", Toast.LENGTH_SHORT).show();
+                    } else {
+                        // Handle getting download URL failure
+                        recordBtn.setEnabled(true);
+                        Toast.makeText(context, "download URL failure occurred!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } else {
+                recordBtn.setEnabled(true);
+                Toast.makeText(context, "server upload failed!", Toast.LENGTH_SHORT).show();
+
+            }
+        });
     }
 }
 

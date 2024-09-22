@@ -94,12 +94,13 @@ public interface APIService {
     );
 
     @GET("get-voice-order-data/{user_id}/{order_by_voice_type}/{order_by_voice_doc_id}" +
-            "/{order_by_voice_audio_ref_id}")
-    Call<JsonObject> getRecShopVoiceOrderData(
+            "/{order_by_voice_audio_ref_id}/{shop_id}")
+    Call<JsonObject> getVoiceOrderCartData(
             @Path("user_id") String userId,
             @Path("order_by_voice_type") String orderByVoiceType,
             @Path("order_by_voice_doc_id") String orderByVoiceDocID,
-            @Path("order_by_voice_audio_ref_id") String orderByVoiceAudioRefID);
+            @Path("order_by_voice_audio_ref_id") String orderByVoiceAudioRefID,
+            @Path("shop_id") String shopID);
 
     @Multipart
     @POST("handle-address-decision")

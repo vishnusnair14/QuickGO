@@ -47,26 +47,27 @@ public class VoiceOrdersAdapter extends RecyclerView.Adapter<VoiceOrdersAdapter.
     private final String LOG_TAG = "voiceOrderAdapter";
     private final List<VoiceOrdersModel> voiceOrdersViewModel;
     private final Context context;
-    private long CURRENT_PLAYING_REF;
-    private FirebaseUser user;
+    private final FirebaseUser user;
     private long mDownloadId;
-    private String orderByVoiceDocID;
-    private String orderByVoiceAudioRefID;
-    private int CURRENT_PLAY_POS = -1;
-    private TextView statusTV;
+    private final String orderByVoiceDocID;
+    private final String orderByVoiceAudioRefID;
+    private final TextView statusTV;
     private boolean isPaused = false;
-    private String from;
+    private final String from;
+    private String shopID;
     public static MediaPlayer mediaPlayer = new MediaPlayer();
 
     public VoiceOrdersAdapter(FirebaseUser user, Context context, String from,
                               List<VoiceOrdersModel> voiceOrdersViewModel,
-                              String orderByVoiceDocID, String orderByVoiceAudioRefID, TextView statusTV) {
+                              String orderByVoiceDocID, String orderByVoiceAudioRefID,
+                              String shopID, TextView statusTV) {
         this.user = user;
         this.context = context;
         this.from = from;
         this.voiceOrdersViewModel = voiceOrdersViewModel;
         this.orderByVoiceDocID = orderByVoiceDocID;
         this.orderByVoiceAudioRefID = orderByVoiceAudioRefID;
+        this.shopID = shopID;
         this.statusTV = statusTV;
         SoundManager.initialize(context);
     }
@@ -95,7 +96,7 @@ public class VoiceOrdersAdapter extends RecyclerView.Adapter<VoiceOrdersAdapter.
         });
 
         holder.audioDeleteButton.setOnClickListener(v -> {
-            sendDeleteVoiceOrderFileRequest(audioModel.getAudio_key(), audioModel.getAudio_title(), false, null);
+            sendDeleteVoiceOrderFileRequest(audioModel.getAudio_key(), audioModel.getAudio_title(), false, null, shopID);
         });
     }
 
@@ -111,6 +112,7 @@ public class VoiceOrdersAdapter extends RecyclerView.Adapter<VoiceOrdersAdapter.
             notifyDataSetChanged();
         }
     }
+
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView audioTitleTV, audioFeedbackTV, audioTimerTV, audioIDTV;
@@ -130,9 +132,11 @@ public class VoiceOrdersAdapter extends RecyclerView.Adapter<VoiceOrdersAdapter.
         }
     }
 
-    public void sendDeleteVoiceOrderFileRequest(String audio_key, String audioTitle, boolean _s, BottomSheetDialog bottomSheetDialog) {
+
+    public void sendDeleteVoiceOrderFileRequest(String audio_key, String audioTitle,
+                                                boolean doClearCart, BottomSheetDialog bottomSheetDialog, String shopID) {
         DeleteVoiceOrderFile deleteVoiceOrderFileModel = new DeleteVoiceOrderFile(this.from, user.getUid(),
-                orderByVoiceDocID, orderByVoiceAudioRefID, audio_key, _s);
+                orderByVoiceDocID, orderByVoiceAudioRefID, shopID, audio_key, doClearCart);
 
         APIService apiService = ApiServiceGenerator.getApiService(context);
         Call<JsonObject> call = apiService.deleteVoiceOrderFromCart(deleteVoiceOrderFileModel);
@@ -152,9 +156,13 @@ public class VoiceOrdersAdapter extends RecyclerView.Adapter<VoiceOrdersAdapter.
                         }
                         SoundManager.playOnDelete();
 
-                        Utils.deleteVoiceOrderCacheFile(context, orderByVoiceDocID);
+                        if (from.equals("obs")) {
+                            Utils.deleteVoiceOrderCacheFile(context, orderByVoiceDocID, shopID);
+                        } else {
+                            Utils.deleteVoiceOrderCacheFile(context, orderByVoiceDocID, null);
+                        }
 
-                        if (_s) {
+                        if (doClearCart) {
                             Utils.deleteAllDownloadedVoiceOrderCartFiles(context);
                             voiceOrdersViewModel.clear();
                             notifyDataSetChanged();
@@ -274,8 +282,8 @@ public class VoiceOrdersAdapter extends RecyclerView.Adapter<VoiceOrdersAdapter.
 
     public class DownloadReceiver extends BroadcastReceiver {
         private Context mContext;
-        private TextView mFeedback;
-        private ImageButton actionBtn;
+        private final TextView mFeedback;
+        private final ImageButton actionBtn;
         private long downloadID;
 
         public DownloadReceiver(Context context, TextView feedback, long downloadID, ImageButton actionBtn) {

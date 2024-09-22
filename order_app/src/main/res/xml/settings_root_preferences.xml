@@ -1,15 +1,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory app:title="Account Settings">
-
-        <EditTextPreference
-            app:key="signature"
-            app:title="account-setting1"
-            app:useSimpleSummaryProvider="true" />
-
-    </PreferenceCategory>
-
     <PreferenceCategory android:title="Store Preferences">
         <Preference
             app:enabled="true"
@@ -57,13 +48,5 @@
             app:summary="When enabled, the application will route all requests to the test server, Requires restart."
             app:title="Use test server" />
     </PreferenceCategory>
-
-    <ListPreference
-        app:defaultValue="production"
-        app:entries="@array/default_app_server_entries"
-        app:entryValues="@array/default_app_server_values"
-        app:key="default_server"
-        app:title="Set default app server"
-        app:useSimpleSummaryProvider="true" />
 
 </PreferenceScreen>

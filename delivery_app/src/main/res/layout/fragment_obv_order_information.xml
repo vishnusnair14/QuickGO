@@ -207,6 +207,7 @@
         style="?android:attr/buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/md_theme_primary"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -220,7 +221,12 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_weight="1"
-            android:text="CHAT" />
+            android:fontFamily="@font/montserrat"
+            android:text="CHAT"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            app:icon="@drawable/baseline_chat_24"
+            app:iconTint="@color/md_theme_onPrimary" />
 
         <Button
             android:id="@+id/obvAllDeliveryOptions_floatingActionButton"
@@ -230,7 +236,12 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_weight="1"
-            android:text="DELIVERY OPTIONS" />
+            android:fontFamily="@font/montserrat"
+            android:text="DELIVERY OPTIONS"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            app:icon="@drawable/baseline_next_plan_24"
+            app:iconTint="@color/md_theme_onPrimary" />
     </LinearLayout>
 
 

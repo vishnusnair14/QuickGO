@@ -1,4 +1,4 @@
-package com.vishnu.quickgodelivery.server;
+package com.vishnu.quickgodelivery.server.sapi;
 
 import android.util.Log;
 

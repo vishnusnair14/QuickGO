@@ -52,6 +52,7 @@ public class ImageSearchFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         com.vishnu.quickgoorder.databinding.FragmentImageSearchBinding binding = FragmentImageSearchBinding.inflate(inflater, container, false);
         View root = binding.getRoot();

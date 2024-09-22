@@ -1,4 +1,4 @@
-package com.vishnu.quickgoorder.ui.authentication;
+package com.vishnu.quickgoorder.ui.authentication.signInWithPhoneNumber;
 
 import android.app.Activity;
 import android.content.Context;

@@ -15,7 +15,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -54,8 +53,6 @@ public class VoiceCartFragment extends Fragment {
     private final String LOG_TAG = "CartFragment";
     private static FirebaseUser user;
     private List<VoiceOrdersModel> voiceOrderItemList;
-    private FloatingActionButton clearVoiceCartBtn;
-    private FloatingActionButton refreshVoiceCartBtn;
     RecyclerView voiceOrderRecycleView;
     TextView checkoutCartButton;
     TextView statusTV;
@@ -93,6 +90,9 @@ public class VoiceCartFragment extends Fragment {
                 bundle.putString("from", "fromHomeRecommendationFragment");
                 bundle.putString("shop_id", getArguments().getString("shop_id"));
                 bundle.putString("shop_district", getArguments().getString("shop_district"));
+
+                orderByVoiceDocID = preferences.getString(PreferenceKeys.HOME_RECOMMENDATION_FRAGMENT_ORDER_ID, "0");
+                orderByVoiceAudioRefID = preferences.getString(PreferenceKeys.HOME_RECOMMENDATION_FRAGMENT_AUDIO_REF_ID, "0");
             }
 
             if (getArguments().containsKey("fromHomeOrderByVoiceFragment")
@@ -115,8 +115,8 @@ public class VoiceCartFragment extends Fragment {
         com.vishnu.quickgoorder.databinding.FragmentVoiceOrderCartBinding binding = FragmentVoiceOrderCartBinding.inflate(inflater, container, false);
         ViewGroup root = binding.getRoot();
 
-        refreshVoiceCartBtn = binding.voiceOrderRefreshFloatingActionButton;
-        clearVoiceCartBtn = binding.deleteAllVoiceOrdersFloatingActionButton;
+        FloatingActionButton refreshVoiceCartBtn = binding.voiceOrderRefreshFloatingActionButton;
+        FloatingActionButton clearVoiceCartBtn = binding.deleteAllVoiceOrdersFloatingActionButton;
         checkoutCartButton = binding.checkoutTextView;
         statusTV = binding.voiceOrdersStatusViewTextView;
         progressBar = binding.voiceOrderCartRecycleViewProgressBar;
@@ -127,7 +127,6 @@ public class VoiceCartFragment extends Fragment {
 
         voiceOrderItemList = new ArrayList<>();
 
-
         voiceOrderRecycleView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         voiceOrderRecycleView.setItemAnimator(new CustomItemAnimator());
@@ -135,7 +134,7 @@ public class VoiceCartFragment extends Fragment {
         if (fromHomeRecommendationFragment) {
             // from RECOMMENDATION-SHOP-FRAGMENT
             voiceOrdersAdapter = new VoiceOrdersAdapter(user, requireContext(), "obs", voiceOrderItemList,
-                    orderByVoiceDocID, orderByVoiceAudioRefID, statusTV);
+                    orderByVoiceDocID, orderByVoiceAudioRefID, shopID, statusTV);
             voiceOrderRecycleView.setAdapter(voiceOrdersAdapter);
 
             refreshVoiceCartBtn.setEnabled(true);
@@ -144,37 +143,37 @@ public class VoiceCartFragment extends Fragment {
 
             if (preferences.getString(PreferenceKeys.HOME_RECOMMENDATION_FRAGMENT_ORDER_ID, "0").equals("0")) {
                 preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_FRAGMENT_ORDER_ID, Utils.generateOrderID()).apply();
-                String orderIDForHomeRecommendation = preferences.getString("", "0");
+                String orderIDForHomeRecommendation = preferences.getString(PreferenceKeys.HOME_RECOMMENDATION_FRAGMENT_ORDER_ID, "0");
                 bundle.putString("order_id", orderIDForHomeRecommendation);
             } else {
                 bundle.putString("order_id", preferences.getString(PreferenceKeys.HOME_RECOMMENDATION_FRAGMENT_ORDER_ID, "0"));
             }
 
             bundle.putString("order_by_voice_type", "obs");
-            bundle.putString("order_by_voice_doc_id", shopID);
+            bundle.putString("order_by_voice_doc_id", orderByVoiceDocID);
             bundle.putString("order_by_voice_audio_ref_id", preferences.getString(
                     PreferenceKeys.HOME_RECOMMENDATION_FRAGMENT_AUDIO_REF_ID, "0"));
 
-            getRecShopVoiceOrderData(user.getUid(), "obs", shopID, preferences.getString(
-                    PreferenceKeys.HOME_RECOMMENDATION_FRAGMENT_AUDIO_REF_ID, "0"), progressBar);
+            getRecShopVoiceOrderData(user.getUid(), "obs", orderByVoiceDocID, orderByVoiceAudioRefID, progressBar, shopID);
 
             refreshVoiceCartBtn.setOnClickListener(view -> {
-                Utils.deleteVoiceOrderCacheFile(requireContext(), shopID);
+                Utils.deleteVoiceOrderCacheFile(requireContext(), orderByVoiceDocID, shopID);
                 voiceOrdersAdapter.clear();
-                sendRecShopVoiceDataNetworkRequest(user.getUid(), "obs", shopID,
-                        preferences.getString(PreferenceKeys.HOME_RECOMMENDATION_FRAGMENT_AUDIO_REF_ID, "0"), progressBar);
+
+                sendVoiceOrderCartDataRequest(user.getUid(), "obs", orderByVoiceDocID,
+                        preferences.getString(PreferenceKeys.HOME_RECOMMENDATION_FRAGMENT_AUDIO_REF_ID, "0"), progressBar, shopID);
                 voiceOrdersAdapter.notifyDataSetChanged();
             });
 
+            clearVoiceCartBtn.setOnClickListener(view -> showClearVoiceCartConfirmBtmView(root, shopID));
 
         } else if (fromHomeOrderByVoiceFragment) {
             // from ORDER-BY-VOICE-FRAGMENT
             refreshVoiceCartBtn.setEnabled(true);
             clearVoiceCartBtn.setEnabled(true);
-//            checkoutCartButton.setEnabled(true);
 
             voiceOrdersAdapter = new VoiceOrdersAdapter(user, requireContext(), "obv", voiceOrderItemList,
-                    orderByVoiceDocID, orderByVoiceAudioRefID, statusTV);
+                    orderByVoiceDocID, orderByVoiceAudioRefID, null, statusTV);
             voiceOrderRecycleView.setAdapter(voiceOrdersAdapter);
 
             bundle.putString("order_by_voice_type", "obv");
@@ -183,17 +182,17 @@ public class VoiceCartFragment extends Fragment {
             bundle.putString("order_by_voice_audio_ref_id", orderByVoiceAudioRefID);
 
             getRecShopVoiceOrderData(user.getUid(), "obv", orderByVoiceDocID,
-                    orderByVoiceAudioRefID, progressBar);
+                    orderByVoiceAudioRefID, progressBar, "0");
 
             refreshVoiceCartBtn.setOnClickListener(view -> {
                 voiceOrdersAdapter.clear();
-                Utils.deleteVoiceOrderCacheFile(requireContext(), orderByVoiceDocID);
-                sendRecShopVoiceDataNetworkRequest(user.getUid(), "obv",
-                        orderByVoiceDocID, orderByVoiceAudioRefID, progressBar);
+                Utils.deleteVoiceOrderCacheFile(requireContext(), orderByVoiceDocID, "0");
+                sendVoiceOrderCartDataRequest(user.getUid(), "obv",
+                        orderByVoiceDocID, orderByVoiceAudioRefID, progressBar, "0");
                 voiceOrdersAdapter.notifyDataSetChanged();
             });
 
-
+            clearVoiceCartBtn.setOnClickListener(view -> showClearVoiceCartConfirmBtmView(root, null));
         } else {
             statusTV.setText(R.string.unable_to_load_voice_order_files);
             refreshVoiceCartBtn.setEnabled(false);
@@ -201,7 +200,6 @@ public class VoiceCartFragment extends Fragment {
             checkoutCartButton.setEnabled(false);
         }
 
-        clearVoiceCartBtn.setOnClickListener(view -> showClearVoiceCartConfirmBtmView(root));
 
         checkoutCartButton.setOnClickListener(v -> {
             Utils.vibrate(requireContext(), 50, 2);
@@ -211,7 +209,7 @@ public class VoiceCartFragment extends Fragment {
         return root;
     }
 
-    private void showClearVoiceCartConfirmBtmView(ViewGroup root) {
+    private void showClearVoiceCartConfirmBtmView(ViewGroup root, String shopID) {
         View clearCartView = LayoutInflater.from(requireContext()).inflate(
                 R.layout.bottomview_clear_voice_cart_confirmation, root, false);
 
@@ -222,13 +220,9 @@ public class VoiceCartFragment extends Fragment {
         Button yesBtn = clearCartView.findViewById(R.id.btmviewClearVoiceCartOkBtn_button);
         Button noBtn = clearCartView.findViewById(R.id.btmviewClearVoiceCartCancelBtn_button);
 
-        yesBtn.setOnClickListener(v -> {
-            voiceOrdersAdapter.sendDeleteVoiceOrderFileRequest("0", "0", true, clearCartBtmView);
-        });
+        yesBtn.setOnClickListener(v -> voiceOrdersAdapter.sendDeleteVoiceOrderFileRequest("0", "0", true, clearCartBtmView, shopID));
 
-        noBtn.setOnClickListener(v -> {
-            clearCartBtmView.dismiss();
-        });
+        noBtn.setOnClickListener(v -> clearCartBtmView.dismiss());
 
         if (!clearCartBtmView.isShowing()) {
             clearCartBtmView.show();
@@ -254,20 +248,20 @@ public class VoiceCartFragment extends Fragment {
 
 
     private void getRecShopVoiceOrderData(String userID, String orderByVoiceType, String orderByVoiceDocID,
-                                          String orderByVoiceAudioRefID, ProgressBar progressBar) {
+                                          String orderByVoiceAudioRefID, ProgressBar progressBar, String shopID) {
         try {
-            File folder = new File(requireContext().getFilesDir(), "voice_orders");
+            File folder = new File(requireContext().getFilesDir(), "voice_orders/" + orderByVoiceDocID + "/" + shopID);
             File file = new File(folder, "voice_orders_data_" + orderByVoiceDocID + ".json");
 
             if (file.exists()) {
                 processVoiceOrderFile(file, progressBar);
             } else {
                 if (orderByVoiceType.equals("obs")) {
-                    sendRecShopVoiceDataNetworkRequest(userID, orderByVoiceType,
-                            orderByVoiceDocID, orderByVoiceAudioRefID, progressBar);
+                    sendVoiceOrderCartDataRequest(userID, orderByVoiceType,
+                            orderByVoiceDocID, orderByVoiceAudioRefID, progressBar, shopID);
                 } else if (orderByVoiceType.equals("obv")) {
-                    sendRecShopVoiceDataNetworkRequest(userID, orderByVoiceType,
-                            orderByVoiceDocID, orderByVoiceAudioRefID, progressBar);
+                    sendVoiceOrderCartDataRequest(userID, orderByVoiceType,
+                            orderByVoiceDocID, orderByVoiceAudioRefID, progressBar, shopID);
                 }
             }
         } catch (IOException e) {
@@ -290,9 +284,9 @@ public class VoiceCartFragment extends Fragment {
     }
 
 
-    private void saveVoiceOrderDataToFile(String docID, JsonArray addressData) {
+    private void saveVoiceOrderDataToFile(String docID, String shopID, JsonArray addressData) {
         try {
-            File folder = new File(requireContext().getFilesDir(), "voice_orders");
+            File folder = new File(requireContext().getFilesDir(), "voice_orders/" + docID + "/" + shopID);
 
             if (!folder.exists()) {
                 boolean isCreated = folder.mkdirs();
@@ -318,15 +312,15 @@ public class VoiceCartFragment extends Fragment {
     }
 
 
-    private void sendRecShopVoiceDataNetworkRequest(String userID, String orderByVoiceType, String orderByVoiceDocID,
-                                                    String orderByVoiceAudioRefID,
-                                                    @NonNull ProgressBar progressBar) {
+    private void sendVoiceOrderCartDataRequest(String userID, String orderByVoiceType, String orderByVoiceDocID,
+                                               String orderByVoiceAudioRefID,
+                                               @NonNull ProgressBar progressBar, String shopID) {
         statusTV.setText("");
         progressBar.setVisibility(View.VISIBLE);
 
         APIService apiService = ApiServiceGenerator.getApiService(requireContext());
-        Call<JsonObject> call1209 = apiService.getRecShopVoiceOrderData(userID, orderByVoiceType,
-                orderByVoiceDocID, orderByVoiceAudioRefID);
+        Call<JsonObject> call1209 = apiService.getVoiceOrderCartData(userID, orderByVoiceType,
+                orderByVoiceDocID, orderByVoiceAudioRefID, shopID);
 
         call1209.enqueue(new Callback<>() {
             @SuppressLint("NotifyDataSetChanged")
@@ -342,12 +336,12 @@ public class VoiceCartFragment extends Fragment {
 
                         if (voiceOrdersData.isEmpty()) {
                             if (isAdded()) {
-                                saveVoiceOrderDataToFile(orderByVoiceDocID, voiceOrdersData);
+                                saveVoiceOrderDataToFile(orderByVoiceDocID, shopID, voiceOrdersData);
                                 statusTV.setText(R.string.no_voice_orders_recorded_yet);
                                 Log.d(LOG_TAG, "Voice order data is empty");
                             }
                         } else {
-                            saveVoiceOrderDataToFile(orderByVoiceDocID, voiceOrdersData);
+                            saveVoiceOrderDataToFile(orderByVoiceDocID, shopID, voiceOrdersData);
                             voiceOrderItemList.clear();
                             for (JsonElement element : voiceOrdersData) {
                                 VoiceOrdersModel data = new Gson().fromJson(element,
@@ -367,7 +361,8 @@ public class VoiceCartFragment extends Fragment {
                         statusTV.setText(R.string.an_unexpected_error_occurred);
                         Log.e(LOG_TAG, "Invalid response format: Missing 'voice_orders_data' field");
                         if (isAdded()) {
-                            Toast.makeText(getContext(), "Failed to fetch voice order data: Invalid response format", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "Failed to fetch voice order data: Invalid response format",
+                                    Toast.LENGTH_SHORT).show();
                         }
                     }
                 } else {

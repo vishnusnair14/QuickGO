@@ -31,15 +31,15 @@ import java.util.List;
 public class SavedAddressAdapter extends RecyclerView.Adapter<SavedAddressAdapter.AddressViewHolder> {
 
     private final String LOG_TAG = "SavedAddressDataAdapter";
-    private SharedPreferences preferences;
+    private final SharedPreferences preferences;
     FragmentHomeOrderByVoiceBinding binding;
     private final List<SavedAddressModel> savedAddressModelList;
-    private BottomSheetDialog setDeliveryAddrBtmView;
+    private final BottomSheetDialog setDeliveryAddrBtmView;
 
     public SavedAddressAdapter(FragmentHomeOrderByVoiceBinding binding,
                                SharedPreferences preferences,
-                               List<SavedAddressModel> savedAddressModelList, BottomSheetDialog setDeliveryAddrBtmView) {
-
+                               List<SavedAddressModel> savedAddressModelList,
+                               BottomSheetDialog setDeliveryAddrBtmView) {
         this.binding = binding;
         this.savedAddressModelList = savedAddressModelList;
         this.preferences = preferences;
@@ -78,9 +78,9 @@ public class SavedAddressAdapter extends RecyclerView.Adapter<SavedAddressAdapte
         private final ConstraintLayout addrViewLayout;
         private SavedAddressAdapter adapter;
         private FirebaseUser user;
-        private SharedPreferences preferences;
+        private final SharedPreferences preferences;
         FragmentHomeOrderByVoiceBinding binding;
-        private BottomSheetDialog setDeliveryAddrBtmView;
+        private final BottomSheetDialog setDeliveryAddrBtmView;
 
         public AddressViewHolder(@NonNull View itemView, SavedAddressAdapter adapter,
                                  SharedPreferences preferences,
@@ -127,13 +127,13 @@ public class SavedAddressAdapter extends RecyclerView.Adapter<SavedAddressAdapte
             addressCardView.setOnClickListener(v -> {
                 preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_KEY, address.getPhoneNo()).apply();
                 preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_TYPE, address.getAddressType()).apply();
-                preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_FULL_ADDRESS, address.getStreetAddress()).apply();
+                preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_STREET_ADDRESS, address.getStreetAddress()).apply();
+                preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_FULL_ADDRESS, address.getFullAddress()).apply();
 //                    preferences.edit().putString("selectedAddressLat", String.valueOf(address.getAddressLat())).apply();
 //                    preferences.edit().putString("selectedAddressLon", String.valueOf(address.getAddressLon())).apply();
 //                    preferences.edit().putString("selectedAddressCity", address.getCity()).apply();
 //                    preferences.edit().putString("selectedAddressPincode", address.getPincode()).apply();
 //                preferences.edit().putBoolean("isSetToCurrentLoc", false).apply();
-
                 binding.selectedAddressTypeViewTextView.setText(preferences.getString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_TYPE, "Select an address"));
                 binding.selectedFullAddressViewTextView.setText(preferences.getString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_FULL_ADDRESS, "Tap on any saved address to make it as default"));
 

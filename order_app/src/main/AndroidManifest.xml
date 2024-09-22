@@ -13,10 +13,8 @@
     <uses-permission
         android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
-    <uses-permission
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission
-        android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -31,11 +29,24 @@
         android:theme="@style/Theme.IntelliCart"
         android:usesCleartextTraffic="true"
         tools:targetApi="34">
-
+        <activity
+            android:name=".AuthSelectActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.authentication.signInWithPhoneNumber.PhoneAuthActivity"
+            android:exported="false"
+            android:text="Auth"
+            android:theme="@style/Theme.IntelliCart.NoActionBar" />
+        <activity
+            android:name=".ui.authentication.signInWithPhoneNumber.AuthenticationActivity"
+            android:exported="false"
+            android:text="Auth"
+            android:theme="@style/Theme.IntelliCart.NoActionBar" />
         <activity
             android:name=".ui.track.OrderTrackActivity"
             android:exported="false"
-            android:label="Track Order" />
+            android:label="Track Order"
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".ui.payment.PaymentActivity"
             android:exported="false" />
@@ -73,7 +84,7 @@
             android:exported="false"
             android:theme="@style/Theme.IntelliCart.NoActionBar" />
         <activity
-            android:name=".ui.authentication.AuthenticationActivity"
+            android:name=".ui.authentication.signInWithEmailPswd.AuthenticationActivity"
             android:exported="false"
             android:text="Auth"
             android:theme="@style/Theme.IntelliCart.NoActionBar" />

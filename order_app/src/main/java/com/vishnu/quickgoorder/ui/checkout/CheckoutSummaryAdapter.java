@@ -16,14 +16,14 @@ import java.util.List;
 import java.util.Locale;
 
 
-public class CartCheckoutVA extends RecyclerView.Adapter<CartCheckoutVA.ViewHolder> {
-    private final List<CartCheckoutVM> itemList;
+public class CheckoutSummaryAdapter extends RecyclerView.Adapter<CheckoutSummaryAdapter.ViewHolder> {
+    private final List<CheckoutSummaryModel> itemList;
     private final String LOG_TAG = this.getClass().getSimpleName();
     private float grandTotal = 0;
-    private SharedPreferences preferences;
+    private final SharedPreferences preferences;
     private final TextView grandTotalTV;
 
-    public CartCheckoutVA(List<CartCheckoutVM> itemList, TextView grandTotalTV, SharedPreferences preferences) {
+    public CheckoutSummaryAdapter(List<CheckoutSummaryModel> itemList, TextView grandTotalTV, SharedPreferences preferences) {
         this.itemList = itemList;
         this.grandTotalTV = grandTotalTV;
         this.preferences = preferences;
@@ -39,14 +39,14 @@ public class CartCheckoutVA extends RecyclerView.Adapter<CartCheckoutVA.ViewHold
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        CartCheckoutVM cartCheckoutVM = itemList.get(position);
+        CheckoutSummaryModel checkoutSummaryModel = itemList.get(position);
 
-        holder.itemNameTV.setText(cartCheckoutVM.getItem_name());
-        holder.itemQtyTV.setText(String.format(Locale.ENGLISH, "%d", cartCheckoutVM.getItem_qty()));
-        holder.itemPriceTV.setText(String.format(Locale.ENGLISH, "%d", cartCheckoutVM.getItem_price()));
-        holder.itemFinalPriceTV.setText(String.format(Locale.ENGLISH, "₹ %d/-", cartCheckoutVM.getItem_final_price()));
+        holder.itemNameTV.setText(checkoutSummaryModel.getItem_name());
+        holder.itemQtyTV.setText(String.format(Locale.ENGLISH, "%d", checkoutSummaryModel.getItem_qty()));
+        holder.itemPriceTV.setText(String.format(Locale.ENGLISH, "%d", checkoutSummaryModel.getItem_price()));
+        holder.itemFinalPriceTV.setText(String.format(Locale.ENGLISH, "₹ %d/-", checkoutSummaryModel.getItem_final_price()));
 
-        grandTotal = grandTotal + cartCheckoutVM.getGrand_total();
+        grandTotal = grandTotal + checkoutSummaryModel.getGrand_total();
         grandTotalTV.setText(String.format(Locale.ENGLISH, "GRAND TOTAL: ₹ %f/-", grandTotal));
 
         preferences.edit().putFloat("final_amount_payable", grandTotal).apply();

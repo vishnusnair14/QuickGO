@@ -28,7 +28,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -40,11 +39,11 @@ import com.vishnu.quickgodelivery.R;
 import com.vishnu.quickgodelivery.callbacks.ChatID;
 import com.vishnu.quickgodelivery.databinding.FragmentObvOrderInformationBinding;
 import com.vishnu.quickgodelivery.miscellaneous.Utils;
-import com.vishnu.quickgodelivery.server.APIService;
-import com.vishnu.quickgodelivery.server.ApiServiceGenerator;
-import com.vishnu.quickgodelivery.server.ChatWSC;
-import com.vishnu.quickgodelivery.server.MessageAdapter;
-import com.vishnu.quickgodelivery.server.MessageModel;
+import com.vishnu.quickgodelivery.server.sapi.APIService;
+import com.vishnu.quickgodelivery.server.sapi.ApiServiceGenerator;
+import com.vishnu.quickgodelivery.server.ws.ChatClient;
+import com.vishnu.quickgodelivery.server.ws.ChatAdapter;
+import com.vishnu.quickgodelivery.server.ws.ChatModel;
 
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
@@ -74,7 +73,7 @@ public class OBVOrderInformationFragment extends Fragment {
     String shopPhno;
     private String userID;
     SharedPreferences preferences;
-    MessageAdapter messageAdapter;
+    ChatAdapter chatAdapter;
     DecimalFormat decimalFormat = new DecimalFormat("#.#######");
     private View root;
     Button chatSendBtn;
@@ -84,10 +83,10 @@ public class OBVOrderInformationFragment extends Fragment {
     ProgressBar chatStatusPB;
     Button chatFab;
     private RecyclerView recyclerView;
-    private List<MessageModel> messageList;
+    private List<ChatModel> chatMessageList;
     BottomSheetDialog chatBtmDialogView;
     BottomSheetDialog callConfirmBtmDialogView;
-    private ChatWSC chatWSC;
+    private ChatClient chatClient;
     BottomSheetDialog allDeliveryOptionsBtmView;
     private String orderType;
     private String orderByVoiceAudioRefID;
@@ -137,13 +136,11 @@ public class OBVOrderInformationFragment extends Fragment {
         gridViewStatusTV = binding.storePrefShopDetailsGridViewStatusTextView;
         statusTV = binding.orderInfoObvStatusTVTextView;
 
-//        gridViewStatusTV.setVisibility(View.GONE);
-
         statusTV.setOnClickListener(v -> {
             fetchData(orderKey, chatId -> {
                 if (chatId != null) {
                     // TODO: migrate to base activity
-                    chatWSC = new ChatWSC(requireActivity(), this, user, chatId, chatStatusTV,
+                    chatClient = new ChatClient(requireActivity(), this, user, chatId, chatStatusTV,
                             chatStatusPB, chatBtmStatusTV, messageET, chatSendBtn);
                 } else {
                     Toast.makeText(requireContext(), "No channel for chat found!",
@@ -154,8 +151,8 @@ public class OBVOrderInformationFragment extends Fragment {
 
         statusTV.setVisibility(View.GONE);
 
-        messageList = new ArrayList<>();
-        messageAdapter = new MessageAdapter(messageList);
+        chatMessageList = new ArrayList<>();
+        chatAdapter = new ChatAdapter(chatMessageList);
 
         showLoadingUI();
 
@@ -164,7 +161,7 @@ public class OBVOrderInformationFragment extends Fragment {
         fetchData(orderKey, chatId -> {
             if (chatId != null) {
                 // TODO: migrate to base activity
-                chatWSC = new ChatWSC(requireActivity(), this, user, chatId, chatStatusTV,
+                chatClient = new ChatClient(requireActivity(), this, user, chatId, chatStatusTV,
                         chatStatusPB, chatBtmStatusTV, messageET, chatSendBtn);
             } else {
                 Toast.makeText(requireContext(), "No channel for chat found!",
@@ -201,6 +198,7 @@ public class OBVOrderInformationFragment extends Fragment {
         return root;
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void initChatBtmView(ViewGroup root) {
         View chatView = LayoutInflater.from(requireContext()).inflate(
                 R.layout.bottomview_chat_with_partner, root, false);
@@ -216,11 +214,12 @@ public class OBVOrderInformationFragment extends Fragment {
         chatBtmStatusTV = chatView.findViewById(R.id.chatViewBtmStatusTV_textView);
         chatStatusTV = chatView.findViewById(R.id.chatViewStatusTV_textView);
         chatStatusPB = chatView.findViewById(R.id.chatView_progressBar);
+        TextView clearAllChatBtn = chatView.findViewById(R.id.clearAllChat_textView);
 
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        recyclerView.setAdapter(messageAdapter);
+        recyclerView.setAdapter(chatAdapter);
 
         chatSendBtn.setOnClickListener(v -> {
             String message = messageET.getText().toString();
@@ -228,34 +227,40 @@ public class OBVOrderInformationFragment extends Fragment {
                 sendMessage(message);
                 messageET.setText("");
             }
+        });
 
+        clearAllChatBtn.setOnClickListener(v -> {
+            chatMessageList.clear();
+            chatAdapter.notifyDataSetChanged();
+            chatStatusTV.setTextColor(requireContext().getColor(R.color.wsc_connected));
+            chatStatusTV.setText(R.string.ready_to_chat);
         });
     }
 
     // Method to send a message via WebSocket
     public void sendMessage(String message) {
-        if (chatWSC != null) {
+        if (chatClient != null) {
             String messageTime = LocalTime.now().format(DateTimeFormatter.ofPattern("h:mm a")).toUpperCase();
-            chatWSC.sendMessage(message, messageTime);
+            chatClient.sendMessage(message, messageTime);
         }
     }
 
     @SuppressLint("NotifyDataSetChanged")
     public void addMessage(String messageId, String message, String messageTime) {
-        if (messageList != null) {
-            messageList.add(new MessageModel(messageId, message, messageTime, false));
-            messageAdapter.notifyItemInserted(messageList.size() - 1);
+        if (chatMessageList != null) {
+            chatMessageList.add(new ChatModel(messageId, message, messageTime, false));
+            chatAdapter.notifyItemInserted(chatMessageList.size() - 1);
             if (recyclerView != null) {
-                recyclerView.scrollToPosition(messageList.size() - 1);
+                recyclerView.scrollToPosition(chatMessageList.size() - 1);
             }
         }
     }
 
     public void addSentMessage(String message, String messageTime) {
-        messageList.add(new MessageModel("Me", message, messageTime, true));
-        messageAdapter.notifyItemInserted(messageList.size() - 1);
+        chatMessageList.add(new ChatModel("Me", message, messageTime, true));
+        chatAdapter.notifyItemInserted(chatMessageList.size() - 1);
         if (recyclerView != null) {
-            recyclerView.scrollToPosition(messageList.size() - 1);
+            recyclerView.scrollToPosition(chatMessageList.size() - 1);
         }
     }
 
@@ -263,10 +268,12 @@ public class OBVOrderInformationFragment extends Fragment {
         Uri gmmIntentUri = Uri.parse("https://www.google.com/maps/dir/?api=1&destination=" +
                 destLat + "," + destLng + "&travelmode=driving");
 
-        Intent mapIntent = new Intent(Intent.CATEGORY_APP_MAPS, gmmIntentUri);
-//        mapIntent.setPackage("com.google.android.apps.maps");
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+
         if (mapIntent.resolveActivity(requireActivity().getPackageManager()) != null) {
             this.startActivity(mapIntent);
+        } else {
+            Toast.makeText(requireContext(), "Unable to start maps", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -364,115 +371,6 @@ public class OBVOrderInformationFragment extends Fragment {
     }
 
 
-//    private void fetchData(String key, ChatID chatID) {
-//
-//        APIService apiService = ApiServiceGenerator.getApiService(requireContext());
-//        Call<JsonObject> call = apiService.fetchOrderData(orderType, userID, user.getUid(), key);
-//
-//        call.enqueue(new Callback<>() {
-//            @Override
-//            public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
-//                if (response.isSuccessful() && response.body() != null) {
-//                    JsonObject responseBody = response.body();
-//                    String status = responseBody.has("status") ?
-//                            responseBody.get("status").getAsString() : "error";
-//
-//                    if ("success".equals(status)) {
-//                        JsonObject data = responseBody.has("data") ?
-//                                responseBody.get("data").getAsJsonObject() : null;
-//
-//                        String responseType = responseBody.has("order_type") ?
-//                                responseBody.get("order_type").getAsString() : "";
-//
-//                        if (data != null) {
-////                            Log.d(LOG_TAG, data + "");
-//
-//                            if ("obv".equals(responseType)) {
-//                                parseData(data, chatID);
-//                            } else {
-//                                Log.d(LOG_TAG, "Unknown order type: " + responseType);
-//                            }
-//                        } else {
-//                            Log.d(LOG_TAG, "Data field is null.");
-//                        }
-//                    } else {
-//                        Log.d(LOG_TAG, "Error status or message: " +
-//                                responseBody.get("message").getAsString());
-//                    }
-//                } else {
-//                    Log.d(LOG_TAG, "Response is not successful or body is null.");
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
-//                Log.d(LOG_TAG, "Error fetching document: " + t.getMessage());
-//                Toast.makeText(requireContext(), "Network error. Please try again.", Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//    }
-
-
-//    private void parseData(JsonObject data, ChatID chatID) {
-//
-//        // Parsing logic specific to 'obv' response
-//        JsonObject deliveryLocJson = data.has("delivery_address_loc") ?
-//                data.getAsJsonObject("delivery_address_loc") : null;
-//
-//        if (data.has("store_pref_data")) {
-//            JsonArray shopData = data.get("store_pref_data").getAsJsonArray();
-//
-//            StorePrefAdapter adapter = new StorePrefAdapter(requireContext(), getShops(shopData));
-//            gridView.setAdapter(adapter);
-////            gridViewStatusTV.setVisibility(View.GONE);
-//        } else {
-//            gridViewStatusTV.setVisibility(View.VISIBLE);
-//            gridViewStatusTV.setText("No store preference details found");
-//        }
-//
-//
-//        GeoPoint deliveryLoc;
-//        if (deliveryLocJson != null) {
-//            double deliveryLat = deliveryLocJson.has("latitude") ?
-//                    deliveryLocJson.get("latitude").getAsDouble() : 0;
-//            double deliveryLng = deliveryLocJson.has("longitude") ?
-//                    deliveryLocJson.get("longitude").getAsDouble() : 0;
-//            deliveryLoc = new GeoPoint(deliveryLat, deliveryLng);
-//        } else {
-//            deliveryLoc = null;
-//        }
-//
-//
-//        receiverPhno = data.has("user_phno") ?
-//                data.get("user_phno").getAsString() : null;
-//        shopPhno = data.has("shop_phno") ?
-//                data.get("shop_phno").getAsString() : null;
-//        String orderId = data.has("order_id") ?
-//                data.get("order_id").getAsString() : null;
-//
-//        chatID.setChatId(orderId);
-//
-//        if (receiverPhno != null && receiverPhno.length() == 10) {
-//            callUserIV.setEnabled(true);
-//        } else {
-//            callUserIV.setEnabled(false);
-//            Toast.makeText(requireContext(), "Invalid user phno!", Toast.LENGTH_LONG).show();
-//        }
-//
-//        if (deliveryLoc != null) {
-//            showDeliveryLocOnMapBtn.setEnabled(true);
-//            showDeliveryLocOnMapBtn.setOnClickListener(v ->
-//                    openGoogleMaps(decimalFormat.format(deliveryLoc.getLatitude()),
-//                            decimalFormat.format(deliveryLoc.getLongitude())));
-//        }
-//
-//        binding.obvobvOrderInfoReceiverFullAddressViewTextView.setText(
-//                MessageFormat.format("{0}",
-//                        data.get("delivery_full_address").getAsString()));
-//
-//        showAllUI();
-//    }
-
     private void parseData(JsonObject data, ChatID chatID) {
         JsonObject deliveryLocJson = data.has("delivery_address_loc") ? data.getAsJsonObject("delivery_address_loc") : null;
 
@@ -535,9 +433,12 @@ public class OBVOrderInformationFragment extends Fragment {
     private void setupDeliveryLocationButton(GeoPoint deliveryLoc) {
         if (deliveryLoc != null) {
             showDeliveryLocOnMapBtn.setEnabled(true);
-            showDeliveryLocOnMapBtn.setOnClickListener(v ->
-                    openGoogleMaps(decimalFormat.format(deliveryLoc.getLatitude()),
-                            decimalFormat.format(deliveryLoc.getLongitude())));
+
+            showDeliveryLocOnMapBtn.setOnClickListener(v -> {
+                Toast.makeText(requireContext(), deliveryLoc.getLatitude() + "", Toast.LENGTH_SHORT).show();
+                openGoogleMaps(decimalFormat.format(deliveryLoc.getLatitude()),
+                        decimalFormat.format(deliveryLoc.getLongitude()));
+            });
         }
     }
 
@@ -718,8 +619,8 @@ public class OBVOrderInformationFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         // Close WebSocket connection when activity is destroyed
-        if (chatWSC != null) {
-            chatWSC.webSocket.close(1000, "client disconnected");
+        if (chatClient != null) {
+            chatClient.webSocket.close(1000, "client disconnected");
             chatBtmDialogView.dismiss();
             chatBtmDialogView = null;
         }

@@ -27,7 +27,8 @@ public class ItemAdapter extends BaseAdapter {
     String SHOP_ID;
     Context context;
 
-    public ItemAdapter(Context context, DbHandler dbHandler, Vibrator vibrator, List<ItemModel> itemList, String SHOP_ID) {
+    public ItemAdapter(Context context, DbHandler dbHandler, Vibrator vibrator,
+                       List<ItemModel> itemList, String SHOP_ID) {
         this.itemList = itemList;
         this.inflater = LayoutInflater.from(context);
         this.SHOP_ID = SHOP_ID;

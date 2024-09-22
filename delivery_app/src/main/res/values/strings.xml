@@ -126,7 +126,7 @@
     <string name="accept_order">ACCEPT ORDER</string>
     <string name="if_you_">If you want to decline this order,\nClick \'Decline Order\' button, else close this dialog. Remember you can only deliver this order after delivering the current order if not declined.</string>
     <string name="choose_a_delivery_action_for_this_order">Choose a delivery action for this order?</string>
-    <string name="this_order_">This order has been saved for next delivery and successfully added to your next-orders-bucket. Once you deliver the current accepted order successfully, then next you can deliver this selected order.</string>
+    <string name="this_order_">This order has been saved for next delivery and successfully added to your next-orders-bucket.</string>
     <string name="delivery_app">QuickGO Delivery App</string>
     <string name="email_id">$(email_id)</string>
     <string name="uid">$(uid)</string>
@@ -184,7 +184,7 @@
     <string name="failed_to_register_shop_server_busy_404">Failed to register , server busy (404)</string>
     <string name="error">ERROR!</string>
     <string name="closing">closing…</string>
-    <string name="disconnected">Disconnected</string>
+    <string name="disconnected">disconnected</string>
     <string name="retrying_connection">Retrying connection…</string>
     <string name="max_retry_attempts">Could not establish chat connection.</string>
     <string name="registration_in_progress">Registration in progress…</string>
@@ -220,4 +220,13 @@
     <string name="email_hint">email address</string>
     <string name="username">Enter username</string>
     <string name="turn_on_duty_to_receive_orders">Turn on duty to receive orders</string>
+    <string name="purchase_by_store_preference">Purchase by store preference</string>
+    <string name="clear_all"><u>Clear all</u></string>
+    <string name="ready_to_chat">You are ready to chat.</string>
+    <string name="you_are_ready_to_chat">You are ready to chat.</string>
+    <string name="order_has_saved_for_next_delivery">Order has saved for next delivery</string>
+    <string name="once_you_deliver_the_cu">Once you deliver the current accepted order successfully, then next you can deliver this selected order.</string>
+    <string name="are_you_sure_you_want_to_call">Are you sure you want to call [PhoneNumber]? This action will use your phone\'s call functionality, applies standard carrier charges.</string>
+    <string name="delivery_distance_unknown">DELIVERY DISTANCE: Unknown</string>
+    <string name="pickup_distance_unknown">PICKUP DISTANCE: Unknown</string>
 </resources>

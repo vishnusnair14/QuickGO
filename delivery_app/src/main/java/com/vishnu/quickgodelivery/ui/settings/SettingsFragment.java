@@ -11,7 +11,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreferenceCompat;
 
 import com.vishnu.quickgodelivery.R;
-import com.vishnu.quickgodelivery.server.ApiServiceGenerator;
+import com.vishnu.quickgodelivery.server.sapi.ApiServiceGenerator;
 
 
 public class SettingsFragment extends PreferenceFragmentCompat {

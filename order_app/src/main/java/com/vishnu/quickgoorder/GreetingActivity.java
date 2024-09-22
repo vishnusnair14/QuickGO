@@ -9,7 +9,8 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.vishnu.quickgoorder.ui.authentication.AuthenticationActivity;
+import com.vishnu.quickgoorder.ui.authentication.signInWithEmailPswd.AuthenticationActivity;
+import com.vishnu.quickgoorder.ui.authentication.signInWithPhoneNumber.PhoneAuthActivity;
 
 public class GreetingActivity extends AppCompatActivity {
 
@@ -19,16 +20,21 @@ public class GreetingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_greeting);
 
         // all bindings init. here
-        Button continue_button = findViewById(R.id.continue_button);
+        Button getStatedBtn = findViewById(R.id.getStarted_button);
 
-        continue_button.setOnClickListener(view -> {
+        getStatedBtn.setOnClickListener(view -> {
             Intent SignInActivityIntent = new Intent(GreetingActivity.this, AuthenticationActivity.class);
             startActivity(SignInActivityIntent);
         });
 
-        if (R.integer.DebugStateForAPP > 1) {
-            continue_button.performClick();
-            Log.i(TAG, "DebugStateForAPP.called: MainEntryActivity.continue_button");
-        }
+//        signInWithEmailBtn.setOnClickListener(view -> {
+//            Intent SignInActivityIntent = new Intent(GreetingActivity.this, AuthenticationActivity.class);
+//            startActivity(SignInActivityIntent);
+//        });
+
+//        if (R.integer.DebugStateForAPP > 1) {
+//            signInWithPhnoBtn.performClick();
+//            Log.i(TAG, "DebugStateForAPP.called: MainEntryActivity.continue_button");
+//        }
     }
 }

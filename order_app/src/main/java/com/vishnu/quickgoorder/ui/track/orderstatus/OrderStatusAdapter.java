@@ -26,7 +26,8 @@ public class OrderStatusAdapter extends RecyclerView.Adapter<OrderStatusAdapter.
     private final Context context;
     private String orderID;
 
-    public OrderStatusAdapter(List<Map<String, String>> orderStatusList, String orderID, Context context) {
+    public OrderStatusAdapter(List<Map<String, String>> orderStatusList,
+                              String orderID, Context context) {
         this.orderStatusList = orderStatusList;
         this.orderID = orderID;
         this.context = context;

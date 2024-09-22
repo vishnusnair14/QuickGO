@@ -1,6 +1,8 @@
 package com.vishnu.quickgoorder.ui.settings.storepreference.choose_address;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,6 +33,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -50,7 +53,7 @@ public class ChooseAddressFragment extends Fragment {
 
         binding = FragmentStorePreferenceChooseAddressBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-
+        SharedPreferences preferences = requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         RecyclerView recyclerViewAddresses = binding.addressListStorePrefRecycleView;
@@ -60,7 +63,7 @@ public class ChooseAddressFragment extends Fragment {
 
         // Handle address item click to fetch nearby shops
         if (user != null) {
-            addressAdapter = new AddressDataAdapter(addressList, requireContext(), user.getUid());
+            addressAdapter = new AddressDataAdapter(addressList, requireContext(), user.getUid(), preferences);
 
             // Set the adapter to the RecyclerView
             recyclerViewAddresses.setAdapter(addressAdapter);

@@ -1,4 +1,4 @@
-package com.vishnu.quickgoorder.ui.authentication;
+package com.vishnu.quickgoorder.ui.authentication.signInWithEmailPswd;
 
 import android.os.Bundle;
 

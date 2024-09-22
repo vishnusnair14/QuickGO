@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".ui.authentication.signInWithEmailPswd.RegisterFragment">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/registrationPhno_cardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        app:cardCornerRadius="25dp"
+        app:cardElevation="4dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#B2FBF7F7"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/authBannerPhno_textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:fontFamily="@font/archivo_black"
+                android:lineSpacingExtra="5dp"
+                android:text="@string/register_account"
+                android:textAlignment="center"
+                android:textSize="20sp"
+                android:layout_gravity="center"
+                android:drawableLeft="@drawable/baseline_app_registration_24"
+                android:drawablePadding="5dp"
+                android:paddingHorizontal="5dp" />
+
+            <TextView
+                android:id="@+id/textView809"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/montserrat"
+                android:gravity="center"
+                android:text="Enter new phoneno and password to register with us. Remember password for future logins."
+                android:textAlignment="center"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textView490"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:fontFamily="@font/montserrat"
+                android:text="Enter your phone number"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/phoneNumberFieldRegisterFragment_editText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:autofillHints="phone"
+                android:hint="Phone number"
+                android:inputType="phone"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textView3409"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:fontFamily="@font/montserrat"
+                android:text="Enter your OTP"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/otpFieldRegisterFragment_editText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:autofillHints="sms_otp"
+                android:hint="OTP"
+                android:inputType="number"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textView343"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:fontFamily="@font/montserrat"
+                android:text="@string/set_a_new_password"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/passwordFieldRegisterFragmentPhno_editTextText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:autofillHints="password"
+                android:hint="@string/password"
+                android:inputType="textPassword"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/reEnterPasswordFieldRegisterFragmentPhno_editTextText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:hint="@string/re_enter_password"
+                android:inputType="textPassword"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/registerRegisterFragment_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="25dp"
+                android:backgroundTint="#0F63A5"
+                android:fontFamily="@font/montserrat"
+                android:text="@string/register"
+                android:textAllCaps="false"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>

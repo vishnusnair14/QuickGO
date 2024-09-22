@@ -1,4 +1,4 @@
-package com.vishnu.quickgoorder.ui.authentication;
+package com.vishnu.quickgoorder.ui.authentication.signInWithPhoneNumber;
 
 import android.app.Activity;
 import android.content.Context;
@@ -140,7 +140,7 @@ public class LoginFragment extends Fragment {
         loginViewLayout.setVisibility(View.VISIBLE);
         binding.statusViewTextBox.setVisibility(View.GONE);
         binding.loginStatusProgressBar.setVisibility(View.GONE);
-        binding.progressBar.setVisibility(View.GONE);
+        binding.progressBar987.setVisibility(View.GONE);
         binding.loginStatusProgressBar.setVisibility(View.GONE);
     }
 
@@ -149,7 +149,7 @@ public class LoginFragment extends Fragment {
         binding.statusViewTextBox.setVisibility(View.VISIBLE);
         binding.statusViewTextBox.setTextColor(getResources().getColor(cl, null));
         binding.statusViewTextBox.setText(txt);
-        binding.progressBar.setVisibility(View.VISIBLE);
+        binding.progressBar987.setVisibility(View.VISIBLE);
     }
 
     private void sendEmailVerification(@NonNull FirebaseUser user, TextView statusTV) {

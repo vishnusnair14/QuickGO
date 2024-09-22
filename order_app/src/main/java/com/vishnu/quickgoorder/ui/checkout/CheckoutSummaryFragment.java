@@ -12,30 +12,36 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.JsonObject;
 import com.vishnu.quickgoorder.R;
 import com.vishnu.quickgoorder.callbacks.StorePref;
 import com.vishnu.quickgoorder.crypto.DESCore;
 import com.vishnu.quickgoorder.databinding.FragmentCheckoutSummaryBinding;
 import com.vishnu.quickgoorder.miscellaneous.PreferenceKeys;
-import com.vishnu.quickgoorder.miscellaneous.SharedDataView;
 import com.vishnu.quickgoorder.miscellaneous.Utils;
 import com.vishnu.quickgoorder.server.sapi.APIService;
 import com.vishnu.quickgoorder.server.sapi.ApiServiceGenerator;
 import com.vishnu.quickgoorder.ui.payment.PaymentActivity;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 
 import retrofit2.Call;
@@ -44,23 +50,23 @@ import retrofit2.Response;
 
 public class CheckoutSummaryFragment extends Fragment {
     private final String LOG_TAG = "CheckoutSummaryFragment";
-    private FirebaseFirestore db;
-    private CartCheckoutVA checkoutAdapter;
+    private CheckoutSummaryAdapter checkoutAdapter;
     private CheckBox setDefaultAsDeliveryCheckBox;
-    private TextView proceedToPaymentBtn;
+    private TextView proceedToPaymentBtn, storePrefView;
     private TextView grandTotalTV;
-    private static SharedDataView sharedDataView;
     private SharedPreferences preferences;
     private Intent paymentIntent;
     Bundle bundle;
     private FirebaseUser user;
+    ProgressBar storePrefDataViewPB;
     private int hasData = -2;
     BottomSheetDialog savedStorePrefBtmView;
     private BottomSheetDialog storePrefCheckFailedBtmView;
     String shopID;
     String shopDistrict;
+    TextView storePrefBanner;
     String from;
-
+    TextView changeStorePref;
 
     public CheckoutSummaryFragment() {
     }
@@ -70,7 +76,6 @@ public class CheckoutSummaryFragment extends Fragment {
         super.onCreate(savedInstanceState);
         user = FirebaseAuth.getInstance().getCurrentUser();
 
-        sharedDataView = new ViewModelProvider(requireActivity()).get(SharedDataView.class);
         preferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         bundle = new Bundle();
 
@@ -94,12 +99,20 @@ public class CheckoutSummaryFragment extends Fragment {
         // Inflate the layout for this fragment
         com.vishnu.quickgoorder.databinding.FragmentCheckoutSummaryBinding binding = FragmentCheckoutSummaryBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-        db = FirebaseFirestore.getInstance();
 
         setDefaultAsDeliveryCheckBox = binding.setDefaultAsDeliveryCheckBox;
         proceedToPaymentBtn = binding.proceedFromCheckoutTextView;
+        changeStorePref = binding.chnageStorePrefCheckoutSummaryButton;
+        TextView defaultAddrViewTV = binding.checkoutSummaryDefaultAddressViewTextView;
+        TextView defaultAddrPhoneViewTV = binding.checkoutSummaryDefaultAddressPhonenoViewTextView;
+        storePrefView = binding.shopPreferenceViewTextView;
+        storePrefDataViewPB = binding.storePrefDataViewPBProgressBar;
+        storePrefBanner = binding.textView49;
 
         paymentIntent = new Intent(requireActivity(), PaymentActivity.class);
+
+        changeStorePref.setOnClickListener(v -> NavHostFragment.findNavController(this)
+                .navigate(R.id.action_checkoutSummaryFragment_to_nav_store_pref_choose_address));
 
         setDefaultAsDeliveryCheckBox.setOnCheckedChangeListener((compoundButton, b) -> {
             if (b) {
@@ -114,10 +127,10 @@ public class CheckoutSummaryFragment extends Fragment {
             if (setDefaultAsDeliveryCheckBox.isChecked()) {
                 if (from.equals("fromHomeOrderByVoiceFragment")) {
                     if (this.hasData == -1) {
-                        proceedToPaymentBtn.setText("PROCEED ANYWAY");
+                        proceedToPaymentBtn.setText(R.string.proceed_anyway);
                         showStorePrefCheckFailedProceedAnywayBtmView();
                     } else if (this.hasData == 0) {
-                        proceedToPaymentBtn.setText("SET PREFERENCE");
+                        proceedToPaymentBtn.setText(R.string.set_preference);
                         showSetStorePreferenceBtmView();
                     } else if (this.hasData == 1) {
                         paymentIntent.putExtras(bundle);
@@ -137,6 +150,16 @@ public class CheckoutSummaryFragment extends Fragment {
             }
         });
 
+        if (from.equals("fromHomeOrderByVoiceFragment")) {
+            defaultAddrViewTV.setText(preferences.getString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_FULL_ADDRESS, ""));
+            defaultAddrPhoneViewTV.setText(preferences.getString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_KEY, ""));
+        } else if (from.equals("fromHomeRecommendationFragment")) {
+            defaultAddrViewTV.setText(preferences.getString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_STREET_ADDRESS, ""));
+            defaultAddrPhoneViewTV.setText(preferences.getString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_KEY, ""));
+        } else {
+            defaultAddrViewTV.setText("");
+        }
+
         return root;
     }
 
@@ -145,12 +168,13 @@ public class CheckoutSummaryFragment extends Fragment {
             checkIsPrefSavedForAddress(preferences.getString(
                             PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_KEY, "0"),
                     hasData -> {
-                        proceedToPaymentBtn.setText("PROCEED TO PAYMENT");
+                        proceedToPaymentBtn.setText(R.string.proceed_to_payment);
                         proceedToPaymentBtn.setEnabled(true);
                         if (hasData == 1) {
                             this.hasData = 1;
                         } else if (hasData == 0) {
                             this.hasData = 0;
+                            changeStorePref.setText(R.string.set_store_preference);
                         } else if (hasData == -1) {
                             this.hasData = -1;
                         }
@@ -173,18 +197,19 @@ public class CheckoutSummaryFragment extends Fragment {
 
                         if (hasData == 1) {
                             this.hasData = 1;
-                            proceedToPaymentBtn.setText("PROCEED TO PAYMENT");
+                            proceedToPaymentBtn.setText(R.string.proceed_to_payment);
                             Utils.vibrate(requireContext(), 50, 2);
                             paymentIntent.putExtras(bundle);
                             startActivity(paymentIntent);
                             Utils.vibrate(requireContext(), 50, 2);
                         } else if (hasData == 0) {
                             this.hasData = 0;
-                            proceedToPaymentBtn.setText("SET PREFERENCE");
+                            changeStorePref.setText(R.string.set_store_preference);
+                            proceedToPaymentBtn.setText(R.string.set_preference);
                             showSetStorePreferenceBtmView();
                         } else if (hasData == -1) {
                             this.hasData = -1;
-                            proceedToPaymentBtn.setText("PROCEED ANYWAY");
+                            proceedToPaymentBtn.setText(R.string.proceed_anyway);
                             showStorePrefCheckFailedProceedAnywayBtmView();
                         }
                     });
@@ -195,13 +220,11 @@ public class CheckoutSummaryFragment extends Fragment {
 
     private void showStorePrefCheckFailedProceedAnywayBtmView() {
         if (storePrefCheckFailedBtmView != null && storePrefCheckFailedBtmView.isShowing()) {
-            // Hide and dismiss the existing dialog if it's showing
             storePrefCheckFailedBtmView.hide();
             storePrefCheckFailedBtmView.dismiss();
             return;
         }
 
-        // Create the dialog if it does not exist or if it has been dismissed
         View storePrefCheckFailedView = LayoutInflater.from(requireContext()).inflate(
                 R.layout.bottomview_failed_to_check_store_pref_data, null, false);
 
@@ -214,9 +237,7 @@ public class CheckoutSummaryFragment extends Fragment {
         Button cancelBtn = storePrefCheckFailedView.findViewById(R.id.btmviewFailedToCheckStorePrefDataCancelBtn_button);
         Button proceedAnywayBtn = storePrefCheckFailedView.findViewById(R.id.btmviewFailedToCheckStorePrefProceedAnywaysBtn_button);
 
-        retryBtn.setOnClickListener(v -> {
-            tryCheckForStorePrefData(storePrefCheckFailedBtmView);
-        });
+        retryBtn.setOnClickListener(v -> tryCheckForStorePrefData(storePrefCheckFailedBtmView));
 
         setPrefBtn.setOnClickListener(v -> {
             if (storePrefCheckFailedBtmView != null) {
@@ -258,17 +279,13 @@ public class CheckoutSummaryFragment extends Fragment {
             Button actionBtn = savedStorePrefView.findViewById(R.id.btmviewStorePrefDataNotSavedGoToSettingsBtn_button);
             Button cancelBtn = savedStorePrefView.findViewById(R.id.btmviewStorePrefDataNotSavedCancelBtn_button);
 
-            cancelBtn.setOnClickListener(v -> {
-                savedStorePrefBtmView.dismiss();
-            });
+            cancelBtn.setOnClickListener(v -> savedStorePrefBtmView.dismiss());
 
             actionBtn.setOnClickListener(v -> {
                 savedStorePrefBtmView.dismiss();
 
-                new Handler().postDelayed(() -> {
-                    NavHostFragment.findNavController(this)
-                            .navigate(R.id.action_checkoutSummaryFragment_to_nav_store_pref_choose_address);
-                }, 500);
+                new Handler().postDelayed(() -> NavHostFragment.findNavController(this)
+                        .navigate(R.id.action_checkoutSummaryFragment_to_nav_store_pref_choose_address), 500);
             });
         }
 
@@ -278,9 +295,44 @@ public class CheckoutSummaryFragment extends Fragment {
         }
     }
 
+    private StringBuilder extractShopNames(String jsonData) {
+        StringBuilder sData = new StringBuilder();
+        try {
+            // Parse the JSON data
+            JSONObject data = new JSONObject(jsonData);
+            List<Shop> shopList = new ArrayList<>();
+
+            // Iterate over the keys in the JSON object
+            Iterator<String> keys = data.keys();
+
+            while (keys.hasNext()) {
+                String key = keys.next();
+                JSONObject shopDetails = data.getJSONObject(key);
+
+                // Extract the shop_name and shop_preference
+                String shopName = shopDetails.getString("shop_name").substring(0, 1).toUpperCase() +
+                        shopDetails.getString("shop_name").substring(1).toLowerCase();
+                String pref = shopDetails.getString("shop_preference");
+
+                // Add to list as a Shop object
+                shopList.add(new Shop(shopName, pref));
+            }
+
+            // Sort the list based on shop preference
+            shopList.sort(Comparator.comparing(Shop::getPreference));
+
+            // Append sorted data to StringBuilder
+            for (Shop shop : shopList) {
+                sData.append("• ").append(shop.getName()).append(" ").append(shop.getPreference()).append("\n");
+            }
+        } catch (JSONException e) {
+            Log.e(LOG_TAG, e.toString());
+        }
+        return sData;
+    }
 
     private void checkIsPrefSavedForAddress(String phno, StorePref storePref) throws Exception {
-        proceedToPaymentBtn.setText("PLEASE WAIT...");
+        proceedToPaymentBtn.setText(R.string.please_wait);
         proceedToPaymentBtn.setEnabled(false);
 
         APIService apiService = ApiServiceGenerator.getApiService(requireContext());
@@ -301,18 +353,29 @@ public class CheckoutSummaryFragment extends Fragment {
 
                             if (responseBody.has("data")) {
                                 JsonObject storePefData = responseBody.get("data").getAsJsonObject();
+                                String sData = extractShopNames(String.valueOf(storePefData)) + "";
+                                storePrefDataViewPB.setVisibility(View.GONE);
+                                storePrefView.setVisibility(View.VISIBLE);
+                                storePrefBanner.setVisibility(View.VISIBLE);
+                                storePrefView.setText(sData);
                             }
 
                         } else {
                             storePref.isDataFound(0);
+                            storePrefBanner.setVisibility(View.GONE);
+                            storePrefDataViewPB.setVisibility(View.GONE);
 //                                Toast.makeText(context, responseBody.get("message").getAsString(), Toast.LENGTH_SHORT).show();
                         }
                     } else {
                         storePref.isDataFound(-1);
+                        storePrefBanner.setVisibility(View.GONE);
+                        storePrefDataViewPB.setVisibility(View.GONE);
                         Toast.makeText(requireContext(), responseBody.get("message").getAsString(), Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     storePref.isDataFound(-1);
+                    storePrefBanner.setVisibility(View.GONE);
+                    storePrefDataViewPB.setVisibility(View.GONE);
                     Log.e(LOG_TAG, "Failed to fetch store preference data" + response.message());
                 }
             }
@@ -321,6 +384,8 @@ public class CheckoutSummaryFragment extends Fragment {
             public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
                 Log.e(LOG_TAG, "Failed to fetch store preference data", t);
                 storePref.isDataFound(-1);
+                storePrefBanner.setVisibility(View.GONE);
+                storePrefDataViewPB.setVisibility(View.GONE);
             }
         });
     }

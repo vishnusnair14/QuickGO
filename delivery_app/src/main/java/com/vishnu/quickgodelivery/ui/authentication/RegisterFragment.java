@@ -46,8 +46,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.JsonObject;
 import com.vishnu.quickgodelivery.R;
 import com.vishnu.quickgodelivery.databinding.FragmentRegistrationBinding;
-import com.vishnu.quickgodelivery.server.APIService;
-import com.vishnu.quickgodelivery.server.ApiServiceGenerator;
+import com.vishnu.quickgodelivery.server.sapi.APIService;
+import com.vishnu.quickgodelivery.server.sapi.ApiServiceGenerator;
 
 import java.io.File;
 import java.util.HashMap;

@@ -151,7 +151,8 @@ public class SavedAddressAdapter extends RecyclerView.Adapter<SavedAddressAdapte
 //                    preferences.edit().putString("selectedAddressLon", String.valueOf(address.getAddressLon())).apply();
 //                    preferences.edit().putString("selectedAddressCity", address.getCity()).apply();
 //                    preferences.edit().putString("selectedAddressPincode", address.getPincode()).apply();
-                    preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_FULL_ADDRESS, address.getStreetAddress()).apply();
+                    preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_STREET_ADDRESS, address.getStreetAddress()).apply();
+                    preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_FULL_ADDRESS, address.getFullAddress()).apply();
                     preferences.edit().putBoolean(PreferenceKeys.IS_SET_TO_CURRENT_LOCATION, false).apply();
 
                     homeRecommendationBinding.selectedAddressTypeViewTextView.setText(preferences.getString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_TYPE, ""));

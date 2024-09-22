@@ -5,7 +5,7 @@
     android:id="@+id/frameLayout2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.authentication.LoginFragment">
+    tools:context=".ui.authentication.signInWithEmailPswd.LoginFragment">
 
     <TextView
         android:id="@+id/textView6"
@@ -85,7 +85,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView8" />
 
             <ProgressBar
-                android:id="@+id/progressBar"
+                android:id="@+id/progressBar987"
                 style="?android:attr/progressBarStyle"
                 android:layout_width="21dp"
                 android:layout_height="21dp"
@@ -194,8 +194,6 @@
                     android:id="@+id/statusViewLoginFragment_textView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp"
                     android:fontFamily="@font/montserrat"
                     android:gravity="center"
                     android:textStyle="bold"
@@ -208,11 +206,21 @@
                     android:id="@+id/rememberMeLoginFragment_checkBox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginTop="5dp"
                     android:fontFamily="@font/montserrat"
                     android:text="@string/remember_me"
                     android:textColor="#4E4C4C"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/signInWithPhoneNumber_textView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat"
+                    android:gravity="start"
+                    android:text="@string/login_using_phone_number"
+                    android:textAlignment="textStart"
+                    android:textColor="#1B5E20"
+                    android:textSize="12sp"
                     android:textStyle="bold" />
 
                 <Button

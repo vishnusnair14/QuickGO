@@ -25,8 +25,8 @@ import com.google.gson.JsonObject;
 import com.vishnu.quickgodelivery.R;
 import com.vishnu.quickgodelivery.databinding.FragmentDutySettingsBinding;
 import com.vishnu.quickgodelivery.miscellaneous.DutySettingsModel;
-import com.vishnu.quickgodelivery.server.APIService;
-import com.vishnu.quickgodelivery.server.ApiServiceGenerator;
+import com.vishnu.quickgodelivery.server.sapi.APIService;
+import com.vishnu.quickgodelivery.server.sapi.ApiServiceGenerator;
 
 import java.text.MessageFormat;
 

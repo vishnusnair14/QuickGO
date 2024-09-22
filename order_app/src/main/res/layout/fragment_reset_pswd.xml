@@ -5,7 +5,7 @@
     android:id="@+id/frameLayout5"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.authentication.ResetPswdFragment">
+    tools:context=".ui.authentication.signInWithEmailPswd.ResetPswdFragment">
 
     <TextView
         android:id="@+id/textView23"

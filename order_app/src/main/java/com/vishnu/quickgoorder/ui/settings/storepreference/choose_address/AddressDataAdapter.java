@@ -1,6 +1,7 @@
 package com.vishnu.quickgoorder.ui.settings.storepreference.choose_address;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -22,6 +23,7 @@ import com.google.gson.JsonObject;
 import com.vishnu.quickgoorder.R;
 import com.vishnu.quickgoorder.callbacks.StorePref;
 import com.vishnu.quickgoorder.crypto.DESCore;
+import com.vishnu.quickgoorder.miscellaneous.PreferenceKeys;
 import com.vishnu.quickgoorder.server.sapi.APIService;
 import com.vishnu.quickgoorder.server.sapi.ApiServiceGenerator;
 
@@ -38,11 +40,13 @@ public class AddressDataAdapter extends RecyclerView.Adapter<AddressDataAdapter.
     private final List<AddressData> addressList;
     private final Context context;
     private final String user;
+    private SharedPreferences preferences;
 
-    public AddressDataAdapter(List<AddressData> addressList, Context context, String user) {
+    public AddressDataAdapter(List<AddressData> addressList, Context context, String user, SharedPreferences preferences) {
         this.addressList = addressList;
         this.context = context;
         this.user = user;
+        this.preferences = preferences;
     }
 
     @NonNull
@@ -56,7 +60,7 @@ public class AddressDataAdapter extends RecyclerView.Adapter<AddressDataAdapter.
     @Override
     public void onBindViewHolder(@NonNull AddressViewHolder holder, int position) {
         AddressData address = addressList.get(position);
-        holder.bind(address);
+        holder.bind(address, preferences);
     }
 
     @Override
@@ -73,23 +77,32 @@ public class AddressDataAdapter extends RecyclerView.Adapter<AddressDataAdapter.
         private final String userID;
         private final TextView phnoTV;
         private final TextView locCoordsTV;
+        private final TextView defaultAddrViewTV;
 
         public AddressViewHolder(Context context, String userID, @NonNull View itemView) {
             super(itemView);
             this.context = context;
             this.userID = userID;
+
             addressNameTV = itemView.findViewById(R.id.srvSelectAddrForStorePrefAddrName_textView);
             fullAddressTV = itemView.findViewById(R.id.srvselectAddrForStorePrefFullAddressView_textView);
             addressTypeIV = itemView.findViewById(R.id.addressTypeIconView_imageView);
             phnoTV = itemView.findViewById(R.id.addressIDView_textView);
             locCoordsTV = itemView.findViewById(R.id.srvselectAddrForStorePrefAddressLocCordView_textView);
+            defaultAddrViewTV = itemView.findViewById(R.id.srv_store_pref_default_addr_view_textView);
         }
 
-        public void bind(@NonNull AddressData address) {
+        public void bind(@NonNull AddressData address, SharedPreferences preferences) {
             addressNameTV.setText(address.getName());
             fullAddressTV.setText(address.getFullAddress());
             phnoTV.setText(address.getPhoneNo());
             locCoordsTV.setText(MessageFormat.format("{0}°N, {1}°E", address.getAddressLat(), address.getAddressLon()));
+
+            if (address.getPhoneNo().equals(preferences.getString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_KEY, "0"))) {
+                defaultAddrViewTV.setVisibility(View.VISIBLE);
+            } else {
+                defaultAddrViewTV.setVisibility(View.GONE);
+            }
 
             if (address.getAddressType().trim().equals("Home")) {
                 addressTypeIV.setImageResource(R.drawable.baseline_home_24);

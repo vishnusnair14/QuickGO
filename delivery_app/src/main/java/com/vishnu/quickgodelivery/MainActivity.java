@@ -62,8 +62,8 @@ import com.vishnu.quickgodelivery.miscellaneous.StartDutyModel;
 import com.vishnu.quickgodelivery.miscellaneous.EndDutyModel;
 import com.vishnu.quickgodelivery.miscellaneous.SharedDataView;
 import com.vishnu.quickgodelivery.miscellaneous.Utils;
-import com.vishnu.quickgodelivery.server.APIService;
-import com.vishnu.quickgodelivery.server.ApiServiceGenerator;
+import com.vishnu.quickgodelivery.server.sapi.APIService;
+import com.vishnu.quickgodelivery.server.sapi.ApiServiceGenerator;
 import com.vishnu.quickgodelivery.services.DutyNotification;
 import com.vishnu.quickgodelivery.services.GPSProviderService;
 import com.vishnu.quickgodelivery.services.LocationService;
@@ -402,13 +402,16 @@ public class MainActivity extends AppCompatActivity {
                 if (duty_mode.equals("on_duty")) {
                     preferences.edit().putBoolean("isOnDuty", true).apply();
                 } else if (duty_mode.equals("off_duty")) {
+                    showOffDutyView();
                     preferences.edit().putBoolean("isOnDuty", false).apply();
                 } else {
+                    showOffDutyView();
                     preferences.edit().putBoolean("isOnDuty", false).apply();
                 }
 
                 // Initialize the duty toggle state
                 initializeDutyToggle();
+
             }
         });
 
@@ -474,10 +477,12 @@ public class MainActivity extends AppCompatActivity {
                         dutyStatusData.data(null);
                     } else {
                         dutyStatusData.data(null);
+                        showOffDutyView();
                         Toast.makeText(MainActivity.this, response.body().get("message").getAsString(), Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     dutyStatusData.data(null);
+                    showOffDutyView();
                     Toast.makeText(MainActivity.this, "Duty status check failed", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -485,6 +490,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
                 dutyStatusData.data(null);
+                showOffDutyView();
                 Toast.makeText(MainActivity.this, "Network error. Please try again.", Toast.LENGTH_SHORT).show();
             }
         });

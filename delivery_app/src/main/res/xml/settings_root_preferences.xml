@@ -14,7 +14,7 @@
             app:iconSpaceReserved="true"
             app:isPreferenceVisible="true"
             app:key="manageAccountDetails_pref"
-            app:summary="Personalize your QuickGO-Order account."
+            app:summary="Personalize your QuickGO account."
             app:title="Manage your account" />
     </PreferenceCategory>
 

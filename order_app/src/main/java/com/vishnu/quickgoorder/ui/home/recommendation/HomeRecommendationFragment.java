@@ -156,7 +156,7 @@ public class HomeRecommendationFragment extends Fragment {
         binding.selectedAddresViewCardView.setOnClickListener(v -> showSetDeliveryAddressBtmView());
 
         binding.selectedAddressTypeViewTextView.setText(preferences.getString(
-                PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_TYPE, "Select an address for delivery"));
+                PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_TYPE, "Select an address"));
         binding.selectedFullAddressViewTextView.setText(preferences.getString(
                 PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_FULL_ADDRESS, ""));
 

@@ -5,6 +5,7 @@ import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.VibrationEffect;
@@ -30,11 +31,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -85,16 +89,11 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
     BottomSheetDialog setDeliveryAddrBtmView;
     private ChatClient chatClient;
     private RecyclerView orderStatusRecyclerView;
-    private ConstraintLayout mainLayout;
-    private TextView chatViewBtmStatusTV;
     private TextView chatViewStatusTV;
-    private TextView chatClearAllBtnTV;
     private TextView sseViewTV;
     private OrderStatusAdapter orderStatusAdapter;
     private SSEClient sseClient;
-    private ProgressBar chatViewPB;
     private List<Map<String, String>> statusList = new ArrayList<>();
-    private Map<String, Map<String, String>> initialData;
     TextView orderStatusTV;
     private String orderToTrackOrderID;
     ImageView[] statusIconViews;
@@ -111,6 +110,7 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
         db = FirebaseFirestore.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
         SharedPreferences preferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+        MapBottomSheetFragment mapFragment = new MapBottomSheetFragment();
 
         orderIDTV = findViewById(R.id.orderTrackOrderIDView_textView);
         orderTimeTV = findViewById(R.id.orderTrackOrderTimeView_textView);
@@ -122,7 +122,7 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
         orderStatusTV = findViewById(R.id.trackOrderStatusTV_textView);
         orderStatusRecyclerView = findViewById(R.id.orderStatusUpdate_recycleView);
         dropDownIV = findViewById(R.id.dropDownView_textView);
-        mainLayout = findViewById(R.id.orderTrackMain_Layout_constraintLayout);
+        ConstraintLayout mainLayout = findViewById(R.id.orderTrackMain_Layout_constraintLayout);
         FloatingActionButton gotoMap = findViewById(R.id.gotoMap_floatingActionButton);
 
         statusIconViews = new ImageView[]{
@@ -188,9 +188,7 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
             }
         });
 
-        gotoMap.setOnClickListener(v -> {
-
-        });
+        gotoMap.setOnClickListener(v -> mapFragment.show(getSupportFragmentManager(), mapFragment.getTag()));
 
         mainLayout.setOnClickListener(v -> {
             if (isOrderStatusCardViewExpanded) {
@@ -199,7 +197,6 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
         });
 
         dropDownIV.setOnClickListener(v -> toggleCardView());
-
 
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
@@ -211,13 +208,21 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
             }
         };
 
+        Snackbar.make(findViewById(android.R.id.content), "Persistent Snackbar", Snackbar.LENGTH_INDEFINITE)
+                .setAction("DISMISS", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Dismiss action
+                    }
+                })
+                .show();
+
+
+
         getOnBackPressedDispatcher().addCallback(this, callback);
     }
 
     private void animateOrderStatus(int step, boolean isDeliveryPartnerAssigned) {
-        if (!isOrderStatusCardViewExpanded) {
-            toggleCardView();
-        }
 
         if (step > 2) {
             statusIconViews[1].setImageResource(R.drawable.account_circle_24px_diabled);
@@ -253,11 +258,9 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
                 animateProgressBar(progressBars[currentStep]);
 
                 // After the progress bar has animated, move to the next step
-                new Handler().postDelayed(() -> {
-                    animateStep(currentStep + 1, maxStep, imageViews, progressBars, isDeliveryPartnerAssigned);
-                }, 1500); // Adjust this delay to match the progress bar animation duration
+                new Handler().postDelayed(() -> animateStep(currentStep + 1, maxStep, imageViews, progressBars, isDeliveryPartnerAssigned), 1500); // Adjust this delay to match the progress bar animation duration
 
-            }, 750); // Delay to allow image fade-in to complete
+            }, 750);
         }
     }
 
@@ -353,6 +356,7 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
             }
 
             orderDetailsCardView.setVisibility(View.VISIBLE);
+
         } else {
             Log.d(LOG_TAG, "No new unique status data to update.");
         }
@@ -390,7 +394,7 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
     }
 
     public Map<String, Map<String, String>> getInitialOrderStatusData() {
-        initialData = new LinkedHashMap<>();
+        Map<String, Map<String, String>> initialData = new LinkedHashMap<>();
 
         initialData.put("1", new HashMap<>() {{
             put("key", "1");
@@ -401,10 +405,6 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
         return initialData;
     }
 
-    private void setInitialOrderStatusData(Map<String, Map<String, String>> data) {
-        initialData.clear();
-        this.initialData = data;
-    }
 
     private void initSSE(String orderID) {
         sseClient = new SSEClient(this, user.getUid(), orderID);
@@ -412,18 +412,12 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
         sseClient.setConnectionListener(new SSEClient.SSEConnectionListener() {
             @Override
             public void onConnected() {
-                runOnUiThread(() -> {
-                    Toast.makeText(OrderTrackActivity.this, "SSE connected", Toast.LENGTH_SHORT).show();
-
-                });
+                runOnUiThread(() -> Toast.makeText(OrderTrackActivity.this, "SSE connected", Toast.LENGTH_SHORT).show());
             }
 
             @Override
             public void onDisconnected() {
-                runOnUiThread(() -> {
-                    Toast.makeText(OrderTrackActivity.this, "SSE disconnected", Toast.LENGTH_SHORT).show();
-
-                });
+                runOnUiThread(() -> Toast.makeText(OrderTrackActivity.this, "SSE disconnected", Toast.LENGTH_SHORT).show());
             }
         });
 
@@ -480,6 +474,11 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
                 }
 
                 Log.d(LOG_TAG, message);
+
+//                if (!isOrderStatusCardViewExpanded) {
+//                    toggleCardView();
+//                }
+
             });
         });
     }
@@ -509,10 +508,10 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
         messageET = chatView.findViewById(R.id.chaViewtMsgET_editTextText);
         chatSendBtn = chatView.findViewById(R.id.chatSendButton_button);
         chatRecyclerView = chatView.findViewById(R.id.chatMessages_recyclerView);
-        chatViewBtmStatusTV = chatView.findViewById(R.id.chatViewBtmStatusTV_textView);
+        TextView chatViewBtmStatusTV = chatView.findViewById(R.id.chatViewBtmStatusTV_textView);
         chatViewStatusTV = chatView.findViewById(R.id.chatViewStatusTV_textView);
-        chatClearAllBtnTV = chatView.findViewById(R.id.chatClearAllBtn_textView);
-        chatViewPB = chatView.findViewById(R.id.chatView_progressBar);
+        TextView clearAllChatBtn = chatView.findViewById(R.id.chatClearAllBtn_textView);
+        ProgressBar chatViewPB = chatView.findViewById(R.id.chatView_progressBar);
 
         chatSendBtn.setEnabled(false);
         messageET.setEnabled(false);
@@ -534,15 +533,18 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
                 chatViewStatusTV.setText("");
             } else {
                 wobbleAnimation(messageET);
-                Utils.vibrate(this, 0, VibrationEffect.DEFAULT_AMPLITUDE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    Utils.vibrate(this, 0, VibrationEffect.DEFAULT_AMPLITUDE);
+                }
             }
         });
 
-        chatClearAllBtnTV.setOnClickListener(v -> {
+        clearAllChatBtn.setOnClickListener(v -> {
             chatMessageList.clear();
             chatAdapter.notifyDataSetChanged();
             chatViewStatusTV.setText(R.string.ready_to_chat);
         });
+
     }
 
 
@@ -571,7 +573,7 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
         DocumentReference docRef = db.collection("Users")
                 .document(user.getUid())
                 .collection("placedOrderData").document(orderID)
-                .collection("orderData").document("obsData");
+                .collection("orderData").document("info");
 
         docRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -601,9 +603,10 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
         int[] defaultImages = new int[]{
                 R.drawable.order_approve_24px_disabled,
                 R.drawable.account_circle_off_24px_disabled,
+                R.drawable.check_circle_24px_disabled,
                 R.drawable.orders_24px_disabled,
                 R.drawable.route_24px_disabed,
-                R.drawable.check_circle_24px_disabled
+                R.drawable.door_front_24px_disabled,
         };
 
         // Reset all ProgressBars to 0 progress
@@ -676,8 +679,6 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
                 chatSendBtn.setEnabled(true);
                 messageET.setEnabled(true);
                 isDeliveryPartnerAssigned = true;
-//                ImageView iv = findViewById(R.id.imageView12);
-//                iv.setImageResource(R.drawable.account_circle_24px_diabled);
 
                 if (chatMessageList.isEmpty()) {
                     chatViewStatusTV.setText(R.string.ready_to_chat);

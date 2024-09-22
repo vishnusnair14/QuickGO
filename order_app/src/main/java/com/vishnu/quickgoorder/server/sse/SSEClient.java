@@ -7,6 +7,8 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.vishnu.quickgoorder.ui.settings.PreferencesManager;
+
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -23,7 +25,7 @@ public class SSEClient {
     private final String userID;
     private final String orderID;
     private final Activity activity;
-    private final String sseUrl = "https://orca-positive-lightly.ngrok-free.app/stream/";
+    private final String baseUrl;
 
     private int retryCount = 0;
     private SSEConnectionListener connectionListener;
@@ -32,6 +34,8 @@ public class SSEClient {
         this.activity = activity;
         this.userID = userID;
         this.orderID = orderID;
+
+        baseUrl = PreferencesManager.getBaseUrl(activity.getBaseContext()).substring(8);
 
         client = new OkHttpClient.Builder()
                 .connectTimeout(60, TimeUnit.SECONDS)
@@ -50,7 +54,7 @@ public class SSEClient {
         }
 
         Request request = new Request.Builder()
-                .url(sseUrl + userID + "/" + orderID)
+                .url("https://" + baseUrl + "/stream/" + userID + "/" + orderID)
                 .build();
 
         EventSourceListener eventSourceListener = new EventSourceListener() {
@@ -127,6 +131,7 @@ public class SSEClient {
 
     public interface SSEConnectionListener {
         void onConnected();
+
         void onDisconnected();
     }
 }

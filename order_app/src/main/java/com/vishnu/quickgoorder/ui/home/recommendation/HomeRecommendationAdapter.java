@@ -25,7 +25,7 @@ public class HomeRecommendationAdapter extends RecyclerView.Adapter<HomeRecommen
 
     private final List<HomeRecommendationModel> shopList;
     private Context context;
-    DecimalFormat coordinateFormat = new DecimalFormat("0.0000000000");
+    DecimalFormat coordinateFormat = new DecimalFormat("#.##########");
     HomeRecommendationFragment homeRecommendationFragment;
     Bundle bundle;
 

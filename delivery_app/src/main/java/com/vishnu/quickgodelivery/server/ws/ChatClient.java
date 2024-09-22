@@ -1,4 +1,4 @@
-package com.vishnu.quickgodelivery.server;
+package com.vishnu.quickgodelivery.server.ws;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -26,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class ChatWSC extends WebSocketListener {
+public class ChatClient extends WebSocketListener {
 
     private static final String TAG = "ChatWebSocketClient";
     private final Activity activity;
@@ -45,9 +45,9 @@ public class ChatWSC extends WebSocketListener {
     private final int maxRetries = 5;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
-    public ChatWSC(Activity activity, OBSOrderInformationFragment obsOrderInformationFragment,
-                   FirebaseUser user, String chatId, TextView chatStatusTV, ProgressBar chatViewPB,
-                   TextView chatBtmStatusTV, EditText msgET, Button chatSendBtn) {
+    public ChatClient(Activity activity, OBSOrderInformationFragment obsOrderInformationFragment,
+                      FirebaseUser user, String chatId, TextView chatStatusTV, ProgressBar chatViewPB,
+                      TextView chatBtmStatusTV, EditText msgET, Button chatSendBtn) {
         this.activity = activity;
         this.obsOrderInformationFragment = obsOrderInformationFragment;
         this.obvOrderInformationFragment = null;
@@ -67,9 +67,9 @@ public class ChatWSC extends WebSocketListener {
         connect();
     }
 
-    public ChatWSC(Activity activity, OBVOrderInformationFragment obvOrderInformationFragment,
-                   FirebaseUser user, String chatId, TextView chatStatusTV, ProgressBar chatViewPB,
-                   TextView chatBtmStatusTV, EditText msgET, Button chatSendBtn) {
+    public ChatClient(Activity activity, OBVOrderInformationFragment obvOrderInformationFragment,
+                      FirebaseUser user, String chatId, TextView chatStatusTV, ProgressBar chatViewPB,
+                      TextView chatBtmStatusTV, EditText msgET, Button chatSendBtn) {
         this.activity = activity;
         this.obvOrderInformationFragment = obvOrderInformationFragment;
         this.obsOrderInformationFragment = null;
@@ -112,16 +112,17 @@ public class ChatWSC extends WebSocketListener {
     public void onOpen(@NotNull WebSocket webSocket, @NotNull okhttp3.Response response) {
         Log.d(TAG, "WebSocket Connection opened");
         retryCount = 0;
+
         mainHandler.post(() -> {
-            chatBtmStatusTV.setTextColor(activity.getColor(R.color.wsc_connected));
             chatBtmStatusTV.setText(R.string.connected);
-
-            chatStatusTV.setText("");
+            chatStatusTV.setText(R.string.you_are_ready_to_chat);
+            chatBtmStatusTV.setTextColor(activity.getColor(R.color.wsc_connected));
+            chatStatusTV.setTextColor(activity.getColor(R.color.wsc_connected));
             chatViewPB.setVisibility(View.GONE);
-
             chatSendBtn.setEnabled(true);
             msgET.setEnabled(true);
         });
+
     }
 
 

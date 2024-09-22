@@ -19,7 +19,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.vishnu.quickgodelivery.R;
-import com.vishnu.quickgodelivery.miscellaneous.FCMNotificationStorageHelper;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -93,8 +92,7 @@ public class FCM extends FirebaseMessagingService {
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
         if (!remoteMessage.getData().isEmpty()) {
-            FCMNotificationStorageHelper.saveNotificationPayload(getApplicationContext(),
-                    remoteMessage.getData().get("user_id"), remoteMessage.getData().get("shop_id"));
+
 
             // Log data payload
             Log.i(LOG_TAG, "Data Payload: " + remoteMessage.getData());
