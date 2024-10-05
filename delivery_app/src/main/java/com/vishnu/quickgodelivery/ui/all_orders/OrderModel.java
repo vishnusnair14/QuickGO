@@ -5,6 +5,7 @@ public interface OrderModel {
     String getOrder_id();
     String getOrder_type();
     String getUser_phno();
+    String getShop_id();
     String getOrder_by_voice_doc_id();
 
     String getDelivery_full_address();

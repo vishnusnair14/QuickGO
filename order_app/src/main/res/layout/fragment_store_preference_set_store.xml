@@ -49,7 +49,7 @@
     <GridView
         android:id="@+id/gridViewStores"
         android:layout_width="match_parent"
-        android:layout_height="435dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:background="@android:color/transparent"
         android:clipToPadding="false"
@@ -60,11 +60,9 @@
         android:scrollbars="vertical"
         android:stretchMode="columnWidth"
         android:verticalSpacing="12dp"
-        app:layout_constraintBottom_toTopOf="@+id/btnSendPreferences"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/acco_textView"
-        app:layout_constraintVertical_bias="0.0"
         tools:listitem="@layout/srv_shop_pref_lists">
 
     </GridView>
@@ -74,16 +72,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="4dp"
         android:enabled="false"
         android:fontFamily="@font/montserrat"
         android:text="Set Preferences"
         android:textAllCaps="true"
         android:textStyle="bold"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/gridViewStores" />
 
     <TextView
         android:id="@+id/acco_textView"

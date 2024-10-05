@@ -68,6 +68,7 @@ public class VoiceOrdersFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
+        Toast.makeText(requireContext(), shopID, Toast.LENGTH_SHORT).show();
 
         binding = FragmentVoiceOrdersBinding.inflate(inflater, container, false);
         View root = binding.getRoot();

@@ -180,6 +180,7 @@ public class SetStorePrefFragment extends Fragment {
                 progressBar.setVisibility(View.GONE);
                 statusTV.setVisibility(View.GONE);
                 binding.accoTextView.setVisibility(View.VISIBLE);
+                sendPrefBtn.setVisibility(View.VISIBLE);
                 binding.accoTextView.setText(MessageFormat.format(
                         "The shops mentioned below are within a 5 km radius of the address associated with the phone no {0}", mParamPhone));
 
@@ -196,13 +197,14 @@ public class SetStorePrefFragment extends Fragment {
                                 StoreData shop = new Gson().fromJson(shopElement, StoreData.class);
                                 nearbyShops.add(shop);
                                 if (nearbyShops.size() >= 4) {
-                                    break; // Only add the first 4 shops
+                                    break;
                                 }
                             }
                             storeDataAdapter.notifyDataSetChanged();
                             checkForDuplicatePreferences();
 
                         } else {
+                            sendPrefBtn.setVisibility(View.GONE);
                             Log.e(LOG_TAG, "No shops found in 'recommended_shop_data'");
                             binding.accoTextView.setVisibility(View.GONE);
                             progressBar.setVisibility(View.GONE);
@@ -212,10 +214,12 @@ public class SetStorePrefFragment extends Fragment {
                     } else {
                         Log.e(LOG_TAG, "Invalid response format: Missing 'recommended_shop_data' field");
                         if (isAdded()) {
+                            sendPrefBtn.setVisibility(View.GONE);
                             Toast.makeText(requireContext(), "Failed to fetch nearby shops, invalid response format", Toast.LENGTH_SHORT).show();
                         }
                     }
                 } else {
+                    sendPrefBtn.setVisibility(View.GONE);
                     String errorMessage = "Failed to fetch nearby shops";
                     binding.accoTextView.setVisibility(View.GONE);
                     progressBar.setVisibility(View.GONE);
@@ -229,6 +233,7 @@ public class SetStorePrefFragment extends Fragment {
             @Override
             public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
                 progressBar.setVisibility(View.GONE);
+                sendPrefBtn.setVisibility(View.GONE);
                 binding.accoTextView.setVisibility(View.GONE);
                 statusTV.setVisibility(View.VISIBLE);
                 statusTV.setText(R.string.failed_to_fetch_nearby_shops_try_again);

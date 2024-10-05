@@ -15,6 +15,7 @@ public class OBVOrderModel implements OrderModel {
     private String order_type;
     private double pickup_destination_distance;
     private String user_id;
+    private String shop_id;
 
 
     @Override
@@ -62,6 +63,11 @@ public class OBVOrderModel implements OrderModel {
     @Override
     public String getUser_phno() {
         return user_phno;
+    }
+
+    @Override
+    public String getShop_id() {
+        return shop_id;
     }
 
     @Override

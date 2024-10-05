@@ -502,7 +502,6 @@ public class HomeOrderByVoiceFragment extends Fragment {
 
         setDeliveryAddrBtmView = new BottomSheetDialog(requireContext());
         setDeliveryAddrBtmView.setContentView(setDefAddrView);
-        setDeliveryAddrBtmView.setCanceledOnTouchOutside(false);
         Objects.requireNonNull(setDeliveryAddrBtmView.getWindow()).setGravity(Gravity.TOP);
 
         RecyclerView recyclerView = setDefAddrView.findViewById(R.id.setDefaultDeliveryAddress_recycleView);

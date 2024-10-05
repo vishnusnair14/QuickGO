@@ -295,6 +295,7 @@ public class UnifiedOrderAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         intent.putExtra("user_id", listModel.getUser_id());
         intent.putExtra("order_id", listModel.getOrder_id());
         intent.putExtra("user_phno", listModel.getUser_phno());
+        intent.putExtra("shop_id", listModel.getShop_id());
         intent.putExtra("order_by_voice_type", listModel.getOrder_type());
         intent.putExtra("order_by_voice_doc_id", listModel.getOrder_by_voice_doc_id());
         intent.putExtra("order_by_voice_audio_ref_id", listModel.getOrder_by_voice_audio_ref_id());
