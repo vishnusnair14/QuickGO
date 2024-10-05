@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.QuickGO.NoActionBar" parent="Theme.Material3.Light.NoActionBar">
+        <item name="android:navigationBarColor">#D6D3D3</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:forceDarkAllowed">false</item>
+    </style>
+</resources>

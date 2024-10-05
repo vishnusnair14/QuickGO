@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -37,6 +38,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -150,8 +152,10 @@ public class HomeRecommendationFragment extends Fragment {
         trackOrderFab = binding.trackOrder2FloatingActionButton;
         locationTV = binding.locationViewTextView;
 //        nearbyShopCardView = binding.recommendedShopsCardView;
+        TabLayout tabLayout = binding.orderModeTabLayout;
 //        recordVoiceOrderCardView = binding.recordVoiceOrderCardView;
 
+        Objects.requireNonNull(tabLayout.getTabAt(settingsPreferences.getInt("orderModeSelectedTabIndex", 0))).select();
 
         binding.selectedAddresViewCardView.setOnClickListener(v -> showSetDeliveryAddressBtmView());
 
@@ -190,6 +194,32 @@ public class HomeRecommendationFragment extends Fragment {
             Log.d(LOG_TAG, PreferenceKeys.HOME_RECOMMENDATION_FRAGMENT_ORDER_ID + ": already exists");
         }
 
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                // Handle tab selection
+                int position = tab.getPosition();
+                // Access the data or perform actions based on selected tab
+                if (position == 0) {
+                    settingsPreferences.edit().putBoolean("setRecommendationAsDefaultHomeView", false).apply();
+                    settingsPreferences.edit().putInt("orderModeSelectedTabIndex", 0).apply();
+                    Toast.makeText(requireContext(), "Now you have enabled, store preference feature.", Toast.LENGTH_SHORT).show();
+                } else if (position == 1) {
+                    settingsPreferences.edit().putBoolean("setRecommendationAsDefaultHomeView", true).apply();
+                    settingsPreferences.edit().putInt("orderModeSelectedTabIndex", 1).apply();
+                    Toast.makeText(requireContext(), "Now you can order from recommended shops.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
+        });
         return root;
     }
 

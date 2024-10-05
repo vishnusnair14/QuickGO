@@ -1,5 +1,8 @@
-package com.vishnu.quickgovendor.vadapters;
+package com.vishnu.quickgovendor.ui.product;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
@@ -31,7 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class EditProductVA extends RecyclerView.Adapter<EditProductVA.ViewHolder> {
+public class EditProductAdapter extends RecyclerView.Adapter<EditProductAdapter.ViewHolder> {
     private final List<EditProductVM> itemList;
     private final Drawable drawableUp;
     private final Drawable drawableDwn;
@@ -43,7 +46,7 @@ public class EditProductVA extends RecyclerView.Adapter<EditProductVA.ViewHolder
     private boolean onceExecute = true;
 
 
-    public EditProductVA(List<EditProductVM> itemList, Context context, TextView ltv, ProgressBar lpb) {
+    public EditProductAdapter(List<EditProductVM> itemList, Context context, TextView ltv, ProgressBar lpb) {
         this.itemList = itemList;
         this.ltv = ltv;
         this.lpb = lpb;
@@ -111,19 +114,38 @@ public class EditProductVA extends RecyclerView.Adapter<EditProductVA.ViewHolder
         // Toggle the collapse state
         isCollapsed = !isCollapsed;
 
-        // Update the height of the LinearLayout
-        ViewGroup.LayoutParams layoutParams = lc.getLayoutParams();
+        // Prepare animators for expanding and collapsing
+        int startHeight = lc.getHeight();
+        int endHeight = isCollapsed ? 1 : ViewGroup.LayoutParams.WRAP_CONTENT;
+
         if (isCollapsed) {
-            layoutParams.height = 1;
             se.setText(R.string.show_edit_options);
             se.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, ddn, null);
         } else {
-            layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
             se.setText(R.string.hide_edit_options);
             se.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, dup, null);
         }
-        lc.setLayoutParams(layoutParams);
+
+        // If expanding (endHeight == WRAP_CONTENT), we need to calculate the actual height first
+        if (endHeight == ViewGroup.LayoutParams.WRAP_CONTENT) {
+            lc.measure(View.MeasureSpec.makeMeasureSpec(lc.getWidth(), View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+            endHeight = lc.getMeasuredHeight();
+        }
+
+        // Use ValueAnimator for smooth height animation
+        ValueAnimator animator = ValueAnimator.ofInt(startHeight, endHeight);
+        animator.addUpdateListener(animation -> {
+            int animatedValue = (int) animation.getAnimatedValue();
+            ViewGroup.LayoutParams layoutParams = lc.getLayoutParams();
+            layoutParams.height = animatedValue;
+            lc.setLayoutParams(layoutParams);
+        });
+
+        animator.setDuration(300);
+        animator.start();
     }
+
 
     @Override
     public int getItemCount() {

@@ -417,34 +417,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // Check for permissions
-//    private void checkForPermissions() {
-//        Log.d(LOG_TAG, "checking permissions");
-//        isFineLocationGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-//        isCoarseLocationGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-//        isManageExternalStorageGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.MANAGE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-//        isReadMediaImagesGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED;
-//        isReadMediaVideoGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_VIDEO) == PackageManager.PERMISSION_GRANTED;
-//        isReadMediaAudioGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_AUDIO) == PackageManager.PERMISSION_GRANTED;
-//        isRecordAudioGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
-//        isPostNotificationGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED;
-//
-//        if (!isFineLocationGranted && !isCoarseLocationGranted) {
-//            showProminentDisclosure("loc");
-//        } else if (isFineLocationGranted && isCoarseLocationGranted) {
-//            if (!isManageExternalStorageGranted ||
-//                    !isReadMediaImagesGranted || !isReadMediaVideoGranted || !isReadMediaAudioGranted) {
-//                showProminentDisclosure("storage");
-//            } else if (!isRecordAudioGranted) {
-//                showProminentDisclosure("audio");
-//            } else {
-//                Log.d(LOG_TAG, "All permissions granted");
-//            }
-//        }
-//    }
-
-//    setPermissionStatusView("None", false);
-//                Toast.makeText(this, "All permission granted", Toast.LENGTH_SHORT).show();
 
     private void setupNavSettings() {
         // *** LEFT DRAWER MENU ***
@@ -610,41 +582,44 @@ public class MainActivity extends AppCompatActivity {
 
         sendAccountDeletionRequest(user.getUid(), _status -> {
             if (_status) {
+                preferences.edit().putString("username", null).apply();
+                preferences.edit().putString("password", null).apply();
+                preferences.edit().putBoolean("isRememberedPhoneAuth", false).apply();
+                preferences.edit().putBoolean("isRemembered", false).apply();
+                preferences.edit().putBoolean("isInitialLogin", true).apply();
+                preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_KEY, "None").apply();
+                preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_KEY, "None").apply();
+                preferences.edit().putString("selectedDeliveryAddressKey", "").apply();
+                preferences.edit().putString("selectedDeliveryAddressLat", "").apply();
+                preferences.edit().putString("selectedDeliveryAddressLon", "").apply();
+                preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_TYPE, "Select an address").apply();
+                preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_STREET_ADDRESS, "").apply();
+                preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_FULL_ADDRESS, "").apply();
+                preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_FULL_ADDRESS, "").apply();
+                preferences.edit().putBoolean(PreferenceKeys.IS_SET_TO_CURRENT_LOCATION, false).apply();
+                preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_CURRENT_SHOP_PINCODE, "0").apply();
+                preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_FRAGMENT_ORDER_ID, "0").apply();
+                settingsPref.edit().putInt("orderModeSelectedTabIndex", 0).apply();
+                preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_FRAGMENT_AUDIO_REF_ID, "0").apply();
+                preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_FRAGMENT_AUDIO_REF_ID, "0").apply();
+                preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_TYPE, "Select an address").apply();
+                preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_STREET_ADDRESS, "Tap on a delivery address to make it as default").apply();
+                preferences.edit().putBoolean("setRecommendationAsDefaultHomeView", false).apply();
+
+                try {
+                    HomeRecommendationFragment.writeShopDataToFile(this, "{}");
+                    Utils.deleteAddressDataCacheFile(this);
+                    Utils.deleteVoiceOrdersFolder(this);
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, e.toString());
+                }
                 Toast.makeText(MainActivity.this, "Account deleted successfully", Toast.LENGTH_SHORT).show();
+                finish();
+            } else {
+                Toast.makeText(MainActivity.this, "Unable to delete account at the moment!", Toast.LENGTH_SHORT).show();
             }
         });
 
-        preferences.edit().putString("username", null).apply();
-        preferences.edit().putString("password", null).apply();
-        preferences.edit().putBoolean("isRememberedPhoneAuth", false).apply();
-        preferences.edit().putBoolean("isRemembered", false).apply();
-        preferences.edit().putBoolean("isInitialLogin", true).apply();
-        preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_KEY, "None").apply();
-        preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_KEY, "None").apply();
-        preferences.edit().putString("selectedDeliveryAddressKey", "").apply();
-        preferences.edit().putString("selectedDeliveryAddressLat", "").apply();
-        preferences.edit().putString("selectedDeliveryAddressLon", "").apply();
-        preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_TYPE, "Select an address").apply();
-        preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_STREET_ADDRESS, "").apply();
-        preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_FULL_ADDRESS, "").apply();
-        preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_FULL_ADDRESS, "").apply();
-        preferences.edit().putBoolean(PreferenceKeys.IS_SET_TO_CURRENT_LOCATION, false).apply();
-        preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_CURRENT_SHOP_PINCODE, "0").apply();
-        preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_FRAGMENT_ORDER_ID, "0").apply();
-        preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_FRAGMENT_AUDIO_REF_ID, "0").apply();
-        preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_FRAGMENT_AUDIO_REF_ID, "0").apply();
-        preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_TYPE, "Select an address").apply();
-        preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_STREET_ADDRESS, "Tap on a delivery address to make it as default").apply();
-        preferences.edit().putBoolean("setRecommendationAsDefaultHomeView", false).apply();
-
-        try {
-            HomeRecommendationFragment.writeShopDataToFile(this, "{}");
-            Utils.deleteAddressDataCacheFile(this);
-            Utils.deleteVoiceOrdersFolder(this);
-        } catch (Exception e) {
-            Log.e(LOG_TAG, e.toString());
-        }
-        finish();
     }
 
     private void showDelAccDialog() {
@@ -673,6 +648,7 @@ public class MainActivity extends AppCompatActivity {
         preferences.edit().putString("selectedDeliveryAddressKey", "").apply();
         preferences.edit().putString("selectedDeliveryAddressLat", "").apply();
         preferences.edit().putString("selectedDeliveryAddressLon", "").apply();
+        settingsPref.edit().putInt("orderModeSelectedTabIndex", 0).apply();
         preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_TYPE, "Select an address").apply();
         preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_STREET_ADDRESS, "Tap on a delivery address to make it as default").apply();
         preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_FULL_ADDRESS, "Tap on a delivery address to make it as default").apply();

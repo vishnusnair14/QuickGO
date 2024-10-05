@@ -38,6 +38,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -96,6 +97,7 @@ public class HomeOrderByVoiceFragment extends Fragment {
     private FirebaseFirestore db;
     static String audioFileName = "_voice.mp3";
     private SharedPreferences preferences;
+    private SharedPreferences settingsPreferences;
     private BottomSheetDialog setDeliveryAddrBtmView;
     Button enableLocationBtn;
     CollectionReference placedOrderDataRef;
@@ -127,6 +129,8 @@ public class HomeOrderByVoiceFragment extends Fragment {
                 .document(user.getUid()).collection("placedOrderData");
 
         preferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        settingsPreferences = requireActivity().getSharedPreferences("settings", Context.MODE_PRIVATE);
+
         SoundManager.initialize(requireContext());
 
         File externalFilesDir = requireContext().getExternalFilesDir(Context.AUDIO_SERVICE);
@@ -158,6 +162,7 @@ public class HomeOrderByVoiceFragment extends Fragment {
         chronometer = binding.chronometer29;
         trackOrderFab = binding.trackOrder1FloatingActionButton;
         ImageView recIcon = binding.micIconImageView;
+        TabLayout tabLayout = binding.orderModeTabLayout;
 
         Animation blinkAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.blink);
         recIcon.setVisibility(View.INVISIBLE);
@@ -169,6 +174,8 @@ public class HomeOrderByVoiceFragment extends Fragment {
                 PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_TYPE, "Select an address"));
         binding.selectedFullAddressViewTextView.setText(preferences.getString(
                 PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_FULL_ADDRESS, "Tap on a delivery address to make it as default"));
+
+        Objects.requireNonNull(tabLayout.getTabAt(settingsPreferences.getInt("orderModeSelectedTabIndex", 0))).select();
 
         // Define the Runnable
         checkConditionRunnable = () -> {
@@ -247,6 +254,33 @@ public class HomeOrderByVoiceFragment extends Fragment {
         });
 
         binding.selectedAddresViewCardView.setOnClickListener(v -> showSetDeliveryAddressBtmView(root));
+
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                // Handle tab selection
+                int position = tab.getPosition();
+                // Access the data or perform actions based on selected tab
+                if (position == 0) {
+                    settingsPreferences.edit().putBoolean("setRecommendationAsDefaultHomeView", false).apply();
+                    settingsPreferences.edit().putInt("orderModeSelectedTabIndex", 0).apply();
+                    Toast.makeText(requireContext(), "Now you have enabled, store preference feature.", Toast.LENGTH_SHORT).show();
+                } else if (position == 1) {
+                    settingsPreferences.edit().putBoolean("setRecommendationAsDefaultHomeView", true).apply();
+                    settingsPreferences.edit().putInt("orderModeSelectedTabIndex", 1).apply();
+                    Toast.makeText(requireContext(), "Now you can order from recommended shops.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
+        });
 
         return root;
     }

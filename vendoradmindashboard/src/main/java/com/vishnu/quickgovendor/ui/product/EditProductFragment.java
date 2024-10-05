@@ -21,7 +21,6 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.vishnu.quickgovendor.databinding.FragmentEditProductBinding;
-import com.vishnu.quickgovendor.vadapters.EditProductVA;
 import com.vishnu.quickgovendor.vmodels.EditProductVM;
 
 import java.util.ArrayList;
@@ -36,7 +35,7 @@ public class EditProductFragment extends Fragment {
     private String shopID;
     private ProgressBar lpb;
     private TextView ltv;
-    EditProductVA adapterEditProduct;
+    EditProductAdapter adapterEditProduct;
 
     public EditProductFragment() {
 
@@ -112,7 +111,7 @@ public class EditProductFragment extends Fragment {
             }
         });
 
-        adapterEditProduct = new EditProductVA(itemList, requireContext(), ltv, lpb);
+        adapterEditProduct = new EditProductAdapter(itemList, requireContext(), ltv, lpb);
         recyclerView.setAdapter(adapterEditProduct);
     }
 }
