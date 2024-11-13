@@ -1,5 +1,7 @@
 package com.vishnu.quickgoorder.server.sse;
 
+import com.google.firebase.firestore.GeoPoint;
+
 import java.util.Map;
 
 public class SSEModel {
@@ -8,6 +10,13 @@ public class SSEModel {
     private String order_id;
     private String order_time;
     private String dp_name;
+    private String delivery_lat;
+    private String dp_lat;
+    private String dp_lon;
+    private String delivery_lon;
+    private String delivery_address;
+    private GeoPoint dp_loc_coordinates;
+    private GeoPoint delivery_loc_coordinates;
     private String time;
     Map<String, Map<String, String>> order_status_data;
     private String order_status_label_fg_color;
@@ -24,6 +33,54 @@ public class SSEModel {
 
     public String getDp_name() {
         return dp_name;
+    }
+
+    public String getDelivery_address() {
+        return delivery_address;
+    }
+
+    public String getDelivery_lat() {
+        return delivery_lat;
+    }
+
+    public void setDelivery_lat(String delivery_lat) {
+        this.delivery_lat = delivery_lat;
+    }
+
+    public String getDp_lon() {
+        return dp_lon;
+    }
+
+    public void setDp_lon(String dp_lon) {
+        this.dp_lon = dp_lon;
+    }
+
+    public String getDp_lat() {
+        return dp_lat;
+    }
+
+    public void setDp_lat(String dp_lat) {
+        this.dp_lat = dp_lat;
+    }
+
+    public String getDelivery_lon() {
+        return delivery_lon;
+    }
+
+    public void setDelivery_lon(String delivery_lon) {
+        this.delivery_lon = delivery_lon;
+    }
+
+    public void setDelivery_address(String delivery_address) {
+        this.delivery_address = delivery_address;
+    }
+
+    public GeoPoint getDelivery_loc_coordinates() {
+        return delivery_loc_coordinates;
+    }
+
+    public void setDelivery_loc_coordinates(GeoPoint delivery_loc_coordinates) {
+        this.delivery_loc_coordinates = delivery_loc_coordinates;
     }
 
     public void setDp_name(String dp_name) {
@@ -48,6 +105,14 @@ public class SSEModel {
 
     public void setIs_partner_assigned(boolean is_partner_assigned) {
         this.is_partner_assigned = is_partner_assigned;
+    }
+
+    public GeoPoint getDp_loc_coordinates() {
+        return dp_loc_coordinates;
+    }
+
+    public void setDp_loc_coordinates(GeoPoint dp_loc_coordinates) {
+        this.dp_loc_coordinates = dp_loc_coordinates;
     }
 
     public Map<String, Map<String, String>> getOrder_status_data() {

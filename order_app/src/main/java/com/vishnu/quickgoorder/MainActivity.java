@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private final SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener = (sharedPreferences, key) -> {
-        if ("setRecommendationAsDefaultHomeView".equals(key)) {
+        if ("defaultHomeView".equals(key)) {
             new Handler().postDelayed(() -> {
                 setupNavSettings();
                 vibrate();
@@ -135,20 +135,6 @@ public class MainActivity extends AppCompatActivity {
         RegisteredUsersEmailRef = db.collection("AuthenticationData")
                 .document("RegisteredUsersEmail");
 
-        // OnCreate permission request
-//        List<String> permissionsToRequest = new ArrayList<>();
-//        for (String permission : permissions) {
-//            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
-//                permissionsToRequest.add(permission);
-//            }
-//        }
-//
-//        if (!permissionsToRequest.isEmpty()) {
-//            ActivityCompat.requestPermissions(this, permissionsToRequest.toArray(new String[0]), 1);
-//        } else {
-//            Log.i(LOG_TAG, "ALL PERMISSION GRANTED");
-//        }
-
         registerLocationPermissionResult();
         registerStoragePermissionResult();
         registerAudioPermissionResult();
@@ -173,14 +159,6 @@ public class MainActivity extends AppCompatActivity {
         // Register preference change listener
         settingsPref.registerOnSharedPreferenceChangeListener(preferenceChangeListener);
 
-//        Initialize an SDK using below provided Client Id and Client Secret
-//        PlatformConfig config = new PlatformConfig.Builder()
-//                .clientId("c22974f9-e65a-4b54-bb26-6246d06d3bc3")
-//                .clientSecret("BrNOo8Jte3ZTWqFt1KLlUDf79Wb1KuRy")
-//                .accessTokenUrl("https://account.olamaps.io/realms/olamaps/protocol/openid-connect/")
-//                .placesUrl("https://api.olamaps.io/places/v1/")
-//                .routesUrl("https://api.olamaps.io/routing/v1/")
-//                .build();
     }
 
     private void setPermissionStatusView(String type, boolean show) {
@@ -189,9 +167,10 @@ public class MainActivity extends AppCompatActivity {
             if (permissionStatusTV != null) {
                 permissionStatusTV.setVisibility(View.VISIBLE);
                 switch (type) {
-                    case "loc" -> permissionStatusTV.setText("ENABLE LOCATION PERMISSION");
-                    case "storage" -> permissionStatusTV.setText("ENABLE STORAGE PERMISSION");
-                    case "audio" -> permissionStatusTV.setText("ENABLE AUDIO PERMISSION");
+                    case "loc" -> permissionStatusTV.setText(R.string.enable_location_permission);
+                    case "storage" ->
+                            permissionStatusTV.setText(R.string.enable_storage_permission);
+                    case "audio" -> permissionStatusTV.setText(R.string.enable_audio_permission);
                 }
                 permissionStatusTV.setVisibility(View.GONE);
             }
@@ -226,40 +205,6 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
-    //    private void registerStoragePermissionResult() {
-//        storagePermissionRequest = registerForActivityResult(new ActivityResultContracts
-//                .RequestMultiplePermissions(), result -> {
-//            Boolean manageExternalStorageGranted = result.getOrDefault(
-//                    Manifest.permission.MANAGE_EXTERNAL_STORAGE, false);
-//            Boolean readImagesGranted = result.getOrDefault(
-//                    Manifest.permission.READ_MEDIA_IMAGES, false);
-//            Boolean readVideoGranted = result.getOrDefault(
-//                    Manifest.permission.READ_MEDIA_VIDEO, false);
-//            Boolean readAudioGranted = result.getOrDefault(
-//                    Manifest.permission.READ_MEDIA_AUDIO, false);
-//
-//            if (manageExternalStorageGranted != null && manageExternalStorageGranted) {
-//                Log.d(LOG_TAG, "Manage external storage access granted!");
-//                setPermissionStatusView("None", false);
-//                showProminentDisclosure("audio");
-//            } else if (readImagesGranted != null && readImagesGranted) {
-//                Log.d(LOG_TAG, "Read images access granted!");
-//                setPermissionStatusView("None", false);
-////                showProminentDisclosure("storage");
-//            } else if (readVideoGranted != null && readVideoGranted) {
-//                Log.d(LOG_TAG, "Read video access granted!");
-//                setPermissionStatusView("None", false);
-////                showProminentDisclosure("storage");
-//            } else if (readAudioGranted != null && readAudioGranted) {
-//                Log.d(LOG_TAG, "Read audio access granted!");
-//                setPermissionStatusView("None", false);
-////                showProminentDisclosure("storage");
-//            } else {
-//                setPermissionStatusView("storage", true);
-//                Log.d(LOG_TAG, "No storage access granted!");
-//            }
-//        });
-//    }
     private void registerStoragePermissionResult() {
         storagePermissionRequest = registerForActivityResult(new ActivityResultContracts
                         .RequestMultiplePermissions(), result -> {
@@ -326,7 +271,6 @@ public class MainActivity extends AppCompatActivity {
                     subHeadingTxt3.setText(R.string.go_to_app_settings_app_permission);
                 }
                 case "storage" -> {
-
                     headingTxt.setText(R.string.storage_permission_required);
                     subHeadingTxt1.setText(R.string.storage_permission_consent_1);
                     subHeadingTxt2.setText(R.string.storage_permission_consent_2);
@@ -433,20 +377,27 @@ public class MainActivity extends AppCompatActivity {
         NavInflater navInflater = navController.getNavInflater();
         NavGraph navGraph = navInflater.inflate(R.navigation.mobile_navigation);
 
-        boolean setRecommendationAsDefaultHomeView = settingsPref.getBoolean("setRecommendationAsDefaultHomeView", false);
-
-        if (setRecommendationAsDefaultHomeView) {
-            mAppBarConfiguration = new AppBarConfiguration.Builder(
-                    R.id.nav_recommendation,
-                    R.id.nav_settings, R.id.nav_mcart)
-                    .setOpenableLayout(navDrawerLayout).build();
-            navGraph.setStartDestination(R.id.nav_recommendation);
-        } else {
+        int defaultHomeView = settingsPref.getInt("defaultHomeView", 0);
+//        if (defaultHomeView == 0) {
+//            mAppBarConfiguration = new AppBarConfiguration.Builder(
+//                    R.id.nav_orderbycategory,
+//                    R.id.nav_settings,
+//                    R.id.nav_miscellaneous, R.id.nav_mcart)
+//                    .setOpenableLayout(navDrawerLayout).build();
+//            navGraph.setStartDestination(R.id.nav_orderbycategory); }
+        if (defaultHomeView == 0) {
             mAppBarConfiguration = new AppBarConfiguration.Builder(
                     R.id.nav_orderbyvoice,
-                    R.id.nav_settings, R.id.nav_mcart)
+                    R.id.nav_settings,
+                    R.id.nav_miscellaneous, R.id.nav_mcart)
                     .setOpenableLayout(navDrawerLayout).build();
             navGraph.setStartDestination(R.id.nav_orderbyvoice);
+        } else if (defaultHomeView == 1) {
+            mAppBarConfiguration = new AppBarConfiguration.Builder(
+                    R.id.nav_recommendation,
+                    R.id.nav_settings, R.id.nav_miscellaneous, R.id.nav_mcart)
+                    .setOpenableLayout(navDrawerLayout).build();
+            navGraph.setStartDestination(R.id.nav_recommendation);
         }
         navController.setGraph(navGraph);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
@@ -604,7 +555,7 @@ public class MainActivity extends AppCompatActivity {
                 preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_FRAGMENT_AUDIO_REF_ID, "0").apply();
                 preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_TYPE, "Select an address").apply();
                 preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_STREET_ADDRESS, "Tap on a delivery address to make it as default").apply();
-                preferences.edit().putBoolean("setRecommendationAsDefaultHomeView", false).apply();
+                preferences.edit().putInt("defaultHomeView", 0).apply();
 
                 try {
                     HomeRecommendationFragment.writeShopDataToFile(this, "{}");
@@ -660,7 +611,7 @@ public class MainActivity extends AppCompatActivity {
         preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_TYPE, "Select an address").apply();
         preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_STREET_ADDRESS, "Tap on a delivery address to make it as default").apply();
         preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_FULL_ADDRESS, "Tap on a delivery address to make it as default").apply();
-        preferences.edit().putBoolean("setRecommendationAsDefaultHomeView", false).apply();
+        preferences.edit().putInt("defaultHomeView", 0).apply();
 
         try {
             HomeRecommendationFragment.writeShopDataToFile(this, "{}");
@@ -704,7 +655,9 @@ public class MainActivity extends AppCompatActivity {
 //            if (Objects.requireNonNull(navController.getCurrentDestination()).getId() != R.id.nav_mcart) {
 //                navController.navigate(R.id.nav_mcart, null, navOptions);
 //                Navigation.findNavController(this, R.id.action_nav_shop_to_nav_mcart);
-            navController.navigate(R.id.nav_mcart);
+
+//            navController.navigate(R.id.nav_mcart);
+            Toast.makeText(this, "Tap GO TO CART...", Toast.LENGTH_SHORT).show();
             return true;
 
         } else if (item.getItemId() == R.id.action_logout) {

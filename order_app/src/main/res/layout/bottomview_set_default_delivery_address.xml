@@ -223,29 +223,14 @@
         android:id="@+id/tapAndRecordMain_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
         android:fontFamily="@font/archivo_black"
         android:text="@string/choose_a_delivery_address"
         android:textSize="18sp"
         android:typeface="normal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/separator" />
-
-    <TextView
-        android:id="@+id/seeAllAddressExpand_textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
-        android:fontFamily="@font/aldrich"
-        android:text="@string/see_all"
-        android:textColor="#E53935"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/tapAndRecordMain_textView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/tapAndRecordMain_textView"
-        app:layout_constraintTop_toTopOf="@+id/tapAndRecordMain_textView" />
 
     <TextView
         android:id="@+id/savedAddressRecycleViewStatusTV_textView"
@@ -271,30 +256,45 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/setDefaultDeliveryAddress_recycleView" />
 
-    <TextView
-        android:id="@+id/setDefaultDeliveryAddressAddNewAddress_textView"
+    <LinearLayout
+        android:id="@+id/linearLayout8"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="15dp"
-        android:layout_marginEnd="10dp"
-        android:fontFamily="@font/archivo"
-        android:gravity="center"
-        android:text="@string/add_a_new_delivery_address"
-        android:textAlignment="textStart"
-        android:textColor="#004D40"
-        android:textStyle="bold"
-        app:drawableLeftCompat="@drawable/baseline_add_24_black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tapAndRecordMain_textView" />
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/tapAndRecordMain_textView">
+
+        <TextView
+            android:id="@+id/setDefaultDeliveryAddressAddNewAddress_textView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="5"
+            android:fontFamily="@font/archivo"
+            android:gravity="center"
+            android:text="@string/add_a_new_delivery_address"
+            android:textAlignment="textStart"
+            android:textColor="#004D40"
+            android:textStyle="bold"
+            app:drawableLeftCompat="@drawable/baseline_add_24_black" />
+
+        <ImageView
+            android:id="@+id/addressRefresh_imageView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:tint="#040303"
+            app:srcCompat="@drawable/baseline_refresh_24" />
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/setDefaultDeliveryAddress_recycleView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="225dp"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="5dp"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
@@ -303,7 +303,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_max="225dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/setDefaultDeliveryAddressAddNewAddress_textView"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout8"
         tools:listitem="@layout/srv_address_list" />
 
     <ImageView

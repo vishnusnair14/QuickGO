@@ -1,15 +1,25 @@
 package com.vishnu.quickgoorder.ui.track;
 
+import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.VibrationEffect;
 import android.text.TextUtils;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -27,18 +37,31 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -54,6 +77,7 @@ import com.vishnu.quickgoorder.server.ws.ChatAdapter;
 import com.vishnu.quickgoorder.server.ws.ChatClient;
 import com.vishnu.quickgoorder.server.ws.ChatModel;
 import com.vishnu.quickgoorder.server.ws.DeliveryPartnerStatusListener;
+import com.vishnu.quickgoorder.service.LocationService;
 import com.vishnu.quickgoorder.ui.track.orderstatus.OrderStatusAdapter;
 
 import java.text.MessageFormat;
@@ -69,13 +93,16 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class OrderTrackActivity extends AppCompatActivity implements DeliveryPartnerStatusListener {
+public class OrderTrackActivity extends AppCompatActivity implements GoogleMap.OnMyLocationButtonClickListener,
+        GoogleMap.OnMyLocationClickListener, DeliveryPartnerStatusListener, OnMapReadyCallback {
     private final String LOG_TAG = "OrderTrackActivity";
     private FirebaseFirestore db;
     private FirebaseUser user;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     TextView orderIDTV;
     TextView orderTimeTV;
     TextView updatedTimeTV;
+    TextView deliveryAddressTV;
     Button chatSendBtn;
     EditText messageET;
     TextView dropDownIV;
@@ -101,20 +128,28 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
     private int orderStatusNo = 0;
     private boolean isOrderStatusCardViewExpanded = false;
     private boolean isDeliveryPartnerAssigned = false;
+    private GoogleMap mMap;
+    private Marker orderMarker;
+    private Marker deliveryHomeMarker;
+    private double device_lat;
+    private double device_lon;
+    MapView mapView;
+    Bundle savedInstanceState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_track);
+        this.savedInstanceState = savedInstanceState;
 
         db = FirebaseFirestore.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
         SharedPreferences preferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
-        MapBottomSheetFragment mapFragment = new MapBottomSheetFragment();
 
         orderIDTV = findViewById(R.id.orderTrackOrderIDView_textView);
         orderTimeTV = findViewById(R.id.orderTrackOrderTimeView_textView);
         updatedTimeTV = findViewById(R.id.orderTrackOrderUpdatedTimeView_textView);
+        deliveryAddressTV = findViewById(R.id.orderTrackDeliveryAddress_textView);
         chatFab = findViewById(R.id.chat_floatingActionButton);
         sseViewTV = findViewById(R.id.sseView_textView);
         orderDetailsCardView = findViewById(R.id.trackOrderDetails_cardView);
@@ -123,7 +158,11 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
         orderStatusRecyclerView = findViewById(R.id.orderStatusUpdate_recycleView);
         dropDownIV = findViewById(R.id.dropDownView_textView);
         ConstraintLayout mainLayout = findViewById(R.id.orderTrackMain_Layout_constraintLayout);
-        FloatingActionButton gotoMap = findViewById(R.id.gotoMap_floatingActionButton);
+        mapView = findViewById(R.id.mapView);
+        mapView.setVisibility(View.GONE);
+
+        mapView.onCreate(savedInstanceState);
+        mapView.getMapAsync(this);
 
         statusIconViews = new ImageView[]{
                 findViewById(R.id.imageView11),
@@ -188,8 +227,6 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
             }
         });
 
-        gotoMap.setOnClickListener(v -> mapFragment.show(getSupportFragmentManager(), mapFragment.getTag()));
-
         mainLayout.setOnClickListener(v -> {
             if (isOrderStatusCardViewExpanded) {
                 toggleCardView();
@@ -208,19 +245,117 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
             }
         };
 
-        Snackbar.make(findViewById(android.R.id.content), "Persistent Snackbar", Snackbar.LENGTH_INDEFINITE)
-                .setAction("DISMISS", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // Dismiss action
-                    }
-                })
-                .show();
-
-
-
+//        initOlaMaps();
+        animateStep(0, 1, statusIconViews, statusProgressBarViews, false);
         getOnBackPressedDispatcher().addCallback(this, callback);
     }
+
+
+    @Nullable
+    @Override
+    public View onCreateView(@Nullable View parent, @NonNull String name, @NonNull Context
+            context, @NonNull AttributeSet attrs) {
+        return super.onCreateView(parent, name, context, attrs);
+    }
+
+    @Override
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        mMap = googleMap;
+        mMap.setOnMyLocationButtonClickListener(this);
+        mMap.setOnMyLocationClickListener(this);
+
+        // Enable compass, zoom controls, and other features
+        UiSettings uiSettings = mMap.getUiSettings();
+        uiSettings.setCompassEnabled(true);
+        uiSettings.setZoomControlsEnabled(true);
+        uiSettings.setMyLocationButtonEnabled(true);
+        uiSettings.setMapToolbarEnabled(true);
+
+        // Check if location permissions are granted before enabling location-related features
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true); // Enable the blue dot for user location
+        } else {
+            // Request location permissions if not already granted
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION},
+                    LOCATION_PERMISSION_REQUEST_CODE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted; enable location layer
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    mMap.setMyLocationEnabled(true);
+                }
+            } else {
+                // Permission denied; handle accordingly
+                Toast.makeText(this, "Location permission required for map features.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private final BroadcastReceiver locationReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (LocationService.ACTION_LOCATION_BROADCAST.equals(intent.getAction())) {
+                device_lat = intent.getDoubleExtra(LocationService.EXTRA_LATITUDE, 0.00);
+                device_lon = intent.getDoubleExtra(LocationService.EXTRA_LONGITUDE, 0.00);
+            }
+        }
+    };
+
+    private void addDeliveryHomeMarker(GoogleMap mMap, LatLng homeLocation) {
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.home_24);
+        Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 100, 100, false);
+
+        if (deliveryHomeMarker != null) {
+            deliveryHomeMarker.setPosition(homeLocation);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLocation, 18));
+
+        } else {
+            deliveryHomeMarker = mMap.addMarker(new MarkerOptions()
+                    .position(homeLocation)
+                    .title("Delivery Home")
+                    .icon(BitmapDescriptorFactory.fromBitmap(resizedBitmap)));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLocation, 18));
+        }
+    }
+
+    private void updateMapWithLocations(LatLng userLatLng, LatLng deliveryPartnerLatLng) {
+        // Clear the map before adding new markers and polyline
+        mMap.clear();
+
+        // Add marker for the delivery partner
+        mMap.addMarker(new MarkerOptions()
+                .position(deliveryPartnerLatLng)
+                .title("Delivery Partner")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+
+        // Add marker for the user
+        mMap.addMarker(new MarkerOptions()
+                .position(userLatLng)
+                .title("Your Location")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+
+        // Draw a line (polyline) between the user's location and the delivery partner's location
+        mMap.addPolyline(new PolylineOptions()
+                .add(userLatLng, deliveryPartnerLatLng)
+                .width(5)
+                .color(Color.BLUE));
+
+        // Optionally, move the camera to show both markers and the line
+        LatLngBounds bounds = new LatLngBounds.Builder()
+                .include(userLatLng)
+                .include(deliveryPartnerLatLng)
+                .build();
+        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100));
+    }
+
 
     private void animateOrderStatus(int step, boolean isDeliveryPartnerAssigned) {
 
@@ -258,17 +393,19 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
                 animateProgressBar(progressBars[currentStep]);
 
                 // After the progress bar has animated, move to the next step
-                new Handler().postDelayed(() -> animateStep(currentStep + 1, maxStep, imageViews, progressBars, isDeliveryPartnerAssigned), 1500); // Adjust this delay to match the progress bar animation duration
+                new Handler().postDelayed(() -> animateStep(currentStep + 1,
+                        maxStep, imageViews, progressBars, isDeliveryPartnerAssigned), 1500);
 
             }, 750);
         }
     }
 
-    private void animateImageViewResourceChange(final ImageView imageView, final int newResource) {
+    private void animateImageViewResourceChange(final ImageView imageView,
+                                                final int newResource) {
         // Fade out the current image
         imageView.animate()
                 .alpha(0f)
-                .setDuration(500) // Adjust the duration as needed
+                .setDuration(500)
                 .withEndAction(() -> {
                     // Change the image resource once fade out is complete
                     imageView.setImageResource(newResource);
@@ -276,7 +413,7 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
                     // Fade in the new image
                     imageView.animate()
                             .alpha(1f)
-                            .setDuration(500) // Adjust the duration as needed
+                            .setDuration(500)
                             .start();
                 })
                 .start();
@@ -352,11 +489,9 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
 
                 orderStatusAdapter.notifyItemInserted(orderStatusAdapter.getItemCount() - 1);
                 orderStatusRecyclerView.scrollToPosition(combinedStatusList.size() - 1);
-
             }
 
             orderDetailsCardView.setVisibility(View.VISIBLE);
-
         } else {
             Log.d(LOG_TAG, "No new unique status data to update.");
         }
@@ -381,11 +516,13 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
             if (isOrderStatusCardViewExpanded) {
                 dropDownIV.setText(R.string.hide_detailed_update);
                 dropDownIV.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null,
-                        ContextCompat.getDrawable(OrderTrackActivity.this, R.drawable.baseline_arrow_drop_up_24), null);
+                        ContextCompat.getDrawable(OrderTrackActivity.this,
+                                R.drawable.baseline_arrow_drop_up_24), null);
             } else {
                 dropDownIV.setText(R.string.view_detailed_update);
                 dropDownIV.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null,
-                        ContextCompat.getDrawable(OrderTrackActivity.this, R.drawable.baseline_arrow_drop_down_24), null);
+                        ContextCompat.getDrawable(OrderTrackActivity.this,
+                                R.drawable.baseline_arrow_drop_down_24), null);
             }
         });
 
@@ -412,12 +549,14 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
         sseClient.setConnectionListener(new SSEClient.SSEConnectionListener() {
             @Override
             public void onConnected() {
-                runOnUiThread(() -> Toast.makeText(OrderTrackActivity.this, "SSE connected", Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> Toast.makeText(OrderTrackActivity.this,
+                        "SSE connected", Toast.LENGTH_SHORT).show());
             }
 
             @Override
             public void onDisconnected() {
-                runOnUiThread(() -> Toast.makeText(OrderTrackActivity.this, "SSE disconnected", Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> Toast.makeText(OrderTrackActivity.this,
+                        "SSE disconnected", Toast.LENGTH_SHORT).show());
             }
         });
 
@@ -431,8 +570,8 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
                 onPartnerStatusChanged(isPartnerAssigned);
 
                 if ("None".equals(data.getDp_name())) {
-                    orderStatusTV.setText(R.string.delivery_partner_not_assigned);
-                    orderStatusTV.setTextColor(getColor(R.color.partner_not_assigned));
+                    sseViewTV.setText(R.string.delivery_partner_not_assigned);
+                    sseViewTV.setTextColor(getColor(R.color.partner_not_assigned));
                 } else {
                     if (data.getDp_name() != null) {
                         orderStatusTV.setText(MessageFormat.format("{0} is your delivery partner",
@@ -453,7 +592,9 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
                 if (data.getTime() != null) {
                     updatedTimeTV.setText(data.getTime());
                 }
-
+                if (data.getDelivery_address() != null) {
+                    deliveryAddressTV.setText(data.getDelivery_address());
+                }
                 if (!isAnimationShown) {
                     animateOrderStatus(data.getOrder_status_no(), isPartnerAssigned);
                     orderStatusNo = data.getOrder_status_no();
@@ -473,12 +614,26 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
                     Log.e(LOG_TAG, "Order status data is null");
                 }
 
-                Log.d(LOG_TAG, message);
+                Log.d(LOG_TAG, "SSE Message: " + message);
 
-//                if (!isOrderStatusCardViewExpanded) {
-//                    toggleCardView();
-//                }
+                if (data.getDp_loc_coordinates() != null) {
+                    mapView.setVisibility(View.VISIBLE);
 
+                    // Update partner location on map if it's available
+                    updateMapWithLocations(new LatLng(Double.parseDouble(data.getDelivery_lat()),
+                                    Double.parseDouble(data.getDelivery_lon())),
+                            new LatLng(Double.parseDouble(data.getDp_lat()),
+                                    Double.parseDouble(data.getDp_lon())));
+                } else {
+                    if (data.isIs_partner_assigned()) {
+                        sseViewTV.setText(R.string.delivery_partner_assigned_waiting_for_accept_order);
+                        mapView.setVisibility(View.GONE);
+                        if (!isOrderStatusCardViewExpanded) {
+                            toggleCardView();
+                        }
+                    }
+                    Log.d(LOG_TAG, "location coordinates missing");
+                }
             });
         });
     }
@@ -486,7 +641,8 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
 
     private void wobbleAnimation(EditText editText) {
         // Define the wobble animation
-        ObjectAnimator wobbleAnimator = ObjectAnimator.ofFloat(editText, "translationX", 0f, 5f, -5f, 10f, -10f, 5f, -5f, 0f);
+        ObjectAnimator wobbleAnimator = ObjectAnimator.ofFloat(editText, "translationX",
+                0f, 5f, -5f, 10f, -10f, 5f, -5f, 0f);
         wobbleAnimator.setDuration(500);
         wobbleAnimator.setInterpolator(new CycleInterpolator(1));
         wobbleAnimator.start();
@@ -556,6 +712,7 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
         }
     }
 
+
     @SuppressLint("NotifyDataSetChanged")
     public void addMessage(String senderName, String message, String messageTime) {
         chatMessageList.add(new ChatModel(senderName, message, messageTime, false));
@@ -563,11 +720,13 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
         chatRecyclerView.scrollToPosition(chatMessageList.size() - 1);
     }
 
+
     public void addSentMessage(String message, String messageTime) {
         chatMessageList.add(new ChatModel("Me", message, messageTime, true));
         chatAdapter.notifyItemInserted(chatMessageList.size() - 1);
         chatRecyclerView.scrollToPosition(chatMessageList.size() - 1);
     }
+
 
     private void fetchData(String orderID) {
         DocumentReference docRef = db.collection("Users")
@@ -597,6 +756,7 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
             }
         });
     }
+
 
     private void resetAnimations() {
         // Array of default image resources for each ImageView
@@ -629,23 +789,42 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
     @Override
     protected void onResume() {
         super.onResume();
+        mapView.onResume();
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        mapView.onPause();
+
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-
+        unregisterReceiver(locationReceiver);
         resetAnimations();
     }
 
     @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mapView.onLowMemory();
+    }
+
+    @Override
+    public void onMyLocationClick(@NonNull Location location) {
+        Toast.makeText(this, "Current location:\n" + location, Toast.LENGTH_LONG).show();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
+    @Override
     protected void onStart() {
         super.onStart();
+        IntentFilter filter = new IntentFilter(LocationService.ACTION_LOCATION_BROADCAST);
+        registerReceiver(locationReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+
         if (orderStatusNo != 0) {
             animateOrderStatus(orderStatusNo, isDeliveryPartnerAssigned);
             isAnimationShown = true;
@@ -655,6 +834,7 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mapView.onDestroy();
 
         if (sseClient != null) {
             sseClient.stop();
@@ -670,6 +850,12 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
             setDeliveryAddrBtmView.dismiss();
         }
 
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mapView.onSaveInstanceState(outState);
     }
 
     @Override
@@ -694,6 +880,11 @@ public class OrderTrackActivity extends AppCompatActivity implements DeliveryPar
                 chatViewStatusTV.setTextColor(getColor(R.color.wsc_partner_not_avail));
             }
         });
+    }
+
+    @Override
+    public boolean onMyLocationButtonClick() {
+        return false;
     }
 
 }

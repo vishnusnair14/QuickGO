@@ -8,13 +8,16 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -60,7 +63,6 @@ import retrofit2.Response;
 
 public class OBVOrderInformationFragment extends Fragment {
 
-
     private final String LOG_TAG = "OrderInformationFragment";
     FirebaseFirestore db;
     FirebaseUser user;
@@ -92,9 +94,11 @@ public class OBVOrderInformationFragment extends Fragment {
     private String orderByVoiceAudioRefID;
     private String orderByVoiceDocID;
     private GridView gridView;
+    private SharedPreferences.OnSharedPreferenceChangeListener deliveryPreferenceChangeListener;
     private TextView gridViewStatusTV;
     private TextView statusTV;
-
+    TextView allActionStatusTV;
+    ProgressBar allActionsStatusPB;
     private FragmentObvOrderInformationBinding binding;
 
     public OBVOrderInformationFragment() {
@@ -194,7 +198,10 @@ public class OBVOrderInformationFragment extends Fragment {
         });
 
         binding.obvAllDeliveryOptionsFloatingActionButton.setOnClickListener(v -> showAllDeliveryOptionsBtmView());
-
+        binding.obvAllDeliveryOptionsFloatingActionButton.setOnLongClickListener(v -> {
+            sendOrderDeliveredRequest(preferences, user.getUid(), userID, orderByVoiceDocID, orderByVoiceAudioRefID, orderKey, allDeliveryOptionsBtmView, allActionStatusTV, allActionsStatusPB);
+            return false;
+        });
         return root;
     }
 
@@ -277,6 +284,33 @@ public class OBVOrderInformationFragment extends Fragment {
         }
     }
 
+    private void updateButtonStates(Button reachedShopBtn, Button orderPickupBtn, Button orderEnrouteBtn, Button orderDeliveredBtn, CardView orderEnrouteCardView) {
+        boolean isReachedShop = preferences.getBoolean("isReachedShop", false);
+        boolean isOrderPickedUp = preferences.getBoolean("isOrderPickedUp", false);
+        boolean isOrderEnroute = preferences.getBoolean("isOrderEnroute", false);
+        boolean isOrderDelivered = preferences.getBoolean("isOrderDelivered", false);
+
+        // Update button states based on preferences
+        reachedShopBtn.setEnabled(!isReachedShop);
+        orderPickupBtn.setEnabled(isReachedShop && !isOrderPickedUp);
+        orderEnrouteBtn.setEnabled(isOrderPickedUp && !isOrderEnroute);
+        orderDeliveredBtn.setEnabled(isOrderEnroute && !isOrderDelivered);
+
+//        if (isOrderDelivered) {
+//            reachedShopBtn.setEnabled(true);
+//            orderPickupBtn.setEnabled(true);
+//            orderEnrouteBtn.setEnabled(true);
+//            orderDeliveredBtn.setEnabled(true);
+//        }
+
+        // Show the amount input only when order pickup is done
+        if (preferences.getBoolean("isOrderPickedUp", false) && !preferences.getBoolean("isOrderEnroute", false)) {
+            orderEnrouteCardView.setVisibility(View.VISIBLE);
+        } else {
+            orderEnrouteCardView.setVisibility(View.GONE);
+        }
+    }
+
     private void showAllDeliveryOptionsBtmView() {
 
         View orderView = LayoutInflater.from(requireContext()).inflate(
@@ -287,17 +321,64 @@ public class OBVOrderInformationFragment extends Fragment {
         allDeliveryOptionsBtmView.setCanceledOnTouchOutside(false);
         Objects.requireNonNull(allDeliveryOptionsBtmView.getWindow()).setGravity(Gravity.TOP);
 
+        Button reachedShopBtn = orderView.findViewById(R.id.reachedShop_button);
         Button orderPickupBtn = orderView.findViewById(R.id.orderPickup_button);
         Button orderDeliveredBtn = orderView.findViewById(R.id.orderDelivered_button);
-        TextView allActionStatusTV = orderView.findViewById(R.id.allDeliveryActionsStatusView_textView);
-        ProgressBar allActionsStatusPB = orderView.findViewById(R.id.allDeliveryActionsStatusPB_progressBar);
+        allActionStatusTV = orderView.findViewById(R.id.allDeliveryActionsStatusView_textView);
+        allActionsStatusPB = orderView.findViewById(R.id.allDeliveryActionsStatusPB_progressBar);
+        Button orderEnrouteBtn = orderView.findViewById(R.id.orderEnroute_button);
+        CardView orderEnrouteCardView = orderView.findViewById(R.id.orderEnroute_cardView);
+        EditText amountEditText = orderView.findViewById(R.id.totalAmount_editTextNumberDecimal);
+
+        // Initial button states based on preferences
+        updateButtonStates(reachedShopBtn, orderPickupBtn, orderEnrouteBtn, orderDeliveredBtn, orderEnrouteCardView);
+
+        // Set up the SharedPreference change listener
+        deliveryPreferenceChangeListener = (sharedPreferences, key) -> {
+            assert key != null;
+            if (key.equals("isReachedShop") || key.equals("isOrderPickedUp") || key.equals("isOrderEnroute") || key.equals("isOrderDelivered")) {
+                updateButtonStates(reachedShopBtn, orderPickupBtn, orderEnrouteBtn, orderDeliveredBtn, orderEnrouteCardView);
+            }
+        };
+
+        preferences.registerOnSharedPreferenceChangeListener(deliveryPreferenceChangeListener);
+
+        // Check if amount is entered before enabling Order Enroute button
+        amountEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                orderEnrouteBtn.setEnabled(!s.toString().trim().isEmpty());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+
+        // Button click listeners
+        reachedShopBtn.setOnClickListener(v -> {
+            if (Utils.isNetworkConnected(requireContext())) {
+                reachedShopBtn.setEnabled(false);
+                allActionStatusTV.setText(R.string.please_wait);
+                allActionsStatusPB.setVisibility(View.VISIBLE);
+                preferences.edit().putBoolean("isReachedShop", true).apply();
+                sendReachedShopRequest(user.getUid(), userID, orderKey, reachedShopBtn,
+                        allDeliveryOptionsBtmView, allActionStatusTV, allActionsStatusPB);
+            } else {
+                Toast.makeText(requireContext(), "No internet connection.", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         orderPickupBtn.setOnClickListener(v -> {
-            orderPickupBtn.setEnabled(false);
-            allActionStatusTV.setText(R.string.please_wait);
-            allActionsStatusPB.setVisibility(View.VISIBLE);
-
             if (Utils.isNetworkConnected(requireContext())) {
+                orderPickupBtn.setEnabled(false);
+                allActionStatusTV.setText(R.string.please_wait);
+                allActionsStatusPB.setVisibility(View.VISIBLE);
                 sendOrderPickedUpRequest(user.getUid(), userID, orderKey, orderPickupBtn,
                         allDeliveryOptionsBtmView, allActionStatusTV, allActionsStatusPB);
             } else {
@@ -306,13 +387,38 @@ public class OBVOrderInformationFragment extends Fragment {
             }
         });
 
-        orderDeliveredBtn.setOnClickListener(v -> {
-            allActionStatusTV.setText(R.string.please_wait);
-            allActionsStatusPB.setVisibility(View.VISIBLE);
-            sendOrderDeliveredRequest(preferences, user.getUid(), userID, orderByVoiceDocID,
-                    orderByVoiceAudioRefID, orderKey, allDeliveryOptionsBtmView,
-                    allActionStatusTV, allActionsStatusPB);
+        orderEnrouteBtn.setOnClickListener(v -> {
+            if (Utils.isNetworkConnected(requireContext())) {
+                if (amountEditText.length() == 0) {
+                    Toast.makeText(requireContext(), "Enter the total amount", Toast.LENGTH_SHORT).show();
+                } else {
+                    orderEnrouteBtn.setEnabled(false);
+                    allActionStatusTV.setText(R.string.please_wait);
+                    allActionsStatusPB.setVisibility(View.VISIBLE);
+                    preferences.edit().putBoolean("isOrderEnroute", true).apply();
+                    preferences.edit().putBoolean("isOrderDelivered", false).apply();
+
+                    sendOrderEnrouteRequest(user.getUid(), userID, orderKey, orderEnrouteBtn,
+                            allDeliveryOptionsBtmView, allActionStatusTV, allActionsStatusPB);
+                }
+            } else {
+                Toast.makeText(requireContext(), "No internet connection.", Toast.LENGTH_SHORT).show();
+            }
         });
+
+        orderDeliveredBtn.setOnClickListener(v -> {
+            if (Utils.isNetworkConnected(requireContext())) {
+                allActionStatusTV.setText(R.string.please_wait);
+                allActionsStatusPB.setVisibility(View.VISIBLE);
+                sendOrderDeliveredRequest(preferences, user.getUid(), userID, orderByVoiceDocID,
+                        orderByVoiceAudioRefID, orderKey, allDeliveryOptionsBtmView,
+                        allActionStatusTV, allActionsStatusPB);
+            } else {
+                Toast.makeText(requireContext(), "No internet connection.",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+
 
         allDeliveryOptionsBtmView.show();
     }
@@ -345,7 +451,7 @@ public class OBVOrderInformationFragment extends Fragment {
         });
     }
 
-    private void handleResponse(JsonObject responseBody, ChatID chatID) {
+    private void handleResponse(@NonNull JsonObject responseBody, ChatID chatID) {
         String status = responseBody.has("status") ? responseBody.get("status").getAsString() : "error";
 
         if ("success".equals(status)) {
@@ -371,7 +477,7 @@ public class OBVOrderInformationFragment extends Fragment {
     }
 
 
-    private void parseData(JsonObject data, ChatID chatID) {
+    private void parseData(@NonNull JsonObject data, @NonNull ChatID chatID) {
         JsonObject deliveryLocJson = data.has("delivery_address_loc") ? data.getAsJsonObject("delivery_address_loc") : null;
 
         setupGridView(data);
@@ -473,6 +579,85 @@ public class OBVOrderInformationFragment extends Fragment {
         return storePrefDataModelList;
     }
 
+    private void sendReachedShopRequest(String dpID, String userID, String orderID,
+                                        Button orderPickupBtn,
+                                        BottomSheetDialog allDeliveryOptionsBtmView,
+                                        TextView allActionStatusTV, ProgressBar allActionsStatusPB) {
+
+        APIService apiService = ApiServiceGenerator.getApiService(requireContext());
+        Call<JsonObject> call3480 = apiService.reachedShop(dpID, userID, orderID);
+
+        call3480.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<JsonObject> call34, @NonNull Response<JsonObject> response) {
+                if (response.isSuccessful()) {
+                    if (response.body() != null && !response.body().isEmpty()) {
+                        if (response.body().get("response_status").getAsBoolean()) {
+                            allActionStatusTV.setText("");
+                            allActionsStatusPB.setVisibility(View.GONE);
+                            orderPickupBtn.setEnabled(false);
+                            Toast.makeText(requireContext(), response.body().get("message").getAsString(), Toast.LENGTH_SHORT).show();
+                            preferences.edit().putBoolean("isReachedShop", true).apply();
+                            allDeliveryOptionsBtmView.hide();
+                            allDeliveryOptionsBtmView.dismiss();
+                        } else {
+                            orderPickupBtn.setEnabled(true);
+                            allActionStatusTV.setText("");
+                            allActionsStatusPB.setVisibility(View.GONE);
+                            Toast.makeText(requireContext(), response.body().get("message").getAsString(),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
+
+            }
+        });
+    }
+
+    private void sendOrderEnrouteRequest(String dpID, String userID, String orderID,
+                                         Button orderPickupBtn,
+                                         BottomSheetDialog allDeliveryOptionsBtmView,
+                                         TextView allActionStatusTV, ProgressBar allActionsStatusPB) {
+
+        APIService apiService = ApiServiceGenerator.getApiService(requireContext());
+        Call<JsonObject> call3480 = apiService.orderEnroute(dpID, userID, orderID);
+
+        call3480.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<JsonObject> call34, @NonNull Response<JsonObject> response) {
+                if (response.isSuccessful()) {
+                    if (response.body() != null && !response.body().isEmpty()) {
+                        if (response.body().get("response_status").getAsBoolean()) {
+                            allActionStatusTV.setText("");
+                            allActionsStatusPB.setVisibility(View.GONE);
+                            orderPickupBtn.setEnabled(false);
+                            Toast.makeText(requireContext(), response.body().get("message").getAsString(), Toast.LENGTH_SHORT).show();
+                            preferences.edit().putBoolean("isOrderEnroute", true).apply();
+                            allDeliveryOptionsBtmView.hide();
+                            allDeliveryOptionsBtmView.dismiss();
+                        } else {
+                            orderPickupBtn.setEnabled(true);
+                            allActionStatusTV.setText("");
+                            allActionsStatusPB.setVisibility(View.GONE);
+                            Toast.makeText(requireContext(), response.body().get("message").getAsString(),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
+
+            }
+        });
+    }
+
+
     private void sendOrderPickedUpRequest(String dpID, String userID, String orderID,
                                           Button orderPickupBtn,
                                           BottomSheetDialog allDeliveryOptionsBtmView,
@@ -490,8 +675,8 @@ public class OBVOrderInformationFragment extends Fragment {
                             allActionStatusTV.setText("");
                             allActionsStatusPB.setVisibility(View.GONE);
                             orderPickupBtn.setEnabled(false);
-                            Toast.makeText(requireContext(), "Informed client success",
-                                    Toast.LENGTH_SHORT).show();
+                            Toast.makeText(requireContext(), response.body().get("message").getAsString(), Toast.LENGTH_SHORT).show();
+                            preferences.edit().putBoolean("isOrderPickedUp", true).apply();
                             allDeliveryOptionsBtmView.hide();
                             allDeliveryOptionsBtmView.dismiss();
                         } else {
@@ -529,10 +714,16 @@ public class OBVOrderInformationFragment extends Fragment {
                         if (response.body().get("response_status").getAsBoolean()) {
                             preferences.edit().putString("currentDeliveryOrderID", "0").apply();
                             Toast.makeText(requireContext(), response.body().get("message").getAsString(), Toast.LENGTH_SHORT).show();
-                            allDeliveryOptionsBtmView.hide();
-                            allDeliveryOptionsBtmView.dismiss();
-                            allActionStatusTV.setText("");
-                            allActionsStatusPB.setVisibility(View.GONE);
+                            preferences.edit().putBoolean("isReachedShop", false).apply();
+                            preferences.edit().putBoolean("isOrderPickedUp", false).apply();
+                            preferences.edit().putBoolean("isOrderEnroute", false).apply();
+                            preferences.edit().putBoolean("isOrderDelivered", true).apply();
+                            if (allDeliveryOptionsBtmView != null) {
+                                allDeliveryOptionsBtmView.hide();
+                                allDeliveryOptionsBtmView.dismiss();
+                                allActionStatusTV.setText("");
+                                allActionsStatusPB.setVisibility(View.GONE);
+                            }
                             requireActivity().onBackPressed();
                         } else {
                             if (response.body().has("message")) {
@@ -579,9 +770,7 @@ public class OBVOrderInformationFragment extends Fragment {
 
         callConfirmBtmDialogView = new BottomSheetDialog(requireContext());
         callConfirmBtmDialogView.setContentView(chatView);
-//        callConfirmBtmDialogView.setCanceledOnTouchOutside(false);
         Objects.requireNonNull(callConfirmBtmDialogView.getWindow()).setGravity(Gravity.TOP);
-
 
         TextView proceedBtn = chatView.findViewById(R.id.btmViewCallConfirmProceedBtn_textView);
         TextView cancelBtn = chatView.findViewById(R.id.btmViewCallConfirmCancelBtn_textView);
@@ -618,6 +807,7 @@ public class OBVOrderInformationFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+
         // Close WebSocket connection when activity is destroyed
         if (chatClient != null) {
             chatClient.webSocket.close(1000, "client disconnected");

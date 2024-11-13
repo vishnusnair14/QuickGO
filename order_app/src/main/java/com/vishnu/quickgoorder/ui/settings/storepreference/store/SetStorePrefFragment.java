@@ -93,7 +93,7 @@ public class SetStorePrefFragment extends Fragment {
 
         sendPrefBtn.setOnClickListener(v -> {
             sendPrefBtn.setEnabled(false);
-            sendPrefBtn.setText(R.string.please_wait);
+            sendPrefBtn.setText(R.string.Please_wait);
 
             savePreferences();
         });

@@ -12,13 +12,14 @@
         android:layout_height="150dp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="212dp"
+        android:background="#042992"
         android:elevation="2dp"
-        android:foreground="@drawable/ic_launcher_delivery_app_name_foreground"
         android:hapticFeedbackEnabled="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_launcher_delivery_app_icon_foreground" />
 
     <TextView
         android:id="@+id/app_slogan"
@@ -28,7 +29,7 @@
         android:layout_alignParentEnd="true"
         android:layout_marginTop="55dp"
         android:fontFamily="@font/montserrat"
-        android:text="@string/intelli_cart_nsay_it_your_groceries_are_on_the_way"
+        android:text="Just say it and get it"
         android:textAlignment="center"
         android:textSize="18sp"
         android:textStyle="bold"

@@ -67,6 +67,7 @@ import com.vishnu.quickgodelivery.server.sapi.ApiServiceGenerator;
 import com.vishnu.quickgodelivery.services.DutyNotification;
 import com.vishnu.quickgodelivery.services.GPSProviderService;
 import com.vishnu.quickgodelivery.services.LocationService;
+import com.vishnu.quickgodelivery.services.LocationUpdater;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -105,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int GPS_CHECK_INTERVAL = 1000;
     private Handler gpsCheckHandler;
     private AppBarConfiguration mAppBarConfiguration;
+    LocationUpdater locationUpdater;
 
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @Override
@@ -167,99 +169,6 @@ public class MainActivity extends AppCompatActivity {
         dutyNotificationManager = getSystemService(NotificationManager.class);
         dutyNotificationManager.createNotificationChannel(dutyChannel);
         dutyNotificationService = new Intent(this, DutyNotification.class);
-
-//        // FETCH CURRENT DUTY STATUS
-//        if (preferences.getBoolean("isOnDuty", false)) {
-//            startLocationService();
-//            dutyNotificationService.putExtra("DUTY_NOTIFICATION_TEXT", "You're still on duty");
-//            startService(dutyNotificationService);
-//            showOnDutyView();
-//            locationTV.setVisibility(View.VISIBLE);
-//            drawerDutyStatusView.setText(R.string.on_duty);
-//
-//            if (dutyToggle != null) {
-//                if (!dutyToggle.isChecked()) {
-//                    dutyToggle.setChecked(true);
-//                }
-//            }
-//        } else if (!preferences.getBoolean("isOnDuty", false)) {
-//            stopLocationService();
-//            locationTV.setVisibility(View.GONE);
-//            showOffDutyView();
-//            drawerDutyStatusView.setText(R.string.off_duty);
-//
-//            if (dutyToggle != null) {
-//                if (dutyToggle.isChecked()) {
-//                    dutyToggle.setChecked(false);
-//                }
-//            }
-//        }
-
-//        getCurrentDutyStatusData(data -> {
-//            if (data != null) {
-//                String duty_mode = data.get("duty_mode").getAsString().trim();
-//                if (duty_mode.equals("on_duty")) {
-//                    startLocationService();
-//                    showOnDutyView();
-//                    drawerDutyStatusView.setText(R.string.on_duty);
-//                    locationTV.setVisibility(View.VISIBLE);
-//                    Toast.makeText(this, "You are on duty", Toast.LENGTH_SHORT).show();
-//
-////                    if (dutyToggle != null) {
-////                        if (!dutyToggle.isChecked()) {
-////                            dutyToggle.setChecked(true);
-////                        }
-////                    }
-//                    dutyToggle.setSelected(true);
-//
-//                    if (preferences.getBoolean("isOnDuty", false)) {
-//                        dutyNotificationService.putExtra("DUTY_NOTIFICATION_TEXT", "You're still on duty");
-//                        startService(dutyNotificationService);
-//                    }
-//                } else if (duty_mode.equals("off_duty")) {
-//                    showOffDutyView();
-//                    drawerDutyStatusView.setText(R.string.off_duty);
-//                    locationTV.setVisibility(View.GONE);
-//                    Toast.makeText(this, "You are off duty", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
-//
-//        // TODO: clean here make it std.
-//        // DUTY START-STOP BUTTON LISTENER
-//        if (dutyToggle != null) {
-//            dutyToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
-//                if (Utils.isNetworkConnected(MainActivity.this)) {
-//                    if (isChecked) {
-//                        if (Utils.isGPSEnabled(MainActivity.this)) {
-//                            if (dp_lat != 0 && dp_lon != 0) {
-//                                closeLeftDrawer();
-//                                sentDutyStartRequest();
-//                            } else {
-//                                closeLeftDrawer();
-//                                startGpsCheck();
-//                            }
-//                        } else {
-//                            closeLeftDrawer();
-//                            dutyToggle.setChecked(false);
-//                            locationTV.setVisibility(View.GONE);
-//                            showEnableLocationBtmView(true);
-//                        }
-//                    } else {
-//                        sentDutyEndRequest(user.getUid(), preferences.getString("decodedCityForDuty", "0"));
-//                        closeLeftDrawer();
-//                    }
-//                } else {
-//                    Toast.makeText(this, "No internet connection.", Toast.LENGTH_SHORT).show();
-//                    dutyToggle.setChecked(!isChecked);
-//                }
-//            });
-//        } else {
-//            Toast.makeText(this, "Unable to perform action.", Toast.LENGTH_SHORT).show();
-//        }
-
-
-        // Initialize the ActivityResultLauncher
 
         checkDutyStatus();
 
@@ -324,6 +233,10 @@ public class MainActivity extends AppCompatActivity {
             emailIdTV.setText("");
             userIdTV.setText("");
         }
+        // Update the realtime location to DB
+        locationUpdater = new LocationUpdater(this, user.getUid());
+        locationUpdater.startLocationUpdates();
+
     }
 
 
@@ -932,6 +845,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @Override
     protected void onResume() {
         super.onResume();
@@ -952,6 +866,8 @@ public class MainActivity extends AppCompatActivity {
         } else {
             showEnableLocationBtmView(false);
         }
+
+
     }
 
     @Override
@@ -961,6 +877,7 @@ public class MainActivity extends AppCompatActivity {
 //        stopService(dutyNotificationService);
         unregisterReceiver(gpsStatusReceiver);
         unregisterReceiver(locationReceiver);
+//        locationUpdater.stopLocationUpdates();
     }
 
     @Override

@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.vishnu.quickgoorder.ui.home.recommendation.items.ItemFragment"
+        android:name="com.vishnu.quickgoorder.ui.home.recommendation.items.ProductFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_items">
         <action
@@ -117,6 +117,13 @@
     </fragment>
 
     <fragment
+        android:id="@+id/nav_orderbycategory"
+        android:name="com.vishnu.quickgoorder.ui.home.category.HomeOrderByCategoryFragment"
+        android:label="@string/home"
+        tools:layout="@layout/fragment_home_order_by_category">
+    </fragment>
+
+    <fragment
         android:id="@+id/nav_recommendation"
         android:name="com.vishnu.quickgoorder.ui.home.recommendation.HomeRecommendationFragment"
         android:label="@string/home"
@@ -158,4 +165,8 @@
         android:label="activity_order_track"
         tools:layout="@layout/activity_order_track">
     </activity>
+    <fragment
+        android:id="@+id/nav_miscellaneous"
+        android:name="com.vishnu.quickgoorder.ui.miscellaneous.MiscellaneousFragment"
+        android:label="Options" />
 </navigation>

@@ -144,7 +144,7 @@ public class SavedAddressAdapter extends RecyclerView.Adapter<SavedAddressAdapte
 
             // Set default delivery address view
             addressCardView.setOnClickListener(v -> {
-                if (settingsPreferences.getBoolean("setRecommendationAsDefaultHomeView", false)) {
+                if (settingsPreferences.getInt("defaultHomeView", 0) != 0) {
                     preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_KEY, address.getPhoneNo()).apply();
                     preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_TYPE, address.getAddressType()).apply();
 //                    preferences.edit().putString("selectedAddressLat", String.valueOf(address.getAddressLat())).apply();
@@ -159,11 +159,14 @@ public class SavedAddressAdapter extends RecyclerView.Adapter<SavedAddressAdapte
                     homeRecommendationBinding.selectedFullAddressViewTextView.setText(preferences.getString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_FULL_ADDRESS,
                             "Select an address"));
 
-                    EventBus.getDefault().post(new EBSyncEmptyShopData("{'recommended_shop_data':[]}", 1273));
-
-                    EventBus.getDefault().post(new EBDeliveryAddressData(address.getAddressLat(),
-                            address.getAddressLon(), address.getState(), address.getDistrict(),
-                            address.getPhoneNo(), address.getPincode(), address.getStreetAddress()));
+                    // Enable to get shop by recommendation
+//                    EventBus.getDefault().post(new EBSyncEmptyShopData("{'recommended_shop_data':[]}", 1273));
+//
+//                    EventBus.getDefault().post(new EBDeliveryAddressData(address.getAddressLat(),
+//                            address.getAddressLon(), address.getState(), address.getDistrict(),
+//                            address.getPhoneNo(), address.getPincode(), address.getStreetAddress()));
+                    setDeliveryAddrBtmView.hide();
+                    setDeliveryAddrBtmView.dismiss();
                 } else {
                     setDeliveryAddrBtmView.hide();
                     setDeliveryAddrBtmView.dismiss();

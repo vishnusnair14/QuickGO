@@ -1,11 +1,15 @@
 package com.vishnu.quickgoorder.ui.home.recommendation.orders;
 
+import com.google.firebase.firestore.GeoPoint;
+
 public class AllOrdersModel {
     private String shop_name;
     private String order_id;
     private String order_time;
     private String order_status_label;
     private String order_status_fg_color;
+    private String delivery_full_address;
+    private GeoPoint delivery_address_loc;
     private String order_status_bg_color;
 
     public String getShop_name() {
@@ -26,6 +30,15 @@ public class AllOrdersModel {
 
     public String getOrder_time() {
         return order_time;
+    }
+
+    public String getDelivery_full_address() {
+        return delivery_full_address;
+    }
+
+
+    public GeoPoint getDelivery_loc_coordinates() {
+        return delivery_address_loc;
     }
 
     public void setOrder_time(String order_time) {

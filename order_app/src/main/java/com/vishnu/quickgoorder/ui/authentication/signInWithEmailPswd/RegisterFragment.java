@@ -95,7 +95,7 @@ public class RegisterFragment extends Fragment {
                     && !reenterPasswordET.getText().toString().isEmpty()) {
                 if (passwordET.getText().length() >= 6) {
                     if (reenterPasswordET.getText().toString().equals(passwordET.getText().toString())) {
-                        statusTV.setText(R.string.please_wait);
+                        statusTV.setText(R.string.Please_wait);
                         registerUserInFirestore(emailET.getText().toString());
                     } else {
                         statusTV.setText(R.string.password_not_match);

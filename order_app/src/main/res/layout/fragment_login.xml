@@ -215,13 +215,15 @@
                     android:id="@+id/signInWithPhoneNumber_textView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:enabled="false"
                     android:fontFamily="@font/montserrat"
                     android:gravity="start"
                     android:text="@string/login_using_phone_number"
                     android:textAlignment="textStart"
                     android:textColor="#1B5E20"
                     android:textSize="12sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:visibility="invisible" />
 
                 <Button
                     android:id="@+id/loginLoginFragment_button"

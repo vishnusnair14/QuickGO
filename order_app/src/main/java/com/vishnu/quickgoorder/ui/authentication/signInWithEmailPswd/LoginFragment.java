@@ -99,7 +99,7 @@ public class LoginFragment extends Fragment {
         loginBtn.setOnClickListener(v -> {
             if (!emailET.getText().toString().isEmpty() && !passwordET.getText().toString().isEmpty()) {
                 binding.loginStatusProgressBar.setVisibility(View.VISIBLE);
-                statusTV.setText(R.string.please_wait);
+                statusTV.setText(R.string.Please_wait);
                 if (passwordET.getText().toString().length() >= 6) {
                     signIn(emailET.getText().toString(), passwordET.getText().toString());
                 } else {

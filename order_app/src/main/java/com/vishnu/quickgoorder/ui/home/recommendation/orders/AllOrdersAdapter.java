@@ -46,6 +46,9 @@ public class AllOrdersAdapter extends RecyclerView.Adapter<AllOrdersAdapter.View
         holder.shopNameTv.setText(item.getShop_name().toUpperCase());
         holder.orderNoTv.setText(MessageFormat.format("Order No: {0}", item.getOrder_id().substring(6)));
         holder.orderTimeTV.setText(MessageFormat.format("Order Time: {0}", item.getOrder_time()));
+        holder.deliveryAddressTV.setText(MessageFormat.format("Delivery Address: {0}", item.getDelivery_full_address()));
+//        holder.deliveryAddrLocCordTV.setText(MessageFormat.format("Address co-ordinates: {0}°N {1}°E", item.getDelivery_loc_coordinates(),
+//                item.getDelivery_loc_coordinates()));
 
         holder.orderAcceptedView.setVisibility(View.VISIBLE);
         holder.orderAcceptedView.setTextColor(Color.parseColor(item.getOrder_status_fg_color()));
@@ -78,6 +81,8 @@ public class AllOrdersAdapter extends RecyclerView.Adapter<AllOrdersAdapter.View
         TextView orderTimeTV;
         CardView allOrderCarView;
         TextView orderAcceptedView;
+        TextView deliveryAddressTV;
+        TextView deliveryAddrLocCordTV;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -86,6 +91,8 @@ public class AllOrdersAdapter extends RecyclerView.Adapter<AllOrdersAdapter.View
             orderTimeTV = itemView.findViewById(R.id.srvOrdersOrderTimeView_textView);
             allOrderCarView = itemView.findViewById(R.id.allPlacedOrders_cardView);
             orderAcceptedView = itemView.findViewById(R.id.orderAcceptedView_textView);
+            deliveryAddressTV = itemView.findViewById(R.id.srvOrdersDeliveryAddress_textView);
+            deliveryAddrLocCordTV = itemView.findViewById(R.id.srvOrdersDeliveryLocationCoords_textView);
         }
     }
 }

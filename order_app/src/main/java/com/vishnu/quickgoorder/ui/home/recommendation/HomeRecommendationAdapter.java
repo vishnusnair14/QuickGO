@@ -64,6 +64,7 @@ public class HomeRecommendationAdapter extends RecyclerView.Adapter<HomeRecommen
         holder.shopListCardView.setOnClickListener(view -> {
             bundle.putString("shop_name", shopList.get(position).getShopName());
             bundle.putString("shop_id", shopList.get(position).getShopId());
+            bundle.putString("shop_state", shopList.get(position).getShopState());
             bundle.putString("shop_district", shopList.get(position).getShopDistrict());
 
             NavHostFragment.findNavController(homeRecommendationFragment).navigate(R.id.action_shopInfoFragment_to_nav_home, bundle);

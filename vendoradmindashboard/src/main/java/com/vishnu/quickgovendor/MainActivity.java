@@ -47,8 +47,6 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
 
-
-
         DrawerLayout navDrawerLayout = activityMainBinding.drawerLayout;
         NavigationView leftNavDrawerMenu = activityMainBinding.navView;
         View headerView = leftNavDrawerMenu.getHeaderView(0);

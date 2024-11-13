@@ -184,10 +184,10 @@ public class VoiceOrdersAdapter extends RecyclerView.Adapter<VoiceOrdersAdapter.
                         }
 
                         Toast.makeText(context, responseBody.get("message").getAsString(), Toast.LENGTH_SHORT).show();
-                        Log.d(LOG_TAG, "File deleted successfully");
+                        Log.d(LOG_TAG, "Audio file deleted successfully");
                     } else {
                         Toast.makeText(context, responseBody.get("message").getAsString(), Toast.LENGTH_SHORT).show();
-                        Log.e(LOG_TAG, "Unable to delete file, at the moment");
+                        Log.e(LOG_TAG, "Unable to delete audio file, at the moment");
                     }
                 } else {
                     String errorMessage = "Failed to delete voice data";
@@ -215,11 +215,11 @@ public class VoiceOrdersAdapter extends RecyclerView.Adapter<VoiceOrdersAdapter.
         DownloadManager.Request request = new DownloadManager.Request(uri);
         request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
         request.setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS + "/orderByVoice", fileName + ".mp3");
-        request.setTitle("Downloading Audio");
+        request.setTitle("Please wait...");
         request.setDescription("Order voice" + fileName);
 
-        fdbk.setText(R.string.downloading);
-        Toast.makeText(context, "Downloading audio...", Toast.LENGTH_SHORT).show();
+        fdbk.setText(R.string.Please_wait);
+        Toast.makeText(context, R.string.Please_wait, Toast.LENGTH_SHORT).show();
 
         File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS + "/orderByVoice"),
                 fileName + ".mp3");
@@ -300,7 +300,7 @@ public class VoiceOrdersAdapter extends RecyclerView.Adapter<VoiceOrdersAdapter.
                 // Check if the completed download matches the one you initiated
                 if (downloadId == mDownloadId) {
                     // Download completed, perform your actions here
-                    mFeedback.setText(R.string.download_completed);
+                    mFeedback.setText(R.string.complete);
                     actionBtn.setImageResource(R.drawable.baseline_play_arrow_24);
                     actionBtn.setBackgroundColor(ContextCompat.getColor(context, R.color.ctbBtnPlayBg));
 //                    Toast.makeText(mContext, "Download completed", Toast.LENGTH_SHORT).show();

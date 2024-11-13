@@ -62,19 +62,19 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             });
         }
 
-        if (orderByShopRecommendation_button != null) {
-            orderByShopRecommendation_button.setOnPreferenceChangeListener((preference, newValue) -> {
-                boolean orderByShopRecommendation = (Boolean) newValue;
-                if (orderByShopRecommendation) {
-                    preferences.edit().putBoolean("setRecommendationAsDefaultHomeView", true).apply();
-                    Toast.makeText(requireContext(), "Now you can order from recommended shops.", Toast.LENGTH_LONG).show();
-                } else {
-                    preferences.edit().putBoolean("setRecommendationAsDefaultHomeView", false).apply();
-                    Toast.makeText(requireContext(), "Now you have enabled, store preference feature.", Toast.LENGTH_LONG).show();
-                }
-                return true;
-            });
-        }
+//        if (orderByShopRecommendation_button != null) {
+//            orderByShopRecommendation_button.setOnPreferenceChangeListener((preference, newValue) -> {
+//                boolean orderByShopRecommendation = (Boolean) newValue;
+//                if (orderByShopRecommendation) {
+//                    preferences.edit().putBoolean("defaultHomeView", true).apply();
+//                    Toast.makeText(requireContext(), "Now you can order from recommended shops.", Toast.LENGTH_LONG).show();
+//                } else {
+//                    preferences.edit().putBoolean("setRecommendationAsDefaultHomeView", false).apply();
+//                    Toast.makeText(requireContext(), "Now you have enabled, store preference feature.", Toast.LENGTH_LONG).show();
+//                }
+//                return true;
+//            });
+//        }
     }
 
     @Override

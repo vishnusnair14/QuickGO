@@ -33,17 +33,19 @@ import com.vishnu.quickgoorder.miscellaneous.Utils;
 import com.vishnu.quickgoorder.server.sapi.APIService;
 import com.vishnu.quickgoorder.server.sapi.ApiServiceGenerator;
 import com.vishnu.quickgoorder.ui.payment.PaymentActivity;
+import com.vishnu.quickgoorder.ui.track.OrderTrackActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -63,9 +65,13 @@ public class CheckoutSummaryFragment extends Fragment {
     BottomSheetDialog savedStorePrefBtmView;
     private BottomSheetDialog storePrefCheckFailedBtmView;
     String shopID;
+    String orderByVoiceDocID;
+    String orderByVoiceAudioRefID;
     String shopDistrict;
     TextView storePrefBanner;
     String from;
+    BottomSheetDialog placeOrderConfBtmView;
+    private String orderID;
     TextView changeStorePref;
 
     public CheckoutSummaryFragment() {
@@ -91,6 +97,9 @@ public class CheckoutSummaryFragment extends Fragment {
             bundle.putString("order_by_voice_type", getArguments().getString("order_by_voice_type"));
             bundle.putString("order_by_voice_doc_id", getArguments().getString("order_by_voice_doc_id"));
             bundle.putString("order_by_voice_audio_ref_id", getArguments().getString("order_by_voice_audio_ref_id"));
+            orderID = getArguments().getString("order_id");
+            orderByVoiceDocID = getArguments().getString("order_by_voice_doc_id");
+            orderByVoiceAudioRefID = getArguments().getString("order_by_voice_audio_ref_id");
         }
     }
 
@@ -133,22 +142,34 @@ public class CheckoutSummaryFragment extends Fragment {
                         proceedToPaymentBtn.setText(R.string.set_preference);
                         showSetStorePreferenceBtmView();
                     } else if (this.hasData == 1) {
-                        paymentIntent.putExtras(bundle);
-                        startActivity(paymentIntent);
-                        Utils.vibrate(requireContext(), 50, 2);
+                        showPlaceOrderConfirmationBtmView();
                     } else {
                         tryCheckForStorePrefData(null);
                     }
                 } else {
-                    paymentIntent.putExtras(bundle);
-                    startActivity(paymentIntent);
-                    Utils.vibrate(requireContext(), 50, 2);
+                    showPlaceOrderConfirmationBtmView();
                 }
             } else if (!setDefaultAsDeliveryCheckBox.isChecked()) {
                 NavHostFragment.findNavController(this)
                         .navigate(R.id.action_checkoutSummaryFragment_to_savedAddressFragment);
             }
         });
+
+//        proceedToPaymentBtn.setOnClickListener(view -> {
+//            if (setDefaultAsDeliveryCheckBox.isChecked()) {
+//                Utils.vibrate(requireContext(), 50, 2);
+//                if (from.equals("fromHomeOrderByVoiceFragment")) {
+//                    showPlaceOrderConfirmationBtmView();
+//                } else {
+//                    paymentIntent.putExtras(bundle);
+//                    startActivity(paymentIntent);
+//                    Utils.vibrate(requireContext(), 50, 2);
+//                }
+//            } else if (!setDefaultAsDeliveryCheckBox.isChecked()) {
+//                NavHostFragment.findNavController(this)
+//                        .navigate(R.id.action_checkoutSummaryFragment_to_savedAddressFragment);
+//            }
+//        });
 
         if (from.equals("fromHomeOrderByVoiceFragment")) {
             defaultAddrViewTV.setText(preferences.getString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_FULL_ADDRESS, ""));
@@ -162,6 +183,104 @@ public class CheckoutSummaryFragment extends Fragment {
 
         return root;
     }
+
+    private JsonObject getOBVOrderData() throws Exception {
+        JsonObject jsonData = new JsonObject();
+        jsonData.addProperty("order_id", orderID);
+        jsonData.addProperty("user_id", DESCore.encrypt(user.getUid().trim()));
+        if (user.getEmail() != null) {
+            jsonData.addProperty("user_email", DESCore.encrypt(user.getEmail()).trim());
+        }
+        jsonData.addProperty("user_phno", DESCore.encrypt(preferences.getString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_KEY, "0").trim()));
+        jsonData.addProperty("order_by_voice_doc_id", orderByVoiceDocID);
+        jsonData.addProperty("order_by_voice_audio_ref_id", orderByVoiceAudioRefID);
+        return jsonData;
+    }
+
+    private void showPlaceOrderConfirmationBtmView() {
+        View rzOrderProcess = LayoutInflater.from(requireContext()).inflate(
+                R.layout.bottomview_place_order_confirmation, null);
+
+        /* Create a BottomSheetDialog with TOP gravity */
+        placeOrderConfBtmView = new BottomSheetDialog(requireContext());
+        placeOrderConfBtmView.setContentView(rzOrderProcess);
+        placeOrderConfBtmView.setCanceledOnTouchOutside(true);
+
+        Button placeOrderBtn = rzOrderProcess.findViewById(R.id.btmViewPlaceOrderConfirmProceedBtn_textView);
+        Button declineOrderBtn = rzOrderProcess.findViewById(R.id.btmViewCallConfirmDeclineBtn_textView);
+        TextView statusTV = rzOrderProcess.findViewById(R.id.btmViewOrderConfrmStatusTV_textView);
+        ProgressBar statusPB = rzOrderProcess.findViewById(R.id.btmViewCallConfirm_progressBar);
+
+        placeOrderBtn.setOnClickListener(v -> {
+            statusTV.setText(R.string.placing_order_please_wait);
+            statusPB.setVisibility(View.VISIBLE);
+            new Handler().postDelayed(() -> {
+                try {
+                    placeOrderOBV(requireContext(), placeOrderConfBtmView, statusTV, statusPB);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }, 1200);
+        });
+
+        declineOrderBtn.setOnClickListener(v -> {
+            placeOrderConfBtmView.hide();
+            placeOrderConfBtmView.dismiss();
+        });
+        Objects.requireNonNull(placeOrderConfBtmView.getWindow()).setGravity(Gravity.TOP);
+
+        placeOrderConfBtmView.show();
+    }
+
+    private void placeOrderOBV(Context context, BottomSheetDialog btmDlgSht, TextView statusTV, ProgressBar statusPB) throws
+            Exception {
+
+        JsonObject jsonData = getOBVOrderData();
+        RequestBody data = RequestBody.create(jsonData.toString(), MediaType.parse("application/json"));
+
+        APIService apiService = ApiServiceGenerator.getApiService(requireContext());
+        Call<JsonObject> call3710 = apiService.placeOrderOBV(data);
+
+        call3710.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
+                if (response.isSuccessful()) {
+                    JsonObject resp = response.body();
+                    if (resp != null && resp.has("dp_id")) {
+                        statusTV.setText(R.string.order_placed_successfully);
+                        statusPB.setVisibility(View.GONE);
+                        preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_FRAGMENT_ORDER_ID, "0").apply();
+                        preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_FRAGMENT_AUDIO_REF_ID, "0").apply();
+                        Utils.deleteVoiceOrderCacheFile(context, orderByVoiceDocID, null);
+
+                        Toast.makeText(requireContext(), "Order placed successfully\n" +
+                                resp.get("dp_id").getAsString(), Toast.LENGTH_SHORT).show();
+
+                        new Handler().postDelayed(() -> {
+                            btmDlgSht.hide();
+                            btmDlgSht.dismiss();
+                            Intent intent = new Intent(requireContext(), OrderTrackActivity.class);
+                            if (orderID != null && !orderID.isEmpty()) {
+                                intent.putExtra("orderToTrackOrderID", orderID);
+                            }
+                            startActivity(intent);
+                            requireActivity().finish();
+                        }, 1200);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
+                if (placeOrderConfBtmView != null) {
+                    placeOrderConfBtmView.dismiss();
+                }
+                Toast.makeText(requireContext(), "Unable to place order at the moment.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // **** DO NOT UNCOMMENT ****
 
     private void checkAndSaveStorePrefDataState() {
         try {
@@ -199,9 +318,7 @@ public class CheckoutSummaryFragment extends Fragment {
                             this.hasData = 1;
                             proceedToPaymentBtn.setText(R.string.proceed_to_payment);
                             Utils.vibrate(requireContext(), 50, 2);
-                            paymentIntent.putExtras(bundle);
-                            startActivity(paymentIntent);
-                            Utils.vibrate(requireContext(), 50, 2);
+                            showPlaceOrderConfirmationBtmView();
                         } else if (hasData == 0) {
                             this.hasData = 0;
                             changeStorePref.setText(R.string.set_store_preference);
@@ -258,9 +375,10 @@ public class CheckoutSummaryFragment extends Fragment {
             if (storePrefCheckFailedBtmView != null) {
                 storePrefCheckFailedBtmView.dismiss();
             }
-            paymentIntent.putExtras(bundle);
-            startActivity(paymentIntent);
             Utils.vibrate(requireContext(), 50, 2);
+//            paymentIntent.putExtras(bundle);
+//            startActivity(paymentIntent);
+            showPlaceOrderConfirmationBtmView();
         });
 
         storePrefCheckFailedBtmView.show();
@@ -332,7 +450,7 @@ public class CheckoutSummaryFragment extends Fragment {
     }
 
     private void checkIsPrefSavedForAddress(String phno, StorePref storePref) throws Exception {
-        proceedToPaymentBtn.setText(R.string.please_wait);
+        proceedToPaymentBtn.setText(R.string.Please_wait);
         proceedToPaymentBtn.setEnabled(false);
 
         APIService apiService = ApiServiceGenerator.getApiService(requireContext());

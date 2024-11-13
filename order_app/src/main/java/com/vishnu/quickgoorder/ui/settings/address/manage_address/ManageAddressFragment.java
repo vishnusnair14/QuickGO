@@ -161,9 +161,9 @@ public class ManageAddressFragment extends Fragment {
                         saveAddressDataToFile(addressData);
                         updateRecyclerView(addressData, progressBar);
 
-                        if (isAdded()) {
-                            Toast.makeText(getContext(), "Address data retrieved successfully", Toast.LENGTH_SHORT).show();
-                        }
+//                        if (isAdded()) {
+//                            Toast.makeText(getContext(), "Address data retrieved successfully", Toast.LENGTH_SHORT).show();
+//                        }
                     } else {
                         Log.e(LOG_TAG, "Invalid response format: Missing 'address_data' field");
                         if (isAdded()) {

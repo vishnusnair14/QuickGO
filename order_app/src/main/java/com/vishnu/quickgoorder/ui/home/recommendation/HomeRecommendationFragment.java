@@ -22,7 +22,10 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -118,6 +121,7 @@ public class HomeRecommendationFragment extends Fragment {
     private BottomSheetDialog selectOrderToTrackBtmView;
     private static final int INITIAL_RETRY_DELAY_MS = 2000;
     private static final int MAX_RETRY_COUNT = 5;
+    private ImageView addressRefreshBtn;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -202,14 +206,19 @@ public class HomeRecommendationFragment extends Fragment {
                 int position = tab.getPosition();
                 // Access the data or perform actions based on selected tab
                 if (position == 0) {
-                    settingsPreferences.edit().putBoolean("setRecommendationAsDefaultHomeView", false).apply();
+                    settingsPreferences.edit().putInt("defaultHomeView", 0).apply();
                     settingsPreferences.edit().putInt("orderModeSelectedTabIndex", 0).apply();
-                    Toast.makeText(requireContext(), "Now you have enabled, store preference feature.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Now you have switched to, order by voice feature.", Toast.LENGTH_SHORT).show();
                 } else if (position == 1) {
-                    settingsPreferences.edit().putBoolean("setRecommendationAsDefaultHomeView", true).apply();
+                    settingsPreferences.edit().putInt("defaultHomeView", 1).apply();
                     settingsPreferences.edit().putInt("orderModeSelectedTabIndex", 1).apply();
                     Toast.makeText(requireContext(), "Now you can order from recommended shops.", Toast.LENGTH_SHORT).show();
                 }
+//                } else if (position == 2) {
+//                    settingsPreferences.edit().putInt("defaultHomeView", 2).apply();
+//                    settingsPreferences.edit().putInt("orderModeSelectedTabIndex", 2).apply();
+//                    Toast.makeText(requireContext(), "Now you have enabled, store preference feature.", Toast.LENGTH_SHORT).show();
+//                }
             }
 
             @Override
@@ -441,8 +450,10 @@ public class HomeRecommendationFragment extends Fragment {
 //                            Toast.makeText(getContext(), "Address data retrieved successfully", Toast.LENGTH_SHORT).show();
                             Log.d(LOG_TAG, "Address data retrieved successfully");
                         }
+                        addressRefreshBtn.clearAnimation();
                     } else {
                         Log.e(LOG_TAG, "Invalid response format: Missing 'address_data' field");
+                        addressRefreshBtn.clearAnimation();
                         if (isAdded()) {
                             Toast.makeText(getContext(), "Failed to fetch address data: Invalid response format", Toast.LENGTH_SHORT).show();
                         }
@@ -454,6 +465,7 @@ public class HomeRecommendationFragment extends Fragment {
                     if (isAdded()) {
                         Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
                     }
+                    addressRefreshBtn.clearAnimation();
                 }
             }
 
@@ -463,11 +475,13 @@ public class HomeRecommendationFragment extends Fragment {
                 if (isAdded()) {
                     Toast.makeText(getContext(), "Failed to fetch address data", Toast.LENGTH_SHORT).show();
                 }
+                addressRefreshBtn.clearAnimation();
                 Log.e(LOG_TAG, "Failed to fetch address data", t);
             }
         });
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void showSetDeliveryAddressBtmView() {
         View setDefAddrView = LayoutInflater.from(requireContext()).inflate(
                 R.layout.bottomview_set_default_delivery_address, null, false);
@@ -485,6 +499,9 @@ public class HomeRecommendationFragment extends Fragment {
         noAddrFndBnr = setDefAddrView.findViewById(R.id.savedAddressRecycleViewStatusTV_textView);
         ProgressBar progressBar = setDefAddrView.findViewById(R.id.selectAddressForDelivery_progressBar);
         TextView addNewDeliveryAddressTV = setDefAddrView.findViewById(R.id.setDefaultDeliveryAddressAddNewAddress_textView);
+        addressRefreshBtn = setDefAddrView.findViewById(R.id.addressRefresh_imageView);
+
+        Animation rotateAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.rotate);
 
         if (isLocationNotEnabled(requireContext())) {
             enableLocView.setVisibility(View.VISIBLE);
@@ -525,7 +542,13 @@ public class HomeRecommendationFragment extends Fragment {
                 NavHostFragment.findNavController(this)
                         .navigate(R.id.action_nav_recommendation_to_nav_addAddress);
             }, 350);
+        });
 
+        addressRefreshBtn.setOnClickListener(v -> {
+            addressRefreshBtn.startAnimation(rotateAnimation);
+            savedAddressList.clear();
+            savedAddressAdapter.notifyDataSetChanged();
+            fetchAddressDataFromServer(user.getUid(), progressBar);
         });
 
         if (setDeliveryAddrBtmView != null && !setDeliveryAddrBtmView.isShowing()) {
@@ -646,94 +669,6 @@ public class HomeRecommendationFragment extends Fragment {
         }
     }
 
-
-//    private void getRecommendedShopsData(FragmentHomeRecommendationBinding binding,
-//                                         double la, double lo, String user_state, String user_district, String user_pincode) {
-//
-//        shopsRecycleViewPB.setVisibility(View.VISIBLE);
-//        serverStatusFeedbackTV.setVisibility(View.VISIBLE);
-//
-//        APIService apiService = ApiServiceGenerator.getApiService(requireContext());
-//        Call<JsonObject> call3499 = apiService.getShopRecommendations(la, lo, user_state, user_district, user_pincode);
-//
-//        int SERVER_CALL_MID_LIMIT = 5;
-//
-//        if (serverContactFlag == 0) {
-//            serverStatusFeedbackTV.setTextColor(getResources().getColor(R.color.serverStatusFeedbackConnectingColor, null));
-//            serverStatusFeedbackTV.setText(R.string.finding_perfects_shops);
-//        }
-//        if (serverContactFlag >= 2 && serverContactFlag <= SERVER_CALL_MID_LIMIT) {
-//            serverStatusFeedbackTV.setText(R.string.waiting_for_response);
-//        }
-//        if (serverContactFlag > SERVER_CALL_MID_LIMIT && serverContactFlag <= SERVER_CALL_MAX_LIMIT) {
-//            serverStatusFeedbackTV.setTextColor(getResources().getColor(R.color.serverStatusFeedbackOfflineColor, null));
-//            serverStatusFeedbackTV.setText(R.string.taking_longer_than_usual);
-//        }
-//
-//        call3499.enqueue(new Callback<>() {
-//            @Override
-//            public void onResponse(@NonNull Call<JsonObject> call34, @NonNull Response<JsonObject> response) {
-//                if (response.isSuccessful()) {
-////                  serverStatusFeedbackTV.setText(R.string.fetching_data);
-//                    shopsRecycleViewPB.setVisibility(View.GONE);
-//                    shopData = response.body();
-//                    assert shopData != null;
-//
-//                    Log.i(LOG_TAG, "SHOP DATA: " + shopData);
-//
-//                    try {
-//                        if (!isRecommendedShopDataEmpty(new JSONObject(shopData.toString()))) {
-//
-//                            writeShopDataToFile(requireContext(), String.valueOf(shopData));
-//
-//                            syncRecommendedShopDataRecycleView(binding, String.valueOf(shopData));
-//                            preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_CURRENT_SHOP_PINCODE, shopData.get("shop_pincode").getAsString()).apply();
-//
-////                            Toast.makeText(requireContext(), preferences.getString(PreferenceKeys.HOME_RECOMMENDATION_CURRENT_SHOP_PINCODE, "0"), Toast.LENGTH_SHORT).show();
-//                            serverStatusFeedbackTV.setVisibility(View.GONE);
-//                            shopsRecycleViewPB.setVisibility(View.GONE);
-//                        } else {
-//                            deleteShopDataFile(requireContext());
-//                            shopsRecycleViewPB.setVisibility(View.GONE);
-//                            serverStatusFeedbackTV.setTextColor(getResources().getColor(R.color.serverStatusFeedbackNoShopsFoundColor, null));
-//                            serverStatusFeedbackTV.setText(R.string.no_nearby_shops_found);
-//
-//                            if (setDeliveryAddrBtmView != null) {
-//                                setDeliveryAddrBtmView.hide();
-//                                setDeliveryAddrBtmView.dismiss();
-//                                showSetDeliveryAddressBtmView();
-//                            }
-//                        }
-//                    } catch (JSONException e) {
-//                        throw new RuntimeException(e);
-//                    }
-//                } else {
-//                    Log.e(LOG_TAG, "Response failed!" + serverContactFlag);
-//                    new Handler().postDelayed(() -> {
-//                        if (serverContactFlag <= SERVER_CALL_MAX_LIMIT) {
-//                            serverStatusFeedbackTV.setVisibility(View.VISIBLE);
-//                            serverStatusFeedbackTV.setText(R.string.connecting_to_server);
-//                            getRecommendedShopsData(binding, la, lo, user_state, user_district, user_pincode);
-//                            serverContactFlag++;
-//                        }
-//                        if (serverContactFlag > SERVER_CALL_MAX_LIMIT) {
-//                            serverStatusFeedbackTV.setTextColor(getResources().getColor(R.color.serverStatusFeedbackTryAgainColor, null));
-//                            serverStatusFeedbackTV.setText(R.string.server_offline1);
-//                            shopsRecycleViewPB.setVisibility(View.GONE);
-//                        }
-//                    }, 2000);
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
-//                Log.e(LOG_TAG, "Unable to contact server at the moment!");
-//                Log.e(LOG_TAG, "Server offline maybe!");
-//                shopsRecycleViewPB.setVisibility(View.GONE);
-//                serverStatusFeedbackTV.setTextColor(getResources().getColor(R.color.serverStatusFeedbackOfflineColor, null));
-//            }
-//        });
-//    }
 
     public static void deleteShopDataFile(@NonNull Context context) {
         String filename = "recommended_shops.json";

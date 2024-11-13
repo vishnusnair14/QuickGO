@@ -509,7 +509,7 @@ public class OBSOrderInformationFragment extends Fragment {
                             allActionStatusTV.setText("");
                             allActionsStatusPB.setVisibility(View.GONE);
                             orderPickupBtn.setEnabled(false);
-                            Toast.makeText(requireContext(), "Informed client success",
+                            Toast.makeText(requireContext(), "Status updated success",
                                     Toast.LENGTH_SHORT).show();
                             allDeliveryOptionsBtmView.hide();
                             allDeliveryOptionsBtmView.dismiss();

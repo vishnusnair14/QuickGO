@@ -128,7 +128,7 @@
         %s!
     </string>
     <string name="select_a_delivery_address">Select a delivery address</string>
-    <string name="proceed_to_payment">Proceed to payment</string>
+    <string name="proceed_to_payment">Place Order</string>
     <string name="logout_options">Logout Options</string>
     <string name="voice_cart">Voice Cart</string>
     <string name="manual_cart">Manual Cart</string>
@@ -156,7 +156,8 @@
     <string name="pin_code">Pin code</string>
     <string name="login">LOGIN</string>
     <string name="register">REGISTER</string>
-    <string name="please_wait">Please wait…</string>
+    <string name="Please_wait">Please wait…</string>
+    <string name="please_wait">please wait…</string>
     <string name="password_not_match">Password doesn\'t match</string>
     <string name="enter_the_email_address">Enter the email address:</string>
     <string name="enter_a_new">Enter new email and password to register with us. Remember password for future logins.</string>
@@ -315,7 +316,7 @@
     <string name="manage_your_delivery_addresses_set_default">Manage your delivery addresses, set default location coordinates for each.</string>
     <string name="audio_record_permission_required">Audio record permission required</string>
     <string name="storage_permission_required">Storage permission required</string>
-    <string name="quickgo_order_app">QuickGO Order App</string>
+    <string name="voigo_order_app">Order App</string>
     <string name="erase">Erase</string>
     <string name="tap_on_any_address_to_add_overwrite_or_erase_store_preference_data">Tap on any address to add, overwrite or erase store preference data</string>
     <string name="unable_to_check_data_at_the_moment_the_server_">Unable to check data at the moment. The server is busy. Please try again later.</string>
@@ -337,5 +338,20 @@
     <string name="login_using_phone_number"><u>Login with phone number</u></string>
     <string name="change_store_preference"><u>Change store preference</u></string>
     <string name="set_store_preference">Set store preference</string>
+    <string name="menu_miscellaneous">Miscellaneous</string>
+    <string name="title_activity_miscellaneous">MiscellaneousActivity</string>
+    <string name="enable_location_permission">ENABLE LOCATION PERMISSION</string>
+    <string name="enable_storage_permission">ENABLE STORAGE PERMISSION</string>
+    <string name="enable_audio_permission">ENABLE AUDIO PERMISSION</string>
+    <string name="order_details">Order Details</string>
+    <string name="open_map">Open maps</string>
+    <string name="order_status_order_received">Order Status: Order Received</string>
+    <string name="complete">Complete</string>
+    <string name="captured_successfully">captured successfully</string>
+    <string name="delivery_partner_assigned_waiting_for_accept_order">Delivery partner assigned, waiting to accept the order…</string>
+    <string name="placing_order_please_wait">Placing order, please wait…</string>
+    <string name="note_before_p">Note: Before placing the order, please verify your recorded voice orders from cart. Ensure they are recorded in a quiet environment, and make sure the recordings are clear so that delivery partners can hear them accurately.</string>
+    <string name="are_you_sure_you_want_to_place_order">Are you sure you want to place order?</string>
+    <string name="once_order_is_placed_yo">Once order is placed, you can\'t cancel the order. Do you want to proceed?</string>
 
 </resources>

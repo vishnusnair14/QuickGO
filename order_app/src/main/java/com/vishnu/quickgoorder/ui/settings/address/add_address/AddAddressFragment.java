@@ -246,7 +246,6 @@ public class AddAddressFragment extends Fragment {
     }
 
     private void sentAddressDecisionRequest(String _decision) {
-
         JsonObject jsonData = getAddressDecisionData(_decision);
         RequestBody data = RequestBody.create(jsonData.toString(), MediaType.parse("application/json"));
 

@@ -63,7 +63,6 @@ public class FCM extends FirebaseMessagingService {
                 stackBuilder.getPendingIntent(0,
                         PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "FCM_CHANNEL")
                 .setSmallIcon(R.drawable.ic_launcher_order_app_icon_foreground)
                 .setContentTitle(title)
@@ -76,7 +75,6 @@ public class FCM extends FirebaseMessagingService {
 
         Notification notification = builder.build();
         notificationManager.notify(0, notification);
-
     }
 
 

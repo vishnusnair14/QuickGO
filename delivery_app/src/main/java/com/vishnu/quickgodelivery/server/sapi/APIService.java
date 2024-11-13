@@ -60,6 +60,18 @@ public interface APIService {
             @Path("user_id") String userID,
             @Path("order_id") String orderID);
 
+    @GET("reached-shop/{delivery_partner_id}/{user_id}/{order_id}")
+    Call<JsonObject> reachedShop(
+            @Path("delivery_partner_id") String deliveryPartnerID,
+            @Path("user_id") String userID,
+            @Path("order_id") String orderID);
+
+    @GET("order-enroute/{delivery_partner_id}/{user_id}/{order_id}")
+    Call<JsonObject> orderEnroute(
+            @Path("delivery_partner_id") String deliveryPartnerID,
+            @Path("user_id") String userID,
+            @Path("order_id") String orderID);
+
     @GET("order-pickedup/{delivery_partner_id}/{user_id}/{order_id}")
     Call<JsonObject> orderPickedUp(
             @Path("delivery_partner_id") String deliveryPartnerID,

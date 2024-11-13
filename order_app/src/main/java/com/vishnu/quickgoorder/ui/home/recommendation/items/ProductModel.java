@@ -1,21 +1,20 @@
 package com.vishnu.quickgoorder.ui.home.recommendation.items;
 
-public class ItemModel {
+public class ProductModel {
     private String item_image_url, item_name, item_qty, item_price_unit, item_name_reference;
     private int item_price;
     private String item_id;
 
 
-    public ItemModel() {
+    public ProductModel() {
     }
 
-    public ItemModel(String item_id, String item_image_url, String item_name,
-                     String item_qty, int item_price, String item_price_unit,
-                     String item_name_reference) {
+    public ProductModel(String item_id, String item_image_url, String item_name
+            , int item_price, String item_price_unit,
+                        String item_name_reference) {
         this.item_id = item_id;
         this.item_image_url = item_image_url;
         this.item_name = item_name;
-        this.item_qty = item_qty;
         this.item_price = item_price;
         this.item_price_unit = item_price_unit;
         this.item_name_reference = item_name_reference;

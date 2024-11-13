@@ -11,11 +11,11 @@
             app:summary="Items will be checked and delivered from these preferred store when ordered!"
             app:title="Set your store preference" />
 
-        <SwitchPreferenceCompat
-            android:defaultValue="false"
-            app:key="orderByShopRecommendation_pref"
-            app:summary="When enabled, you can directly order from nearby recommended shops within 5-10km radius."
-            app:title="Order from recommended shops" />
+<!--        <SwitchPreferenceCompat-->
+<!--            android:defaultValue="false"-->
+<!--            app:key="orderByShopRecommendation_pref"-->
+<!--            app:summary="When enabled, you can directly order from nearby recommended shops within 5-10km radius."-->
+<!--            app:title="Order from recommended shops" />-->
     </PreferenceCategory>
 
     <PreferenceCategory app:title="Manage Addresses">

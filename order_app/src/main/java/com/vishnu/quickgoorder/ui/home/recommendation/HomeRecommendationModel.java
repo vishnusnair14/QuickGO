@@ -27,6 +27,9 @@ public class HomeRecommendationModel {
     @SerializedName("shop_district")
     private String shopDistrict;
 
+    @SerializedName("shop_state")
+    private String shopState;
+
 
 
     public String getShopDistrict() {
@@ -56,6 +59,14 @@ public class HomeRecommendationModel {
 
     public String getShopId() {
         return shopId;
+    }
+
+    public String getShopState() {
+        return shopState;
+    }
+
+    public void setShopState(String shopState) {
+        this.shopState = shopState;
     }
 
     public void setShopId(String shopId) {

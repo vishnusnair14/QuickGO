@@ -4,7 +4,6 @@ plugins {
     id 'com.google.gms.google-services'
     id 'org.jetbrains.kotlin.android'
     id 'androidx.navigation.safeargs'
-
 }
 
 android {
@@ -75,18 +74,19 @@ dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.0.0'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.0.0'
 
-    implementation(platform('com.google.firebase:firebase-bom:33.2.0'))
+    implementation(platform('com.google.firebase:firebase-bom:33.5.1'))
     implementation 'com.google.firebase:firebase-appcheck-playintegrity:18.0.0'
-    implementation 'com.google.firebase:firebase-storage:21.0.0'
+    implementation 'com.google.firebase:firebase-storage:21.0.1'
     implementation("com.google.firebase:firebase-firestore")
     implementation('com.google.firebase:firebase-database:21.0.0')
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-messaging-ktx")
 //    implementation("com.google.firebase:firebase-analytics-ktx")
-    implementation('com.google.android.libraries.places:places:3.5.0')
+    implementation('com.google.android.libraries.places:places:4.0.0')
     implementation 'com.google.android.gms:play-services-location:21.3.0'
     implementation 'com.google.code.gson:gson:2.11.0'
 
+    implementation 'com.google.android.gms:play-services-maps:19.0.0'
 
     implementation("com.squareup.picasso:picasso:2.71828")
     implementation 'com.squareup.retrofit2:retrofit:2.11.0'
@@ -94,6 +94,8 @@ dependencies {
 
 //    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.14")
     implementation("com.squareup.okhttp3:okhttp-sse:5.0.0-alpha.14")
+    implementation 'com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.14'
+
 //    testImplementation("com.squareup.okhttp3:okhttp-sse:4.12.0")
 
     implementation 'org.greenrobot:eventbus:3.3.1'
@@ -101,7 +103,7 @@ dependencies {
     implementation 'com.razorpay:checkout:1.6.39'
 
     implementation 'com.google.android.material:material:1.12.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.0'
 
     implementation 'com.android.volley:volley:1.2.1'
 
@@ -109,21 +111,34 @@ dependencies {
 
     implementation('io.coil-kt:coil:2.7.0')
 
-//    //noinspection GradlePath
-//    implementation files('D:/IntellicartClients/libs/maps-1.0.68.aar')
-//    // Required for Ola-MapsSdk
-//    implementation 'com.moengage:moe-android-sdk:12.6.01'
-//    implementation 'org.maplibre.gl:android-sdk:10.2.0'
-//    implementation 'org.maplibre.gl:android-sdk-directions-models:5.9.0'
-//    implementation 'org.maplibre.gl:android-sdk-services:5.9.0'
-//    implementation 'org.maplibre.gl:android-sdk-turf:5.9.0'
-//    implementation 'org.maplibre.gl:android-plugin-markerview-v9:1.0.0'
-//    implementation 'org.maplibre.gl:android-plugin-annotation-v9:1.0.0'
 
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
-    implementation 'androidx.activity:activity:1.9.1'
+    implementation 'androidx.activity:activity:1.9.3'
+    implementation 'androidx.preference:preference:1.2.1'
+
+    implementation 'io.realm:realm-gradle-plugin:10.11.0'
+//    implementation 'io.realm.mongodb:realm-mongodb:10.11.0'
+    implementation 'org.mongodb:mongodb-driver-sync:4.2.3'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.2.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
+}
+
+
+secrets {
+    // To add your Maps API key to this project:
+    // 1. If the secrets.properties file does not exist, create it in the same folder as the local.properties file.
+    // 2. Add this line, where YOUR_API_KEY is your API key:
+    //        MAPS_API_KEY=YOUR_API_KEY
+    propertiesFileName = "secrets.properties"
+
+    // A properties file containing default secret values. This file can be
+    // checked in version control.
+    defaultPropertiesFileName = "local.properties"
+
+    // Configure which keys should be ignored by the plugin by providing regular expressions.
+    // "sdk.dir" is ignored by default.
+    ignoreList.add("keyToIgnore") // Ignore the key "keyToIgnore"
+    ignoreList.add("sdk.*")       // Ignore all keys matching the regexp "sdk.*"
 }

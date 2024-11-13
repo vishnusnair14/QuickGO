@@ -1,8 +1,5 @@
 package com.vishnu.quickgoorder.cloud;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.util.Log;
@@ -13,23 +10,15 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
-import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.vishnu.quickgoorder.R;
-import com.vishnu.quickgoorder.miscellaneous.PreferenceKeys;
-import com.vishnu.quickgoorder.miscellaneous.Utils;
-import com.vishnu.quickgoorder.ui.home.recommendation.items.ItemModel;
+import com.vishnu.quickgoorder.ui.home.recommendation.items.ProductModel;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,6 +26,7 @@ public class DbHandler {
     private final FirebaseFirestore db;
     private static FirebaseUser user;
     private final static String LOG_TAG = "DbHandler";
+
     public DbHandler() {
 
         db = FirebaseFirestore.getInstance();
@@ -46,7 +36,7 @@ public class DbHandler {
     /**
      * update items to user manual cart collection (on use add-to-cart btn) [OUTGOING ONLY]
      */
-    public void addItemToManualCartDB(View view, ItemModel item, Vibrator vibrator, String shopID, TextView btn) {
+    public void addItemToManualCartDB(View view, ProductModel item, Vibrator vibrator, String shopID, TextView btn) {
 
         DocumentReference cartDataCollection = db.collection("Users")
                 .document(user.getUid()).collection("userCartData")
@@ -88,7 +78,7 @@ public class DbHandler {
     }
 
     @NonNull
-    private static Map<String, Object> getStringObjectMap(@NonNull ItemModel item) {
+    private static Map<String, Object> getStringObjectMap(@NonNull ProductModel item) {
         Map<String, Object> subFieldName_mapType = new HashMap<>();
         subFieldName_mapType.put("item_name", item.getItem_name());
         subFieldName_mapType.put("item_image_url", item.getItem_image_url());
@@ -104,7 +94,7 @@ public class DbHandler {
         DocumentReference FCMTokenBucketRef = FirebaseFirestore.getInstance().document("FCMTokenMapping/OrderAppClient");
 
         Map<String, Object> subAttributes = new HashMap<>();
-        subAttributes.put("delivery_client_id", clientID);
+        subAttributes.put("client_id", clientID);
         subAttributes.put("fcm_token", updatedToken);
         subAttributes.put("token_creation_date", FieldValue.serverTimestamp());
 

@@ -15,7 +15,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -61,14 +60,12 @@ public class VoiceOrdersFragment extends Fragment {
             orderByVoiceDocID = arguments.getString("order_by_voice_doc_id");
             orderByVoiceAudioRefID = arguments.getString("order_by_voice_audio_ref_id");
         } else {
-            Toast.makeText(requireContext(), "arguments-null", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Error retrieving arguments", Toast.LENGTH_SHORT).show();
         }
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-
-        Toast.makeText(requireContext(), shopID, Toast.LENGTH_SHORT).show();
 
         binding = FragmentVoiceOrdersBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -82,7 +79,7 @@ public class VoiceOrdersFragment extends Fragment {
         voiceOrderRecycleView.setLayoutManager(new LinearLayoutManager(getContext()));
         voiceOrderRecycleView.setAdapter(voiceOrdersViewAdapter);
 
-        Toast.makeText(requireContext(), orderByVoiceDocID, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(requireContext(), orderByVoiceDocID, Toast.LENGTH_SHORT).show();
         getVoiceOrderData();
 
         return root;

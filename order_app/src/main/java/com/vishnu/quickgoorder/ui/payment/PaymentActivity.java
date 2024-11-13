@@ -145,10 +145,7 @@ public class PaymentActivity extends AppCompatActivity implements PaymentResultW
         final Activity activity = this;
         try {
             JSONObject options = getJsonObject(order_id);
-
             checkout.open(activity, options);
-
-
         } catch (Exception e) {
             Log.e("TAG", "Error in starting Razorpay Checkout", e);
         }
@@ -329,8 +326,6 @@ public class PaymentActivity extends AppCompatActivity implements PaymentResultW
         jsonData.addProperty("user_phno", DESCore.encrypt(preferences.getString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_KEY, "0").trim()));
         jsonData.addProperty("order_by_voice_doc_id", orderByVoiceDocID);
         jsonData.addProperty("order_by_voice_audio_ref_id", orderByVoiceAudioRefID);
-
-
         return jsonData;
     }
 

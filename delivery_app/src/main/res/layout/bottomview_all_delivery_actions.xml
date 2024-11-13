@@ -40,7 +40,7 @@
         android:layout_width="wrap_content"
         android:layout_height="21dp"
         android:layout_gravity="center"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:indeterminateTint="#878181"
         android:visibility="invisible" />
 
@@ -59,25 +59,46 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/reachedShop_button"
+                style="@style/ThemeOverlay.Material3.Button.TextButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_weight="1"
+                android:backgroundTint="#00ACC1"
+                android:backgroundTintMode="add"
+                android:fontFamily="@font/montserrat"
+                android:text="Reached Shop"
+                android:textAlignment="center"
+                android:textAllCaps="true"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:icon="@drawable/baseline_add_business_24" />
 
             <Button
                 android:id="@+id/orderPickup_button"
                 style="@style/ThemeOverlay.Material3.Button.TextButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="16dp"
                 android:layout_marginBottom="8dp"
                 android:layout_weight="1"
-                android:backgroundTint="#00ACC1"
+                android:backgroundTint="#038697"
                 android:backgroundTintMode="add"
                 android:fontFamily="@font/montserrat"
                 android:text="@string/order_pickup"
@@ -87,46 +108,87 @@
                 android:textStyle="bold"
                 app:icon="@drawable/package_2_24dp_e8eaed_fill0_wght400_grad0_opsz24" />
 
-            <Button
-                android:id="@+id/button2"
-                style="@style/ThemeOverlay.Material3.Button.TextButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="8dp"
-                android:layout_weight="1"
-                android:fontFamily="@font/montserrat"
-                android:text="Order en-routed"
-                android:textAllCaps="true"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-
         </LinearLayout>
 
-        <LinearLayout
+        <androidx.cardview.widget.CardView
+            android:id="@+id/orderEnroute_cardView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_weight="1"
+            app:cardBackgroundColor="#F8F8FE"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="5dp">
 
-            <Button
-                android:id="@+id/orderDelivered_button"
-                style="@style/ThemeOverlay.Material3.Button.TextButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="8dp"
-                android:layout_weight="1"
-                android:backgroundTint="#0A870F"
-                android:fontFamily="@font/montserrat"
-                android:text="Order Delivered"
-                android:textAllCaps="true"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-        </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/montserrat"
+                    android:text="Enter the total paid amount to continue"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/totalAmount_editTextNumberDecimal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:inputType="numberDecimal"
+                    android:singleLine="true"
+                    android:textAlignment="center"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/orderEnroute_button"
+                    style="@style/ThemeOverlay.Material3.Button.TextButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/montserrat"
+                    android:text="Order en-routed"
+                    android:textAllCaps="true"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <Button
+            android:id="@+id/orderDelivered_button"
+            style="@style/ThemeOverlay.Material3.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:layout_weight="1"
+            android:backgroundTint="#0A870F"
+            android:fontFamily="@font/montserrat"
+            android:text="Order Delivered"
+            android:textAllCaps="true"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
     </LinearLayout>
 
 </LinearLayout>

@@ -88,6 +88,30 @@
                       </LayoutPositions>
                     </value>
                   </entry>
+                  <entry key="nav_miscellaneous">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="12" />
+                            <option name="y" value="12" />
+                          </Point>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
+                  <entry key="nav_orderbycategory">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="12" />
+                            <option name="y" value="12" />
+                          </Point>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
                   <entry key="nav_orderbyvoice">
                     <value>
                       <LayoutPositions>
@@ -124,8 +148,8 @@
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="666" />
-                            <option name="y" value="495" />
+                            <option name="x" value="575" />
+                            <option name="y" value="439" />
                           </Point>
                         </option>
                         <option name="myPositions">

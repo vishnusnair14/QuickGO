@@ -28,6 +28,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Chronometer;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +43,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -50,12 +52,18 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.vishnu.quickgoorder.R;
 import com.vishnu.quickgoorder.cloud.DbHandler;
 import com.vishnu.quickgoorder.databinding.FragmentItemsBinding;
 import com.vishnu.quickgoorder.miscellaneous.PreferenceKeys;
 import com.vishnu.quickgoorder.miscellaneous.SoundManager;
 import com.vishnu.quickgoorder.miscellaneous.Utils;
+import com.vishnu.quickgoorder.server.sapi.APIService;
+import com.vishnu.quickgoorder.server.sapi.ApiServiceGenerator;
 
 import java.io.File;
 import java.io.IOException;
@@ -65,8 +73,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
-public class ItemFragment extends Fragment {
+public class ProductFragment extends Fragment {
     private static final String LOG_TAG = "HomeFragment";
     FirebaseFirestore db;
     FloatingActionButton recordBtn;
@@ -76,17 +88,23 @@ public class ItemFragment extends Fragment {
     private boolean isButtonHeld = false;
     TextView recordingStatusTV;
     TextView pressAndRecMainTV;
+    private ProductAdapter productAdapter;
     File AppAudioDir;
     private SharedPreferences preferences;
     TextView shopBannerTV;
     private final Handler handler = new Handler();
-    List<ItemModel> itemList = new ArrayList<>();
+    List<ProductModel> itemList = new ArrayList<>();
     private static Vibrator vibrator;
     TextView gotoCartBtn;
     static String audioFileName = "_voice.mp3";
     private String shopID;
+    TabLayout tabLayout;
     private Chronometer chronometer;
+    ProgressBar progressBar;
     private FirebaseUser user;
+    String shopState, shopDistrict;
+    private GridView gridViewItems;
+
 
     String[] permissions = {
             Manifest.permission.RECORD_AUDIO,
@@ -99,7 +117,7 @@ public class ItemFragment extends Fragment {
             Manifest.permission.ACCESS_FINE_LOCATION
     };
 
-    public ItemFragment() {
+    public ProductFragment() {
     }
 
     @Override
@@ -110,6 +128,7 @@ public class ItemFragment extends Fragment {
         user = FirebaseAuth.getInstance().getCurrentUser();
         preferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         vibrator = (Vibrator) requireActivity().getSystemService(Context.VIBRATOR_SERVICE);
+
 
         dbHandler = new DbHandler();
 
@@ -126,7 +145,6 @@ public class ItemFragment extends Fragment {
         }
 
         AppAudioDir = new File(externalFilesDir, "orderByVoice");
-
     }
 
     @SuppressLint({"ClickableViewAccessibility", "NotifyDataSetChanged"})
@@ -136,9 +154,15 @@ public class ItemFragment extends Fragment {
         View root = binding.getRoot();
         Bundle bundle = new Bundle();
 
-        showRecFab = binding.showRecViewFloatingActionButton;
+        showRecFab = binding.homeItemsFragmentGotoCartButtonFab;
         shopBannerTV = binding.shopNameBannerViewTextView;
         gotoCartBtn = binding.homeItemsFragmentGotoCartButton;
+        gridViewItems = binding.itemsGridView;
+        progressBar = binding.progressBar3;
+        tabLayout = binding.tabLayout2;
+
+        productAdapter = new ProductAdapter(requireContext(), dbHandler, vibrator, itemList, shopID);
+        gridViewItems.setAdapter(productAdapter);
 
         // OnCreate permission request
         List<String> permissionsToRequest = new ArrayList<>();
@@ -157,14 +181,14 @@ public class ItemFragment extends Fragment {
         if (getArguments() != null) {
             shopBannerTV.setText(requireArguments().getString("shop_name".toUpperCase()));
             shopID = getArguments().getString("shop_id");
-            String shopDistrict = getArguments().getString("shop_district");
+            shopState = getArguments().getString("shop_state");
+            shopDistrict = getArguments().getString("shop_district");
 
             bundle.putBoolean("fromHomeRecommendationFragment", true);
             bundle.putString("shop_id", shopID);
+            bundle.putString("shop_state", shopState);
             bundle.putString("shop_district", shopDistrict);
         }
-
-        syncItemGridView(binding, shopID);
 
         gotoCartBtn.setOnClickListener(v -> {
             NavHostFragment.findNavController(this).navigate(R.id.action_nav_home_to_nav_mcart, bundle);
@@ -177,8 +201,41 @@ public class ItemFragment extends Fragment {
             return true;
         });
 
-
         showRecFab.setOnClickListener(v -> showRecordBtmView(root));
+
+        // Set up TabLayout listener
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                progressBar.setVisibility(View.VISIBLE);
+                switch (tab.getPosition()) {
+                    case 0:
+                        fetchItems("fruits");
+                        break;
+                    case 1:
+                        fetchItems("vegetables");
+                        break;
+                    case 2:
+                        fetchItems("others");
+                        break;
+                    default:
+                        itemList.clear();
+                        productAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                // Optional: Handle unselected state if needed
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                // Optional: Handle reselected state if needed
+            }
+        });
+
+        fetchItems("fruits");
 
         return root;
     }
@@ -250,64 +307,11 @@ public class ItemFragment extends Fragment {
         chronometer.setBase(SystemClock.elapsedRealtime());
     }
 
-    /**
-     * sync home-product recycle view with 'ShopIDMap/ShopItemInfo' db document [INCOMING ONLY]
-     *
-     * @fragment_home.xml
-     */
-    private void syncItemGridView(@NonNull FragmentItemsBinding binding, String SHOP_ID) {
-        GridView gridView = binding.homeFragmentGridView;
-//        gridView.setNumColumns(3);
-
-        itemList.clear();
-
-        /* Retrieve data from Firestore */
-        db.collection("ShopData").document("itemData").collection("allAvailableItems")
-                .document(SHOP_ID).get().addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
-                            Map<String, Object> itemData = document.getData();
-                            if (itemData != null) {
-                                for (String field : itemData.keySet()) {
-                                    Map<String, Object> dataMap1 = (Map<String, Object>) itemData.get(field);
-                                    if (dataMap1 != null) {
-                                        // Extract item data and add to itemList
-                                        String itemID = (String) dataMap1.get("item_id");
-                                        String itemName = (String) dataMap1.get("item_name");
-                                        String itemImageUrl = (String) dataMap1.get("item_image_url");
-                                        String itemQty = (String) dataMap1.get("item_qty");
-                                        Long itemPrice = (Long) dataMap1.get("item_price");
-                                        String itemPriceUnit = (String) dataMap1.get("item_price_unit");
-                                        String itemNameReference = (String) dataMap1.get("item_name_reference");
-                                        int price = 0;
-                                        if (itemPrice != null) {
-                                            price = Math.toIntExact(itemPrice);
-                                        }
-                                        ItemModel item = new ItemModel(itemID, itemImageUrl, itemName, itemQty, price, itemPriceUnit, itemNameReference);
-                                        itemList.add(item);
-                                    }
-                                }
-                                // Update the GridView adapter
-                                ItemAdapter adapter = new ItemAdapter(requireContext(), dbHandler, vibrator, itemList, SHOP_ID);
-                                gridView.setAdapter(adapter);
-
-                                binding.homeFragmentLoadingProgressBar.setVisibility(View.GONE);
-                                binding.homeFragLoadingViewTextView.setVisibility(View.GONE);
-                            }
-                        }
-                    } else {
-                        Log.d("Firestore", "Error fetching document: ", task.getException());
-                    }
-                });
-    }
-
     private final Runnable onButtonHoldRunnable = () -> {
         if (isButtonHeld) {
             performOnButtonHold();
         }
     };
-
 
     private void performOnButtonHold() {
         startChronometer();
@@ -450,6 +454,53 @@ public class ItemFragment extends Fragment {
                 recordBtn.setEnabled(true);
                 Toast.makeText(context, "server upload failed!", Toast.LENGTH_SHORT).show();
 
+            }
+        });
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private void updateGridView(JsonArray itemData, ProgressBar progressBar) {
+//        itemList.clear();
+//        productAdapter.notifyDataSetChanged();
+        Gson gson = new Gson();
+
+        for (JsonElement element : itemData) {
+            // Since each element has a nested object, get the first entry in the map
+            JsonObject mainObject = element.getAsJsonObject();
+            if (!mainObject.entrySet().isEmpty()) {
+                JsonElement nestedElement = mainObject.entrySet().iterator().next().getValue();
+                ProductModel product = gson.fromJson(nestedElement, ProductModel.class);
+                itemList.add(product);
+            }
+        }
+
+        productAdapter.notifyDataSetChanged();
+        progressBar.setVisibility(View.GONE);
+    }
+
+
+    private void fetchItems(String itemType) {
+        APIService apiService = ApiServiceGenerator.getApiService(requireContext());
+        Call<JsonObject> call = apiService.getItems(itemType, shopID, shopState, shopDistrict);
+
+        itemList.clear();
+        productAdapter.notifyDataSetChanged();
+
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    JsonArray itemData = response.body().getAsJsonArray("item_data");
+                    Log.d("itemData", itemData.toString());
+                    updateGridView(itemData, progressBar);
+                } else {
+                    Toast.makeText(requireContext(), "Failed to load items", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull Throwable t) {
+                Toast.makeText(requireContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

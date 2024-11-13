@@ -2,6 +2,7 @@ package com.vishnu.quickgoorder.server.sapi;
 
 import com.google.gson.JsonObject;
 import com.vishnu.quickgoorder.server.models.DeleteVoiceOrderFile;
+import com.vishnu.quickgoorder.server.models.VoiceOrderRequest;
 
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -18,10 +19,12 @@ public interface APIService {
     @POST("save_preferences/")
     Call<JsonObject> saveSelectedStores(@Body JsonObject selectedShops);
 
+    @POST("/add-voice-order/")
+    Call<JsonObject> addVoiceOrder(@Body VoiceOrderRequest body);
+
     @POST("place-order-obv")
     Call<JsonObject> placeOrderOBV(
-            @Body RequestBody orderData
-    );
+            @Body RequestBody orderData);
 
     @GET("delete-user-account")
     Call<JsonObject> deleteUserAccount(
@@ -76,6 +79,13 @@ public interface APIService {
     Call<JsonObject> deleteStorePreferenceData(
             @Path("user_id") String userID,
             @Path("phno_enc") String phnoEnc);
+
+    @GET("get-items/{item_type}/{shop_id}/{shop_state}/{shop_district}")
+    Call<JsonObject> getItems(
+            @Path("item_type") String itemType,
+            @Path("shop_id") String shopID,
+            @Path("shop_state") String shopState,
+            @Path("shop_district") String shopDistrict);
 
     @GET("create-order-rz/{amount}")
     Call<JsonObject> createPaymentOrder(

@@ -19,16 +19,16 @@ import com.vishnu.quickgoorder.cloud.DbHandler;
 import java.util.List;
 import java.util.Locale;
 
-public class ItemAdapter extends BaseAdapter {
-    private final List<ItemModel> itemList;
+public class ProductAdapter extends BaseAdapter {
+    private final List<ProductModel> itemList;
     private final LayoutInflater inflater;
     private final DbHandler dbHandler;
     Vibrator vibrator;
     String SHOP_ID;
     Context context;
 
-    public ItemAdapter(Context context, DbHandler dbHandler, Vibrator vibrator,
-                       List<ItemModel> itemList, String SHOP_ID) {
+    public ProductAdapter(Context context, DbHandler dbHandler, Vibrator vibrator,
+                       List<ProductModel> itemList, String SHOP_ID) {
         this.itemList = itemList;
         this.inflater = LayoutInflater.from(context);
         this.SHOP_ID = SHOP_ID;
@@ -55,7 +55,7 @@ public class ItemAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
-        ItemModel item = itemList.get(position);
+        ProductModel item = itemList.get(position);
 
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.srv_home_item, parent, false);
