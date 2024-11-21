@@ -132,8 +132,9 @@
                     android:drawablePadding="8dp"
                     android:ems="10"
                     android:fontFamily="@font/montserrat"
-                    android:hint="Enter phone number in +[country code][number]"
+                    android:hint="@string/enter_your_phone_number"
                     android:inputType="phone"
+                    android:maxLength="10"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
                     android:textSize="16sp"
@@ -202,6 +203,20 @@
 
                 <!-- Password Field -->
 
+                <TextView
+                    android:id="@+id/signInWithEmail_textView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:enabled="true"
+                    android:fontFamily="@font/montserrat"
+                    android:gravity="start"
+                    android:text="@string/login_with_email"
+                    android:textAlignment="textStart"
+                    android:textColor="#1B5E20"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
                 <ProgressBar
                     android:id="@+id/loginStatus_progressBar"
                     style="?android:attr/progressBarStyle"
@@ -220,7 +235,6 @@
                     android:fontFamily="@font/montserrat"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
-                    android:text="@string/verify_your_account"
                     android:textAlignment="center"
                     android:textSize="16sp"
                     android:textStyle="bold" />

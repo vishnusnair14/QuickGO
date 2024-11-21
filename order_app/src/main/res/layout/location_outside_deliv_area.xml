@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/messageTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/archivo_black"
+        android:text="Oops!  We currently don't deliver to this location. VoiGo isn't here yet, but we're expanding soon"
+        android:textAppearance="?attr/textAppearanceBody1"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/dismissButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="DISMISS"
+        android:layout_gravity="end"
+        android:layout_marginTop="16dp" />
+</LinearLayout>

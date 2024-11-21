@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,6 +24,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.vishnu.quickgoorder.R;
 import com.vishnu.quickgoorder.databinding.FragmentSavedDeliveryAddressBinding;
 import com.vishnu.quickgoorder.eventbus.EBUpdatedAddressData;
 import com.vishnu.quickgoorder.server.sapi.APIService;
@@ -50,6 +52,7 @@ public class ManageAddressFragment extends Fragment {
     private static final FirebaseUser currentUser = mAuth.getCurrentUser();
     static String userId;
     ProgressBar progressBar;
+    TextView statusTV;
     private List<SavedAddressModel> savedAddressList;
     private SavedAddressAdapter savedAddressAdapter;
 
@@ -79,20 +82,21 @@ public class ManageAddressFragment extends Fragment {
 
         RecyclerView recyclerView = binding.savedAddressRecyclerView;
         progressBar = binding.savedAddressFragProgressBar;
+        statusTV = binding.savedAddressStatusTVTextView;
+        statusTV.setVisibility(View.GONE);
 
         savedAddressList = new ArrayList<>();
         savedAddressAdapter = new SavedAddressAdapter(requireContext(),
-                 savedAddressList);
+                savedAddressList);
         recyclerView.setAdapter(savedAddressAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-
 
         getSavedAddressData(userId, progressBar);
         return root;
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private void updateRecyclerView(JsonArray addressData, ProgressBar progressBar) {
+    private void updateRecyclerView(@NonNull JsonArray addressData, @NonNull ProgressBar progressBar) {
         progressBar.setVisibility(View.VISIBLE);
         savedAddressList.clear();
         for (JsonElement element : addressData) {
@@ -130,7 +134,7 @@ public class ManageAddressFragment extends Fragment {
         }
     }
 
-    private void saveAddressDataToFile(JsonArray addressData) {
+    private void saveAddressDataToFile(@NonNull JsonArray addressData) {
         try {
             File file = new File(requireContext().getFilesDir(), "address_data.json");
             FileWriter writer = new FileWriter(file);
@@ -141,7 +145,7 @@ public class ManageAddressFragment extends Fragment {
         }
     }
 
-    private void fetchAddressDataFromServer(String userId, ProgressBar progressBar) {
+    private void fetchAddressDataFromServer(String userId, @NonNull ProgressBar progressBar) {
         progressBar.setVisibility(View.VISIBLE);
 
         APIService apiService = ApiServiceGenerator.getApiService(requireContext());
@@ -154,17 +158,20 @@ public class ManageAddressFragment extends Fragment {
                 progressBar.setVisibility(View.GONE);
                 if (response.isSuccessful() && response.body() != null) {
                     JsonObject responseBody = response.body();
-
+                    statusTV.setVisibility(View.GONE);
                     if (responseBody.has("address_data")) {
                         JsonArray addressData = responseBody.getAsJsonArray("address_data");
 
                         saveAddressDataToFile(addressData);
                         updateRecyclerView(addressData, progressBar);
 
-//                        if (isAdded()) {
-//                            Toast.makeText(getContext(), "Address data retrieved successfully", Toast.LENGTH_SHORT).show();
-//                        }
+                        if (responseBody.get("message").getAsString().equals("No address found")) {
+                            statusTV.setVisibility(View.VISIBLE);
+                            statusTV.setText(R.string.no_saved_address_found);
+                        }
                     } else {
+                        statusTV.setVisibility(View.VISIBLE);
+                        statusTV.setText(R.string.failed_to_fetch_data_try_again);
                         Log.e(LOG_TAG, "Invalid response format: Missing 'address_data' field");
                         if (isAdded()) {
                             Toast.makeText(getContext(), "Failed to fetch address data: Invalid response format", Toast.LENGTH_SHORT).show();
@@ -174,6 +181,8 @@ public class ManageAddressFragment extends Fragment {
                     String errorMessage = "Failed to fetch address data";
                     errorMessage += ": " + response.message();
                     Log.e(LOG_TAG, errorMessage);
+                    statusTV.setVisibility(View.VISIBLE);
+                    statusTV.setText(R.string.failed_to_fetch_data_try_again);
                     if (isAdded()) {
                         Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
                     }
@@ -183,6 +192,8 @@ public class ManageAddressFragment extends Fragment {
             @Override
             public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
                 progressBar.setVisibility(View.GONE);
+                statusTV.setVisibility(View.VISIBLE);
+                statusTV.setText(R.string.failed_to_fetch_data_try_again);
                 if (isAdded()) {
                     Toast.makeText(getContext(), "Failed to fetch address data", Toast.LENGTH_SHORT).show();
                 }

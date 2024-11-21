@@ -228,7 +228,7 @@ public class AllOrdersFragment extends Fragment {
                                     // Update the orderList and notify adapter of the change
                                     orderList.clear();
                                     orderList.addAll(tempOrderMap.values());
-                                    orderList.sort(Comparator.comparingLong(AllOrdersModel::getOrderTimeMillis).reversed());
+                                    orderList.sort(Comparator.comparingLong(AllOrdersModel::getOrderTimeMillis));
 
                                     // Ensure UI update on the main thread
                                     new Handler(Looper.getMainLooper()).post(() -> {

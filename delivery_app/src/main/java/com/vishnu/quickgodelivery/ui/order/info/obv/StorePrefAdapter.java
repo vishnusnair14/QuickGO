@@ -1,6 +1,8 @@
 package com.vishnu.quickgodelivery.ui.order.info.obv;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -26,11 +28,13 @@ public class StorePrefAdapter extends BaseAdapter {
     private final LayoutInflater inflater;
     private BottomSheetDialog shopDetailsBtmView;
     private final List<StorePrefDataModel> storePrefDataModelList;
+    OBVOrderInformationFragment obvOrderInformationFragment;
 
     public StorePrefAdapter(Context context, List<StorePrefDataModel> storePrefDataModelList) {
         this.context = context;
         this.inflater = LayoutInflater.from(context);
         this.storePrefDataModelList = storePrefDataModelList;
+        obvOrderInformationFragment = new OBVOrderInformationFragment();
     }
 
     @Override
@@ -70,12 +74,30 @@ public class StorePrefAdapter extends BaseAdapter {
                 Utils.vibrate(context, 50, 2);
             });
 
+            holder.showOnMap.setOnClickListener(v -> {
+                openGoogleMaps(String.valueOf(storePrefDataModel.getShopLat()),
+                        String.valueOf(storePrefDataModel.getShopLon()));
+            });
+
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
         return convertView;
+    }
+
+    private void openGoogleMaps(String destLat, String destLng) {
+        Uri gmmIntentUri = Uri.parse("https://www.google.com/maps/dir/?api=1&destination=" +
+                destLat + "," + destLng + "&travelmode=driving");
+
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+
+        if (mapIntent.resolveActivity(context.getPackageManager()) != null) {
+            context.startActivity(mapIntent);
+        } else {
+            Toast.makeText(context, "Unable to start maps", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void showShopDetailsBtmView(StorePrefDataModel storePrefDataModel) {
@@ -113,13 +135,15 @@ public class StorePrefAdapter extends BaseAdapter {
                     storePrefDataModel.getShopDistrict().substring(1)));
 
             // Update information
-            shopInfoTV1.setText("");
-            shopInfoTV2.setText("");
+            shopInfoTV1.setText(MessageFormat.format("{0}°N {1}°E", storePrefDataModel.getShopLat(), storePrefDataModel.getShopLon()));
+            shopInfoTV2.setText(MessageFormat.format("The approximate radius from your initial location to shop is: {0}km",
+                    storePrefDataModel.getDistanceKm()));
             shopInfoTV3.setText("");
 
-            showOnMapBtn.setOnClickListener(v->{
+            showOnMapBtn.setOnClickListener(v -> {
 
             });
+
             hideBtn.setOnClickListener(v -> shopDetailsBtmView.dismiss());
 
             // Show the dialog
@@ -131,18 +155,19 @@ public class StorePrefAdapter extends BaseAdapter {
     }
 
 
-
     static class ViewHolder {
         ImageView shopImage;
         TextView shopName;
         TextView shopAddress;
         TextView viewAllDetails;
+        TextView showOnMap;
 
         ViewHolder(View view) {
             shopImage = view.findViewById(R.id.srvStorePrefShopImage_imageView);
             shopName = view.findViewById(R.id.srvStorePrefShopName_textView);
             shopAddress = view.findViewById(R.id.srvStorePrefShopDetails_textView);
             viewAllDetails = view.findViewById(R.id.srvStorePrefShowAllDetails_textView);
+            showOnMap = view.findViewById(R.id.srvStorePrefViewOnMap_textView);
 
         }
     }

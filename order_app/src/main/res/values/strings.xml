@@ -353,5 +353,10 @@
     <string name="note_before_p">Note: Before placing the order, please verify your recorded voice orders from cart. Ensure they are recorded in a quiet environment, and make sure the recordings are clear so that delivery partners can hear them accurately.</string>
     <string name="are_you_sure_you_want_to_place_order">Are you sure you want to place order?</string>
     <string name="once_order_is_placed_yo">Once order is placed, you can\'t cancel the order. Do you want to proceed?</string>
+    <string name="login_with_email">Login with email</string>
+    <string name="no_saved_address_found">No saved address found!</string>
+    <string name="failed_to_fetch_data_try_again">Failed to fetch data, try again!</string>
+    <string name="no_address_found_add_new">No address found, add new!</string>
+    <string name="location_is_outside_deliverable_area">Location is outside deliverable area</string>
 
 </resources>

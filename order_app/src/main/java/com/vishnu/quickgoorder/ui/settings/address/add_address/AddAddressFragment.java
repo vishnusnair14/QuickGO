@@ -1,10 +1,17 @@
 package com.vishnu.quickgoorder.ui.settings.address.add_address;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.IntentSender;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,7 +19,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -20,13 +29,35 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
+import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.Priority;
+import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.JsonObject;
@@ -42,8 +73,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
+import java.util.List;
+import java.util.Locale;
 
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -70,8 +104,16 @@ public class AddAddressFragment extends Fragment {
     private final DecimalFormat coordinateFormat = new DecimalFormat("#.##########");
     private FragmentAddAddressBinding binding;
     private FirebaseUser user;
-    private Spinner spinnerCountry, spinnerState, spinnerDistrict;
+    private Spinner spinnerState, spinnerDistrict;
+    private static final int GPS_REQUEST_CODE = 1001;
 
+    private static final String ARG_PARAM1 = "lat_from_map";
+    private static final String ARG_PARAM2 = "lon_from_map";
+
+    private double address_lat;
+    private double address_lon;
+    NavController navController;
+    FragmentManager fragmentManager;
 
     public AddAddressFragment() {
     }
@@ -79,6 +121,14 @@ public class AddAddressFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (getArguments() != null) {
+            address_lat = getArguments().getDouble(ARG_PARAM1, 0);
+            address_lon = getArguments().getDouble(ARG_PARAM2, 0);
+        }
+        navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_content_main);
+        fragmentManager = requireActivity().getSupportFragmentManager();
+
     }
 
     @Override
@@ -98,7 +148,6 @@ public class AddAddressFragment extends Fragment {
         RadioGroup addressTyperadioGroup = binding.addressTypeRadioGroup;
         phoneNoET = binding.phoneNumberEditTextText;
         locationTV = binding.addFragLocationViewTextView;
-
         spinnerState = binding.spinnerState;
         spinnerDistrict = binding.spinnerDistrict;
 
@@ -172,7 +221,40 @@ public class AddAddressFragment extends Fragment {
         return root;
     }
 
-    private void populateDistrictSpinner(String state) {
+
+    private void checkAndPromptForGPS() {
+        // Create a LocationRequest to request high-accuracy location
+        LocationRequest locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10000L)
+                .setMinUpdateIntervalMillis(5000L) // Fastest interval
+                .build();
+
+        // Build a LocationSettingsRequest
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest);
+
+        // Check location settings with the SettingsClient
+        SettingsClient settingsClient = LocationServices.getSettingsClient(requireActivity());
+        Task<LocationSettingsResponse> task = settingsClient.checkLocationSettings(builder.build());
+
+        task.addOnSuccessListener(requireActivity(), locationSettingsResponse -> {
+            // GPS is enabled, you can proceed with accessing location
+
+        });
+
+        task.addOnFailureListener(requireActivity(), e -> {
+            if (e instanceof ResolvableApiException) {
+                try {
+                    // Show the dialog to enable GPS
+                    ResolvableApiException resolvable = (ResolvableApiException) e;
+                    resolvable.startResolutionForResult(requireActivity(), GPS_REQUEST_CODE);
+                } catch (IntentSender.SendIntentException sendEx) {
+                    // Handle error in showing the dialog
+                }
+            }
+        });
+    }
+
+    private void populateDistrictSpinner(@NonNull String state) {
         int districtsArrayId = switch (state) {
             case "Karnataka" -> R.array.karnataka_districts_array;
             case "Kerala" -> R.array.kerala_districts_array;
@@ -190,7 +272,7 @@ public class AddAddressFragment extends Fragment {
 
     private final BroadcastReceiver locationReceiver = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, @NonNull Intent intent) {
             if (LocationService.ACTION_LOCATION_BROADCAST.equals(intent.getAction())) {
                 latitude = intent.getDoubleExtra(LocationService.EXTRA_LATITUDE, 0.00);
                 longitude = intent.getDoubleExtra(LocationService.EXTRA_LONGITUDE, 0.00);
@@ -230,6 +312,11 @@ public class AddAddressFragment extends Fragment {
                             if (response.body().get("success").getAsBoolean()) {
                                 Utils.deleteAddressDataCacheFile(requireContext());
                                 Toast.makeText(requireContext(), response.body().get("message").getAsString(), Toast.LENGTH_SHORT).show();
+//                                new Handler().postDelayed(() ->
+//                                        NavHostFragment.findNavController(AddAddressFragment.this)
+//                                                .navigate(R.id.action_nav_addAddress_to_nav_settings), 1200);
+                                clearFieldData();
+
                             }
                         }
 
@@ -262,6 +349,11 @@ public class AddAddressFragment extends Fragment {
                             if (response.body().get("success").getAsBoolean()) {
                                 Utils.deleteAddressDataCacheFile(requireContext());
                                 Toast.makeText(requireContext(), response.body().get("message").getAsString(), Toast.LENGTH_SHORT).show();
+//                                new Handler().postDelayed(() ->
+//                                        NavHostFragment.findNavController(AddAddressFragment.this)
+//                                                .navigate(R.id.action_nav_addAddress_to_nav_settings), 1200);
+                                clearFieldData();
+
                             }
                         }
                         Log.d("MainActivity", "Shop created successfully");
@@ -274,6 +366,14 @@ public class AddAddressFragment extends Fragment {
                 Log.e("LOG_TAG", "Image upload error: " + t.getMessage());
             }
         });
+    }
+
+    private void clearFieldData() {
+        phoneNoET.setText("");
+        pinCodeEditText.setText("");
+        cityStateTV.setText("");
+        postOffValNameTV.setText("");
+        locationTV.setText("");
     }
 
     private void showDecisionDialog() {
@@ -290,7 +390,7 @@ public class AddAddressFragment extends Fragment {
     }
 
 
-    private void validatePinCode(String pincode, PincodeValidation isValid) {
+    private void validatePinCode(@NonNull String pincode, PincodeValidation isValid) {
         RequestQueue queue = Volley.newRequestQueue(requireContext());
 
         String PINCODE_VAL_URL = "http://www.postalpincode.in/api/pincode/";
@@ -360,8 +460,8 @@ public class AddAddressFragment extends Fragment {
         jsonData.addProperty("is_default", isAddDef);
         jsonData.addProperty("post_office_name", postOffName);
         jsonData.addProperty("address_type", addressType);
-        jsonData.addProperty("address_lat", latitude);
-        jsonData.addProperty("address_lon", longitude);
+        jsonData.addProperty("address_lat", address_lat);
+        jsonData.addProperty("address_lon", address_lon);
         jsonData.addProperty("phone_no", phoneNoET.getText().toString());
         return jsonData;
     }
@@ -376,6 +476,18 @@ public class AddAddressFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        checkAndPromptForGPS();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
+    @Override
     public void onStart() {
         super.onStart();
         IntentFilter filter = new IntentFilter(LocationService.ACTION_LOCATION_BROADCAST);
@@ -387,4 +499,15 @@ public class AddAddressFragment extends Fragment {
         super.onStop();
         requireContext().unregisterReceiver(locationReceiver);
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+    }
+
 }

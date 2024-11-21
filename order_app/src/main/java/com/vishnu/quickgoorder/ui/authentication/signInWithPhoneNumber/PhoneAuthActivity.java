@@ -4,7 +4,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.telephony.PhoneNumberUtils;
+import android.util.Log;
 import android.view.View;
+
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber;
+
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -41,6 +47,7 @@ public class PhoneAuthActivity extends AppCompatActivity {
     private PhoneAuthProvider.ForceResendingToken resendToken;
     private LinearLayout loginViewLayout;
     private TextView statusViewTV;
+    private TextView singInWithEmailTV;
     private ActivityFinisher mListener;
     private ProgressBar statusProgressBar;
     private SharedPreferences preferences;
@@ -72,6 +79,7 @@ public class PhoneAuthActivity extends AppCompatActivity {
         otpField = findViewById(R.id.otpFieldLoginFragment_editTextText);
         sendOtpButton = findViewById(R.id.buttonSendOtp);
         verifyOtpButton = findViewById(R.id.buttonVerifyOtp);
+        singInWithEmailTV = findViewById(R.id.signInWithEmail_textView);
 
         // Send OTP Button Click Listener
         sendOtpButton.setOnClickListener(v -> {
@@ -79,7 +87,16 @@ public class PhoneAuthActivity extends AppCompatActivity {
 
             if (!phoneNumber.isEmpty()) {
                 // Assume phoneNumber is already in E.164 format
-                startPhoneNumberVerification(phoneNumber);
+                if (isValidPhoneNumber(formatToE164(phoneNumber, "IN"))) {
+                    loginViewLayout.setVisibility(View.GONE);
+                    statusViewTV.setVisibility(View.VISIBLE);
+                    statusViewTV.setText("please wait...");
+                    statusProgressBar.setVisibility(View.VISIBLE);
+//                    Toast.makeText(this, formatToE164(phoneNumber, "IN"), Toast.LENGTH_SHORT).show();
+                    startPhoneNumberVerification(formatToE164(phoneNumber, "IN"));
+                } else {
+                    Toast.makeText(this, "phone number not valid", Toast.LENGTH_SHORT).show();
+                }
             } else {
                 Toast.makeText(PhoneAuthActivity.this, "Please enter a valid phone number", Toast.LENGTH_SHORT).show();
             }
@@ -91,18 +108,40 @@ public class PhoneAuthActivity extends AppCompatActivity {
 
             if (!otpCode.isEmpty()) {
                 if (mVerificationId != null) {
+                    loginViewLayout.setVisibility(View.GONE);
+                    statusViewTV.setVisibility(View.VISIBLE);
+                    statusViewTV.setText("please wait...");
+                    statusProgressBar.setVisibility(View.VISIBLE);
                     verifyPhoneNumberWithCode(mVerificationId, otpCode);
-                }else {
+                } else {
                     Toast.makeText(this, "Can't verify OTP", Toast.LENGTH_SHORT).show();
                 }
             } else {
                 Toast.makeText(PhoneAuthActivity.this, "Please enter the OTP", Toast.LENGTH_SHORT).show();
             }
         });
-
+        singInWithEmailTV.setOnClickListener(v -> {
+            Intent i = new Intent(this, AuthenticationActivity.class);
+            startActivity(i);
+        });
         init();
     }
 
+    public boolean isValidPhoneNumber(String phoneNumber) {
+        String e164Regex = "\\+?[1-9]\\d{1,14}";
+        return phoneNumber.matches(e164Regex);
+    }
+
+    public String formatToE164(String phoneNumber, String countryCode) {
+        try {
+            PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+            Phonenumber.PhoneNumber number = phoneUtil.parse(phoneNumber, countryCode);
+            return phoneUtil.format(number, PhoneNumberUtil.PhoneNumberFormat.E164);
+        } catch (Exception e) {
+            Log.d("TAG", e.toString());
+            return null;
+        }
+    }
 
     private void showCheckView(int txt, int cl) {
         loginViewLayout.setVisibility(View.GONE);
@@ -126,10 +165,11 @@ public class PhoneAuthActivity extends AppCompatActivity {
             if (!preferences.getBoolean("isRememberedPhoneAuth", false) || user == null) {
                 showLoginView();
             } else {
+                statusProgressBar.setVisibility(View.VISIBLE);
                 showCheckView(R.string.signing_in, R.color.signing_in);
-                statusProgressBar.setVisibility(View.GONE);
                 new Handler().postDelayed(() -> {
                     startActivity(mainActivity);
+//                    loginViewLayout.setVisibility(View.VISIBLE);
                     finish();
                 }, 100);
             }
@@ -158,6 +198,8 @@ public class PhoneAuthActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         // Sign in success, update UI with the signed-in user's information
                         preferences.edit().putBoolean("isRememberedPhoneAuth", true).apply();
+                        startActivity(mainActivity);
+                        finish();
                         Toast.makeText(PhoneAuthActivity.this, "Authentication Successful", Toast.LENGTH_SHORT).show();
                     } else {
                         // Sign in failed, display a message and update the UI
@@ -175,6 +217,7 @@ public class PhoneAuthActivity extends AppCompatActivity {
                 @Override
                 public void onVerificationCompleted(@NonNull PhoneAuthCredential credential) {
                     // Auto verification or instant verification is done here
+                    Log.d("OTP", "Verification completed with auto-detection.");
                     signInWithPhoneAuthCredential(credential);
                 }
 
@@ -190,7 +233,10 @@ public class PhoneAuthActivity extends AppCompatActivity {
                     // Save verification ID and resending token so we can use them later
                     mVerificationId = verificationId;
                     mResendToken = token;
-
+                    loginViewLayout.setVisibility(View.VISIBLE);
+                    statusViewTV.setVisibility(View.GONE);
+                    statusViewTV.setText("");
+                    statusProgressBar.setVisibility(View.GONE);
                     Toast.makeText(PhoneAuthActivity.this, "OTP Sent", Toast.LENGTH_SHORT).show();
                 }
             };

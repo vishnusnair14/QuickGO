@@ -48,8 +48,8 @@
             android:defaultValue=""
             app:argType="string" />
         <action
-            android:id="@+id/action_nav_settings_to_nav_addAddress"
-            app:destination="@id/nav_addAddress"
+            android:id="@+id/action_nav_settings_to_nav_setAddressLocation"
+            app:destination="@id/nav_setAddressLocation"
             app:popUpToInclusive="false" />
         <action
             android:id="@+id/action_nav_settings_to_savedAddressFragment3"
@@ -61,13 +61,30 @@
         <action
             android:id="@+id/action_nav_settings_to_nav_store_pref"
             app:destination="@id/nav_store_pref_choose_address" />
+        <action
+            android:id="@+id/action_nav_settings_to_nav_setAddressLocation2"
+            app:destination="@id/nav_setAddressLocation" />
     </fragment>
 
     <fragment
         android:id="@+id/nav_addAddress"
         android:name="com.vishnu.quickgoorder.ui.settings.address.add_address.AddAddressFragment"
         android:label="Add Address"
-        tools:layout="@layout/fragment_add_address" />
+        tools:layout="@layout/fragment_add_address" >
+        <action
+            android:id="@+id/action_nav_addAddress_to_nav_settings"
+            app:destination="@id/nav_settings" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_setAddressLocation"
+        android:name="com.vishnu.quickgoorder.ui.settings.address.set_location.SetLocationOnMapFragment"
+        android:label="Set Location"
+        tools:layout="@layout/fragment_set_location_on_map" >
+        <action
+            android:id="@+id/action_nav_setAddressLocation_to_nav_addAddress"
+            app:destination="@id/nav_addAddress" />
+    </fragment>
 
     <fragment
         android:id="@+id/savedAddressFragment"
@@ -108,12 +125,12 @@
         <action
             android:id="@+id/action_nav_orderbyvoice_to_nav_mcart"
             app:destination="@id/nav_mcart" />
-        <action
-            android:id="@+id/action_nav_orderbyvoice_to_nav_addAddress"
-            app:destination="@id/nav_addAddress" />
         <deepLink
             android:id="@+id/deepLink2"
             app:uri="orderapp://homeOrderByVoiceFragment" />
+        <action
+            android:id="@+id/action_nav_orderbyvoice_to_nav_setAddressLocation"
+            app:destination="@id/nav_setAddressLocation" />
     </fragment>
 
     <fragment

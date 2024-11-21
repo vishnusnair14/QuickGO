@@ -21,8 +21,9 @@ public interface APIService {
 
     @Multipart
     @POST("register-delivery-account")
-    Call<JsonObject> registerUser(
-            @Part MultipartBody.Part image,
+    Call<JsonObject>
+    registerUser(
+//            @Part MultipartBody.Part image,
             @Part("account_data") RequestBody accountData);
 
     @POST("start-duty/")
@@ -100,6 +101,8 @@ public interface APIService {
             @Field("order_type") String orderType,
             @Field("user_id") String userId,
             @Field("dp_id") String dpID,
+            @Field("shop_id") String shopID,
+            @Field("shop_name") String shopName,
             @Field("user_phno") String userPhno,
             @Field("order_key") String orderKey);
 }

@@ -16,6 +16,7 @@ public class OBVOrderModel implements OrderModel {
     private double pickup_destination_distance;
     private String user_id;
     private String shop_id;
+    private String shop_name;
 
 
     @Override
@@ -31,6 +32,18 @@ public class OBVOrderModel implements OrderModel {
 
     public double getOrder_delivery_destination_distance() {
         return order_delivery_destination_distance;
+    }
+
+    public void setShop_id(String shop_id) {
+        this.shop_id = shop_id;
+    }
+
+    public void setShop_name(String shop_name) {
+        this.shop_name = shop_name;
+    }
+
+    public String getShop_name() {
+        return shop_name;
     }
 
     public long getOrder_time_millis() {

@@ -309,22 +309,6 @@ public class OrderTrackActivity extends AppCompatActivity implements GoogleMap.O
         }
     };
 
-    private void addDeliveryHomeMarker(GoogleMap mMap, LatLng homeLocation) {
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.home_24);
-        Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 100, 100, false);
-
-        if (deliveryHomeMarker != null) {
-            deliveryHomeMarker.setPosition(homeLocation);
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLocation, 18));
-
-        } else {
-            deliveryHomeMarker = mMap.addMarker(new MarkerOptions()
-                    .position(homeLocation)
-                    .title("Delivery Home")
-                    .icon(BitmapDescriptorFactory.fromBitmap(resizedBitmap)));
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLocation, 18));
-        }
-    }
 
     private void updateMapWithLocations(LatLng userLatLng, LatLng deliveryPartnerLatLng) {
         // Clear the map before adding new markers and polyline
@@ -339,8 +323,8 @@ public class OrderTrackActivity extends AppCompatActivity implements GoogleMap.O
         // Add marker for the user
         mMap.addMarker(new MarkerOptions()
                 .position(userLatLng)
-                .title("Your Location")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                .title("Items will be delivered here")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
 
         // Draw a line (polyline) between the user's location and the delivery partner's location
         mMap.addPolyline(new PolylineOptions()

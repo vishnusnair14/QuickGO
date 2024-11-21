@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -16,6 +17,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.vishnu.quickgodelivery.miscellaneous.Utils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,10 +33,12 @@ public class LocationUpdater {
     private double latitude;
     private double longitude;
     private final Context context;
+    private SharedPreferences preferences;
 
-    public LocationUpdater(Context context, String partnerID) {
+    public LocationUpdater(Context context, String partnerID, SharedPreferences preferences) {
         this.context = context;
         this.partnerID = partnerID;
+        this.preferences = preferences;
     }
 
     // BroadcastReceiver to receive location updates
@@ -59,8 +63,9 @@ public class LocationUpdater {
             @Override
             public void run() {
                 // Update location to Firestore
-                updatePartnerLocationToDB(partnerID, latitude, longitude);
-
+                if (preferences.getBoolean("isOnDuty", false)) {
+                    updatePartnerLocationToDB(partnerID, latitude, longitude);
+                }
                 // Schedule the next update after 20 seconds
                 handler.postDelayed(this, UPDATE_INTERVAL_MS);
             }

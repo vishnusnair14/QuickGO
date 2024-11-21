@@ -33,7 +33,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         if (addNewAddress_button != null) {
             addNewAddress_button.setOnPreferenceClickListener(preference -> {
-                NavHostFragment.findNavController(this).navigate(R.id.action_nav_settings_to_nav_addAddress);
+                NavHostFragment.findNavController(this).navigate(R.id.action_nav_settings_to_nav_setAddressLocation);
                 return true;
             });
         }

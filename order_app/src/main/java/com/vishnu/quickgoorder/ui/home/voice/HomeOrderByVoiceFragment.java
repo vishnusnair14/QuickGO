@@ -6,6 +6,7 @@ import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -35,6 +36,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -62,21 +64,24 @@ import com.vishnu.quickgoorder.miscellaneous.Utils;
 import com.vishnu.quickgoorder.server.models.VoiceOrderRequest;
 import com.vishnu.quickgoorder.server.sapi.APIService;
 import com.vishnu.quickgoorder.server.sapi.ApiServiceGenerator;
-import com.vishnu.quickgoorder.service.MongoDbHelper;
 import com.vishnu.quickgoorder.ui.home.recommendation.orders.AllOrdersAdapter;
 import com.vishnu.quickgoorder.ui.home.recommendation.orders.AllOrdersModel;
 import com.vishnu.quickgoorder.ui.home.voice.address.SavedAddressAdapter;
 import com.vishnu.quickgoorder.ui.home.voice.address.SavedAddressModel;
+import com.vishnu.quickgoorder.ui.home.voice.banner.BannerAdapter;
+import com.vishnu.quickgoorder.ui.home.voice.banner.BannerItem;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -90,7 +95,7 @@ public class HomeOrderByVoiceFragment extends Fragment {
     TextView recordingStatusTV, pressHoldTV, recordVoiceTimerTV;
     File AppAudioDir;
     private final Handler handler = new Handler();
-    TextView pressAndRecMainTV;
+    //    TextView pressAndRecMainTV;
     private FirebaseUser user;
     private FirebaseFirestore db;
     static String audioFileName = "_voice.mp3";
@@ -112,7 +117,10 @@ public class HomeOrderByVoiceFragment extends Fragment {
     private BottomSheetDialog selectOrderToTrackBtmView;
     private AllOrdersAdapter allOrdersAdapter;
     private ImageView addressRefreshBtn;
-    private MongoDbHelper mongoDbHelper;
+    private ViewPager2 viewPager;
+    private BannerAdapter bannerAdapter;
+    private int currentItem = 0;
+    private boolean isRecording = false;
 
     public HomeOrderByVoiceFragment() {
         // Required empty public constructor
@@ -130,7 +138,6 @@ public class HomeOrderByVoiceFragment extends Fragment {
 
         preferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         settingsPreferences = requireActivity().getSharedPreferences("settings", Context.MODE_PRIVATE);
-        mongoDbHelper = new MongoDbHelper();
         SoundManager.initialize(requireContext());
 
         File externalFilesDir = requireContext().getExternalFilesDir(Context.AUDIO_SERVICE);
@@ -157,12 +164,25 @@ public class HomeOrderByVoiceFragment extends Fragment {
         ViewGroup root = binding.getRoot();
 
         recordBtn = binding.recordVoiceImageButton;
-        pressAndRecMainTV = binding.tapAndRecordMainTextView;
+//        pressAndRecMainTV = binding.tapAndRecordMainTextView;
         recordingStatusTV = binding.recordingStatusTextView;
         chronometer = binding.chronometer29;
         trackOrderFab = binding.trackOrder1FloatingActionButton;
         ImageView recIcon = binding.micIconImageView;
         TabLayout tabLayout = binding.orderModeTabLayout;
+
+        viewPager = binding.textBannerViewPager;
+
+        List<BannerItem> bannerItems = new ArrayList<>();
+        bannerItems.add(new BannerItem("Welcome to voigo", Color.parseColor("#043359"), Color.parseColor("#FFC519")));
+        bannerItems.add(new BannerItem("The era of new shopping experience", Color.parseColor("#043359"), Color.parseColor("#FFC519")));
+        bannerItems.add(new BannerItem("Fast, Free Delivery", Color.parseColor("#043359"), Color.parseColor("#FFC519")));
+
+        bannerAdapter = new BannerAdapter(bannerItems);
+        viewPager.setAdapter(bannerAdapter);
+
+        // Enable auto-scrolling
+        autoScrollBanner();
 
         Animation blinkAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.blink);
         recIcon.setVisibility(View.INVISIBLE);
@@ -201,36 +221,61 @@ public class HomeOrderByVoiceFragment extends Fragment {
             }
         });
 
-        recordBtn.setOnTouchListener((v, event) -> {
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN -> {
-                    isButtonHeld = true;
-                    recIcon.setVisibility(View.VISIBLE);
-                    recIcon.setAnimation(blinkAnimation);
-
-                    onButtonHoldRunnable.run();
-                    return true;
-                }
-                case MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                    isButtonHeld = false;
-                    handler.removeCallbacks(onButtonHoldRunnable);
-                    stopChronometer();
-                    recordingStatusTV.setText("");
-                    pressAndRecMainTV.setText(R.string.send_your_voice_orders);
-                    pressAndRecMainTV.setTextColor(requireActivity().getColor(R.color.default_textview));
-                    recIcon.setVisibility(View.INVISIBLE);
-                    recIcon.setAnimation(null);
-
-                    if (!isButtonHeld) {
-                        performOnButtonRelease();
-
-                    }
-
-                    return true;
-                }
+//        recordBtn.setOnTouchListener((v, event) -> {
+//            switch (event.getAction()) {
+//                case MotionEvent.ACTION_DOWN -> {
+//                    isButtonHeld = true;
+//                    recIcon.setVisibility(View.VISIBLE);
+//                    recIcon.setAnimation(blinkAnimation);
+//
+//                    onButtonHoldRunnable.run();
+//                    return true;
+//                }
+//                case MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+//                    isButtonHeld = false;
+//                    handler.removeCallbacks(onButtonHoldRunnable);
+//                    stopChronometer();
+//                    recordingStatusTV.setText("");
+//                    pressAndRecMainTV.setText(R.string.send_your_voice_orders);
+//                    pressAndRecMainTV.setTextColor(requireActivity().getColor(R.color.default_textview));
+//                    recIcon.setVisibility(View.INVISIBLE);
+//                    recIcon.setAnimation(null);
+//
+//                    if (!isButtonHeld) {
+//                        performOnButtonRelease();
+//
+//                    }
+//
+//                    return true;
+//                }
+//            }
+//            return false;
+//        });
+        
+        recordBtn.setOnClickListener(v -> {
+            if (!isRecording) {
+                // Start recording
+                isRecording = true;
+                recIcon.setVisibility(View.VISIBLE);
+                recIcon.setAnimation(blinkAnimation);
+                recordingStatusTV.setText(R.string.recording);
+//                pressAndRecMainTV.setText(R.string.recording);
+//                pressAndRecMainTV.setTextColor(requireActivity().getColor(R.color.recording));
+                startChronometer();
+                startRecording(AppAudioDir);
+            } else {
+                // Stop recording
+                isRecording = false;
+                recIcon.setVisibility(View.INVISIBLE);
+                recIcon.setAnimation(null);
+                stopChronometer();
+                recordingStatusTV.setText("");
+//                pressAndRecMainTV.setText(R.string.send_your_voice_orders);
+//                pressAndRecMainTV.setTextColor(requireActivity().getColor(R.color.default_textview));
+                stopRecording(requireContext());
             }
-            return false;
         });
+
 
         if (preferences.getString(PreferenceKeys.HOME_ORDER_BY_VOICE_FRAGMENT_AUDIO_REF_ID, "0").equals("0")) {
             preferences.edit().putString(PreferenceKeys.HOME_ORDER_BY_VOICE_FRAGMENT_AUDIO_REF_ID, Utils.generateAudioRefID()).apply();
@@ -254,7 +299,6 @@ public class HomeOrderByVoiceFragment extends Fragment {
         });
 
         binding.selectedAddresViewCardView.setOnClickListener(v -> showSetDeliveryAddressBtmView(root));
-
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -284,6 +328,22 @@ public class HomeOrderByVoiceFragment extends Fragment {
 
         return root;
     }
+
+    private void autoScrollBanner() {
+        Runnable scrollRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (bannerAdapter.getItemCount() > 0) {
+                    currentItem = (currentItem + 1) % bannerAdapter.getItemCount(); // Loop back to 0 after the last item
+                    viewPager.setCurrentItem(currentItem, true); // Smooth scroll to the item
+                    handler.postDelayed(this, 3500); // Adjust delay as needed
+                }
+            }
+        };
+
+        handler.postDelayed(scrollRunnable, 3000);
+    }
+
 
     private void showOrderToTrackBtmView(ViewGroup root) {
         View orderView = LayoutInflater.from(requireContext()).inflate(
@@ -434,26 +494,31 @@ public class HomeOrderByVoiceFragment extends Fragment {
                 progressBar.setVisibility(View.GONE);
                 if (response.isSuccessful() && response.body() != null) {
                     JsonObject responseBody = response.body();
+                    Log.d(LOG_TAG, responseBody.toString());
 
-                    if (responseBody.has("address_data")) {
-                        JsonArray addressData = responseBody.getAsJsonArray("address_data");
+                    if (responseBody.has("is_address_found")) {
+                        if (!responseBody.get("is_address_found").getAsBoolean()) {
+                            savedAddressStatusTV.setVisibility(View.VISIBLE);
+                            savedAddressStatusTV.setText(R.string.no_address_found_add_new);
+                        } else if (responseBody.has("address_data")) {
+                            JsonArray addressData = responseBody.getAsJsonArray("address_data");
 
-                        saveAddressDataToFile(addressData);
-                        updateRecyclerView(addressData, progressBar);
+                            saveAddressDataToFile(addressData);
+                            updateRecyclerView(addressData, progressBar);
 
-                        if (isAdded()) {
-//                            Toast.makeText(getContext(), "Address data retrieved successfully", Toast.LENGTH_SHORT).show();
-                            savedAddressStatusTV.setVisibility(View.GONE);
-                            Log.d(LOG_TAG, "Address data retrieved successfully");
-                            addressRefreshBtn.clearAnimation();
-                        }
-                    } else {
-                        Log.e(LOG_TAG, "Invalid response format: Missing 'address_data' field");
-                        savedAddressStatusTV.setVisibility(View.VISIBLE);
-                        savedAddressStatusTV.setText("\nUnable to fetch address data, invalid format");
-                        if (isAdded()) {
-                            Toast.makeText(getContext(), "Failed to fetch address data: Invalid response format", Toast.LENGTH_SHORT).show();
-                            addressRefreshBtn.clearAnimation();
+                            if (isAdded()) {
+                                savedAddressStatusTV.setVisibility(View.GONE);
+                                Log.d(LOG_TAG, "Address data retrieved successfully");
+                                addressRefreshBtn.clearAnimation();
+                            }
+                        } else {
+                            Log.e(LOG_TAG, "Invalid response format: Missing 'address_data' field");
+                            savedAddressStatusTV.setVisibility(View.VISIBLE);
+                            savedAddressStatusTV.setText("\nUnable to fetch address data, invalid format");
+                            if (isAdded()) {
+                                Toast.makeText(getContext(), "Failed to fetch address data: Invalid response format", Toast.LENGTH_SHORT).show();
+                                addressRefreshBtn.clearAnimation();
+                            }
                         }
                     }
                 } else {
@@ -558,14 +623,14 @@ public class HomeOrderByVoiceFragment extends Fragment {
 
         Animation rotateAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.rotate);
 
-        if (Utils.isLocationNotEnabled(requireContext())) {
-            enableLocView.setVisibility(View.VISIBLE);
-            setDelToCrntLoc.setVisibility(View.GONE);
-
-        } else {
-            enableLocView.setVisibility(View.GONE);
-            setDelToCrntLoc.setVisibility(View.VISIBLE);
-        }
+//        if (Utils.isLocationNotEnabled(requireContext())) {
+//            enableLocView.setVisibility(View.VISIBLE);
+//            setDelToCrntLoc.setVisibility(View.GONE);
+//
+//        } else {
+//            enableLocView.setVisibility(View.GONE);
+//            setDelToCrntLoc.setVisibility(View.VISIBLE);
+//        }
 
         savedAddressList = new ArrayList<>();
         savedAddressAdapter = new SavedAddressAdapter(binding, preferences,
@@ -579,16 +644,16 @@ public class HomeOrderByVoiceFragment extends Fragment {
         });
 
         setDeliveryToCurrentLocBtn.setOnClickListener(v -> {
-            preferences.edit().putBoolean(PreferenceKeys.IS_SET_TO_CURRENT_LOCATION, true).apply();
-            //TODO put latLng
-            preferences.edit().putString("currentLocLat", String.valueOf("12.24")).apply();
-            preferences.edit().putString("currentLocLon", String.valueOf("75.1212")).apply();
+//            preferences.edit().putBoolean(PreferenceKeys.IS_SET_TO_CURRENT_LOCATION, true).apply();
+//            //TODO put latLng
+//            preferences.edit().putString("currentLocLat", String.valueOf("12.24")).apply();
+//            preferences.edit().putString("currentLocLon", String.valueOf("75.1212")).apply();
         });
 
         addNewDeliveryAddressTV.setOnClickListener(v -> {
             setDeliveryAddrBtmView.dismiss();
             new Handler().postDelayed(() -> NavHostFragment.findNavController(this)
-                    .navigate(R.id.action_nav_orderbyvoice_to_nav_addAddress), 350);
+                    .navigate(R.id.action_nav_orderbyvoice_to_nav_setAddressLocation), 350);
         });
 
         addressRefreshBtn.setOnClickListener(v -> {
@@ -605,7 +670,7 @@ public class HomeOrderByVoiceFragment extends Fragment {
         }
     }
 
-    private static void startRecording(@NonNull File AppAudioDir) {
+    private void startRecording(@NonNull File AppAudioDir) {
         if (!AppAudioDir.exists()) {
             if (AppAudioDir.mkdirs()) {
                 Log.d(ContentValues.TAG, "AppAudioDir: dir created successful");
@@ -615,7 +680,8 @@ public class HomeOrderByVoiceFragment extends Fragment {
         } else {
             Log.d(ContentValues.TAG, "AppAudioDir: already exists!");
         }
-
+        SoundManager.playOnButtonHold();
+        recordBtn.setImageResource(R.drawable.baseline_stop_24);
         mediaRecorder = new MediaRecorder();
         File audioFile = new File(AppAudioDir, audioFileName);
 
@@ -635,13 +701,19 @@ public class HomeOrderByVoiceFragment extends Fragment {
         }
     }
 
-    private static void stopRecording(Context context) {
+    private void stopRecording(Context context) {
         if (mediaRecorder != null) {
             try {
                 mediaRecorder.stop();
                 mediaRecorder.release();
                 mediaRecorder = null;
                 SoundManager.playOnButtonRelease();
+                recordBtn.setImageResource(R.drawable.baseline_keyboard_voice_24);
+                recordBtn.setEnabled(false);
+                recordingStatusTV.setText(R.string.please_wait);
+
+                // uploads order-voice audio file to storage
+                uploadAudioToStorageRec(requireContext(), String.valueOf(AppAudioDir));
             } catch (Exception e) {
                 Log.e(LOG_TAG, e.toString());
                 Toast.makeText(context, "error!", Toast.LENGTH_SHORT).show();
@@ -660,11 +732,10 @@ public class HomeOrderByVoiceFragment extends Fragment {
         chronometer.setBase(SystemClock.elapsedRealtime());
     }
 
-
     private void performOnButtonHold() {
         startChronometer();
-        pressAndRecMainTV.setText(R.string.recording);
-        pressAndRecMainTV.setTextColor(requireActivity().getColor(R.color.recording));
+//        pressAndRecMainTV.setText(R.string.recording);
+//        pressAndRecMainTV.setTextColor(requireActivity().getColor(R.color.recording));
         recordingStatusTV.setText(R.string.recording);
         startRecording(AppAudioDir);
         Log.d(TAG, "testButtonUI: onButtonHold");
@@ -785,22 +856,22 @@ public class HomeOrderByVoiceFragment extends Fragment {
         });
     }
 
-    private void performOnButtonRelease() {
-        stopRecording(requireContext());
-        recordBtn.setEnabled(false);
-//        recordingStatusTV.setText(R.string.uploading_to_db);
-        recordingStatusTV.setText(R.string.please_wait);
-
-        // uploads order-voice audio file to storage
-        uploadAudioToStorageRec(requireContext(), String.valueOf(AppAudioDir));
-    }
-
-    private final Runnable onButtonHoldRunnable = () -> {
-        if (isButtonHeld) {
-            SoundManager.playOnButtonHold();
-            performOnButtonHold();
-        }
-    };
+//    private void performOnButtonRelease() {
+//        stopRecording(requireContext());
+//        recordBtn.setEnabled(false);
+////        recordingStatusTV.setText(R.string.uploading_to_db);
+//        recordingStatusTV.setText(R.string.please_wait);
+//
+//        // uploads order-voice audio file to storage
+//        uploadAudioToStorageRec(requireContext(), String.valueOf(AppAudioDir));
+//    }
+//
+//    private final Runnable onButtonHoldRunnable = () -> {
+//        if (isButtonHeld) {
+//            SoundManager.playOnButtonHold();
+//            performOnButtonHold();
+//        }
+//    };
 
     @Override
     public void onResume() {

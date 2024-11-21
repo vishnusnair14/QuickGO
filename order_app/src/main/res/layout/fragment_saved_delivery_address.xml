@@ -17,6 +17,17 @@
         app:layout_constraintStart_toStartOf="@+id/savedAddress_recyclerView"
         app:layout_constraintTop_toTopOf="@+id/savedAddress_recyclerView" />
 
+    <TextView
+        android:id="@+id/savedAddressStatusTV_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/montserrat"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/savedAddress_recyclerView"
+        app:layout_constraintEnd_toEndOf="@+id/savedAddress_recyclerView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/savedAddress_recyclerView" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/savedAddress_recyclerView"
         android:layout_width="match_parent"

@@ -145,7 +145,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="15dp"
         android:fontFamily="@font/archivo_black"
-        android:text="@string/preferred_store_details"
+        android:text="Store Details"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />
@@ -153,21 +153,19 @@
     <GridView
         android:id="@+id/storePrefShopData_gridView"
         android:layout_width="match_parent"
-        android:layout_height="275dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:columnWidth="150dp"
         android:horizontalSpacing="5dp"
-        android:numColumns="auto_fit"
         android:orientation="horizontal"
-        android:padding="5dp"
+        android:padding="16dp"
         android:scrollbars="vertical"
         android:stretchMode="columnWidth"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView9"
-        tools:listitem="@layout/srv_store_pref_list">
-    </GridView>
+        tools:listitem="@layout/srv_store_pref_list"></GridView>
 
     <TextView
         android:id="@+id/storePrefShopDetailsGridViewStatus_textView"

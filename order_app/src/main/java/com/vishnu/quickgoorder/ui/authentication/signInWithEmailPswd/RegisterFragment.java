@@ -48,7 +48,6 @@ public class RegisterFragment extends Fragment {
     Map<String, Object> userDataMap;
     Map<String, Object> userDataKeyMap;
     DocumentReference registeredUsersCredentialsRef;
-    DocumentReference DeviceInfoRef;
     DocumentReference registeredUsersEmailRef;
 
     public RegisterFragment(Activity activity, Context context) {
@@ -73,7 +72,6 @@ public class RegisterFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        DeviceInfoRef = db.collection("UserInformation").document("DeviceInfo");
         registeredUsersCredentialsRef = db.collection("AuthenticationData").document("RegisteredUsersCredentials");
         registeredUsersEmailRef = db.collection("AuthenticationData").document("RegisteredUsersEmail");
 
@@ -251,7 +249,6 @@ public class RegisterFragment extends Fragment {
                             /* Update user credentials and email in Firestore */
                             updateUserCredsToDB(email, password, user.getUid());
                             updateUserEmailToDB(email);
-                            saveDeviceInfoToFirestore(user);
 
                             emailET.setText(null);
                             passwordET.setText(null);
@@ -268,48 +265,6 @@ public class RegisterFragment extends Fragment {
                         Log.w(LOG_TAG, "createUserWithEmail:failure", task.getException());
                     }
                 });
-    }
-
-    private void saveDeviceInfoToFirestore(FirebaseUser user) {
-        Map<String, Object> deviceInfo = getStringObjectMap(user);
-        Map<String, Object> dataMap = new HashMap<>();
-
-        dataMap.put(Objects.requireNonNull(user.getEmail()).replace('.','_'), deviceInfo);
-
-        // Add the device information to Firestore
-        DeviceInfoRef.get().addOnSuccessListener(documentSnapshot -> {
-            if (documentSnapshot.exists()) {
-                // Update the map-type data
-                DeviceInfoRef.update(dataMap)
-                        .addOnSuccessListener(aVoid -> Log.d(LOG_TAG, "Device info updated successfully"))
-                        .addOnFailureListener(e -> Log.e(LOG_TAG, "Error updating device info", e));
-            } else {
-                DeviceInfoRef.set(dataMap)
-                        .addOnSuccessListener(aVoid -> Log.d(LOG_TAG, "Device info added successfully"))
-                        .addOnFailureListener(e -> Log.e(LOG_TAG, "Error adding device info", e));
-            }
-
-        });
-
-    }
-
-    @NonNull
-    private Map<String, Object> getStringObjectMap(FirebaseUser user) {
-        String manufacturer = Build.MANUFACTURER;
-        String model = Build.MODEL;
-        String androidVersion = Build.VERSION.RELEASE;
-        int apiLevel = Build.VERSION.SDK_INT;
-
-        // Create a map to store the device information
-        Map<String, Object> deviceInfo = new HashMap<>();
-        deviceInfo.put("manufacturer", manufacturer);
-        deviceInfo.put("user_id", user.getUid());
-        deviceInfo.put("registered_email", user.getEmail());
-        deviceInfo.put("model", model);
-        deviceInfo.put("androidVersion", androidVersion);
-        deviceInfo.put("apiLevel", apiLevel);
-        deviceInfo.put("reg_timestamp", FieldValue.serverTimestamp());
-        return deviceInfo;
     }
 
 }

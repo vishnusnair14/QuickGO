@@ -64,6 +64,7 @@ public class OBSOrderInformationFragment extends Fragment {
     Button showShopLocOnMapBtn;
     private String orderKey;
     private String shopID;
+    private String shopName;
     Intent callIntent;
     String receiverPhno;
     private String shopPhno;
@@ -104,6 +105,7 @@ public class OBSOrderInformationFragment extends Fragment {
             userPhno = arguments.getString("user_phno");
             orderKey = arguments.getString("order_id");
             shopID = arguments.getString("shop_id");
+            shopName = arguments.getString("shop_name");
             orderType = arguments.getString("order_by_voice_type");
             orderByVoiceDocID = arguments.getString("order_by_voice_doc_id");
             orderByVoiceAudioRefID = arguments.getString("order_by_voice_audio_ref_id");
@@ -447,7 +449,7 @@ public class OBSOrderInformationFragment extends Fragment {
     private void fetchData(String key, ChatID chatID) {
 
         APIService apiService = ApiServiceGenerator.getApiService(requireContext());
-        Call<JsonObject> call = apiService.fetchOrderData(orderType, userID, user.getUid(), userPhno, key);
+        Call<JsonObject> call = apiService.fetchOrderData(orderType, userID, user.getUid(),shopID, shopName,userPhno, key);
 
         call.enqueue(new Callback<>() {
             @Override

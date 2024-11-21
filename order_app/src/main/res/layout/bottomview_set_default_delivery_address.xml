@@ -17,6 +17,7 @@
         android:text="@string/set_deliver_to_current_location"
         android:textSize="18sp"
         android:typeface="normal"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView7" />
 
@@ -27,6 +28,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
+        android:visibility="gone"
         app:cardCornerRadius="15dp"
         app:cardElevation="8dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -110,6 +112,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="5dp"
         android:layout_marginEnd="10dp"
+        android:visibility="gone"
         app:cardCornerRadius="15dp"
         app:cardElevation="8dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -193,6 +196,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="25dp"
         android:background="#969A95"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/enableLocation_cardView" />
 
@@ -203,6 +207,7 @@
         android:fontFamily="@font/archivo_black"
         android:text="@string/or"
         android:textSize="12sp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/separator2"
         app:layout_constraintEnd_toStartOf="@+id/separator2"
         app:layout_constraintStart_toEndOf="@+id/separator"
@@ -216,6 +221,7 @@
         android:layout_marginTop="25dp"
         android:layout_marginEnd="10dp"
         android:background="#969A95"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/enableLocation_cardView" />
 

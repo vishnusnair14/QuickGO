@@ -103,6 +103,7 @@ public class SavedAddressAdapter extends RecyclerView.Adapter<SavedAddressAdapte
         private final TextView fullAddressTV;
         private final TextView deleteAddressTV;
         private final TextView locCordsTV;
+        private final TextView editCoordTV;
         private SavedAddressAdapter adapter;
         private FirebaseUser user;
 
@@ -115,6 +116,7 @@ public class SavedAddressAdapter extends RecyclerView.Adapter<SavedAddressAdapte
             pincodeTV = itemView.findViewById(R.id.pincodeView_textView);
             deleteAddressTV = itemView.findViewById(R.id.deleteAddressView_textView);
             locCordsTV = itemView.findViewById(R.id.locationCoordinatesView_textView);
+            editCoordTV = itemView.findViewById(R.id.editCoordinates_textView);
         }
 
         public void bind(SavedAddressModel address, int pos) {
@@ -132,6 +134,9 @@ public class SavedAddressAdapter extends RecyclerView.Adapter<SavedAddressAdapte
                 adapter.deleteAddress(user.getUid(), address.getPhoneNo(), pos);
                 return false;
             });
+
+            editCoordTV.setOnClickListener(v -> Toast.makeText(adapter.context, "Unable to edit at the moment, try deleting address and add new! ", Toast.LENGTH_LONG).show());
+
 
         }
     }

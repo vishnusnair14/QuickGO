@@ -72,6 +72,8 @@ public class OBVOrderInformationFragment extends Fragment {
     private String userPhno;
     Intent callIntent;
     String receiverPhno;
+    String shopID;
+    String shopName;
     String shopPhno;
     private String userID;
     SharedPreferences preferences;
@@ -115,6 +117,8 @@ public class OBVOrderInformationFragment extends Fragment {
             orderKey = arguments.getString("order_id");
             userPhno = arguments.getString("user_phno");
             orderType = arguments.getString("order_by_voice_type");
+            shopID = arguments.getString("shop_id");
+            shopName = arguments.getString("shop_name");
             orderByVoiceDocID = arguments.getString("order_by_voice_doc_id");
             orderByVoiceAudioRefID = arguments.getString("order_by_voice_audio_ref_id");
         }
@@ -255,6 +259,7 @@ public class OBVOrderInformationFragment extends Fragment {
     @SuppressLint("NotifyDataSetChanged")
     public void addMessage(String messageId, String message, String messageTime) {
         if (chatMessageList != null) {
+            chatStatusTV.setText("");
             chatMessageList.add(new ChatModel(messageId, message, messageTime, false));
             chatAdapter.notifyItemInserted(chatMessageList.size() - 1);
             if (recyclerView != null) {
@@ -264,6 +269,7 @@ public class OBVOrderInformationFragment extends Fragment {
     }
 
     public void addSentMessage(String message, String messageTime) {
+        chatStatusTV.setText("");
         chatMessageList.add(new ChatModel("Me", message, messageTime, true));
         chatAdapter.notifyItemInserted(chatMessageList.size() - 1);
         if (recyclerView != null) {
@@ -427,7 +433,7 @@ public class OBVOrderInformationFragment extends Fragment {
     private void fetchData(String key, ChatID chatID) {
         statusTV.setVisibility(View.GONE);
         APIService apiService = ApiServiceGenerator.getApiService(requireContext());
-        Call<JsonObject> call = apiService.fetchOrderData(orderType, userID, user.getUid(), userPhno, key);
+        Call<JsonObject> call = apiService.fetchOrderData(orderType, userID, user.getUid(), shopID, shopName, userPhno, key);
 
         call.enqueue(new Callback<>() {
             @Override
@@ -568,8 +574,7 @@ public class OBVOrderInformationFragment extends Fragment {
                     shopObject.get("shop_state").getAsString(),
                     shopObject.get("shop_name").getAsString(),
                     shopObject.get("shop_address").getAsString(),
-                    shopObject.get("shop_preference").getAsInt(),
-                    shopObject.get("distance_km").getAsDouble(),
+                    1, shopObject.get("distance_km").getAsDouble(),
                     shopObject.get("displacement").getAsDouble()
             );
 

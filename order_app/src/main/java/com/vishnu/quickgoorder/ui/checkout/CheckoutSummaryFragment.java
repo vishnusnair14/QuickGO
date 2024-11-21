@@ -132,44 +132,44 @@ public class CheckoutSummaryFragment extends Fragment {
         });
 
 
-        proceedToPaymentBtn.setOnClickListener(view -> {
-            if (setDefaultAsDeliveryCheckBox.isChecked()) {
-                if (from.equals("fromHomeOrderByVoiceFragment")) {
-                    if (this.hasData == -1) {
-                        proceedToPaymentBtn.setText(R.string.proceed_anyway);
-                        showStorePrefCheckFailedProceedAnywayBtmView();
-                    } else if (this.hasData == 0) {
-                        proceedToPaymentBtn.setText(R.string.set_preference);
-                        showSetStorePreferenceBtmView();
-                    } else if (this.hasData == 1) {
-                        showPlaceOrderConfirmationBtmView();
-                    } else {
-                        tryCheckForStorePrefData(null);
-                    }
-                } else {
-                    showPlaceOrderConfirmationBtmView();
-                }
-            } else if (!setDefaultAsDeliveryCheckBox.isChecked()) {
-                NavHostFragment.findNavController(this)
-                        .navigate(R.id.action_checkoutSummaryFragment_to_savedAddressFragment);
-            }
-        });
-
 //        proceedToPaymentBtn.setOnClickListener(view -> {
 //            if (setDefaultAsDeliveryCheckBox.isChecked()) {
-//                Utils.vibrate(requireContext(), 50, 2);
 //                if (from.equals("fromHomeOrderByVoiceFragment")) {
-//                    showPlaceOrderConfirmationBtmView();
+//                    if (this.hasData == -1) {
+//                        proceedToPaymentBtn.setText(R.string.proceed_anyway);
+//                        showStorePrefCheckFailedProceedAnywayBtmView();
+//                    } else if (this.hasData == 0) {
+//                        proceedToPaymentBtn.setText(R.string.set_preference);
+//                        showSetStorePreferenceBtmView();
+//                    } else if (this.hasData == 1) {
+//                        showPlaceOrderConfirmationBtmView();
+//                    } else {
+//                        tryCheckForStorePrefData(null);
+//                    }
 //                } else {
-//                    paymentIntent.putExtras(bundle);
-//                    startActivity(paymentIntent);
-//                    Utils.vibrate(requireContext(), 50, 2);
+//                    showPlaceOrderConfirmationBtmView();
 //                }
 //            } else if (!setDefaultAsDeliveryCheckBox.isChecked()) {
 //                NavHostFragment.findNavController(this)
 //                        .navigate(R.id.action_checkoutSummaryFragment_to_savedAddressFragment);
 //            }
 //        });
+
+        proceedToPaymentBtn.setOnClickListener(view -> {
+            if (setDefaultAsDeliveryCheckBox.isChecked()) {
+                Utils.vibrate(requireContext(), 50, 2);
+                if (from.equals("fromHomeOrderByVoiceFragment")) {
+                    showPlaceOrderConfirmationBtmView();
+                } else {
+                    paymentIntent.putExtras(bundle);
+                    startActivity(paymentIntent);
+                    Utils.vibrate(requireContext(), 50, 2);
+                }
+            } else if (!setDefaultAsDeliveryCheckBox.isChecked()) {
+                NavHostFragment.findNavController(this)
+                        .navigate(R.id.action_checkoutSummaryFragment_to_savedAddressFragment);
+            }
+        });
 
         if (from.equals("fromHomeOrderByVoiceFragment")) {
             defaultAddrViewTV.setText(preferences.getString(PreferenceKeys.HOME_ORDER_BY_VOICE_SELECTED_ADDRESS_FULL_ADDRESS, ""));
@@ -516,8 +516,8 @@ public class CheckoutSummaryFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (from.equals("fromHomeOrderByVoiceFragment")) {
-            checkAndSaveStorePrefDataState();
-        }
+//        if (from.equals("fromHomeOrderByVoiceFragment")) {
+//            checkAndSaveStorePrefDataState();
+//        }
     }
 }

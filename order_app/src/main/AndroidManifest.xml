@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
+
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -10,6 +14,8 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission
         android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
@@ -27,9 +33,10 @@
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_order_app_icon_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.IntelliCart"
+        android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:targetApi="34">
+
 
         <!--
              TODO: Before you run your application, you need a Google Maps API key.
@@ -47,19 +54,16 @@
             android:value="AIzaSyBd39kAqdg2XVFpubSLPA_bWHt0v6wf8b4" />
 
         <activity
-            android:name=".ui.track.MapsActivity"
-            android:exported="false"
-            android:label="@string/title_activity_maps" />
-        <activity
             android:name=".ui.authentication.signInWithPhoneNumber.PhoneAuthActivity"
             android:exported="false"
+
             android:text="Auth"
-            android:theme="@style/Theme.IntelliCart.NoActionBar" />
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".ui.authentication.signInWithPhoneNumber.AuthenticationActivity"
             android:exported="false"
             android:text="Auth"
-            android:theme="@style/Theme.IntelliCart.NoActionBar" />
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".ui.track.OrderTrackActivity"
             android:exported="false"
@@ -97,16 +101,16 @@
         <activity
             android:name=".MainActivity"
             android:exported="false"
-            android:theme="@style/Theme.IntelliCart.NoActionBar" />
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".ui.authentication.signInWithEmailPswd.AuthenticationActivity"
             android:exported="false"
             android:text="Auth"
-            android:theme="@style/Theme.IntelliCart.NoActionBar" />
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".GreetingActivity"
             android:exported="true"
-            android:theme="@style/Theme.IntelliCart.NoActionBar">
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

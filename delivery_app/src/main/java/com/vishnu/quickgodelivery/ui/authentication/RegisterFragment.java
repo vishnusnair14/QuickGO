@@ -4,6 +4,7 @@ import static android.app.Activity.RESULT_OK;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -35,6 +36,8 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -50,6 +53,7 @@ import com.vishnu.quickgodelivery.server.sapi.APIService;
 import com.vishnu.quickgodelivery.server.sapi.ApiServiceGenerator;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -178,9 +182,11 @@ public class RegisterFragment extends Fragment {
         spinnerDistrict = binding.spinnerDistrict;
 
         selectedImageIV.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            imagePickerLauncher.launch(intent);
+//            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//            imagePickerLauncher.launch(intent);
+//            selectImage();
         });
+
 
         ArrayAdapter<CharSequence> stateAdapter = ArrayAdapter.createFromResource(
                 requireContext(), R.array.india_states_array,
@@ -258,6 +264,81 @@ public class RegisterFragment extends Fragment {
         return root;
     }
 
+//    private void selectImage() {
+//        // Check and request permissions based on Android version
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//            // For Android 13+ (READ_MEDIA_IMAGES)
+//            if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.READ_MEDIA_IMAGES)
+//                    != PackageManager.PERMISSION_GRANTED) {
+//                ActivityCompat.requestPermissions(requireActivity(),
+//                        new String[]{android.Manifest.permission.READ_MEDIA_IMAGES}, 101);
+//            } else {
+//                openImagePicker();
+//            }
+//        } else {
+//            // For Android 6+ to 12 (READ_EXTERNAL_STORAGE)
+//            if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE)
+//                    != PackageManager.PERMISSION_GRANTED) {
+//                ActivityCompat.requestPermissions(requireActivity(),
+//                        new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, 101);
+//            } else {
+//                openImagePicker();
+//            }
+//        }
+//    }
+
+    // Handle the image picker intent
+//    private void openImagePicker() {
+//        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+//        intent.addCategory(Intent.CATEGORY_OPENABLE);
+//        intent.setType("image/*");
+//        startActivityForResult(intent, 102);
+//    }
+
+    // Handle the result from the image picker
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if (requestCode == 102 && resultCode == RESULT_OK) {
+//            if (data != null) {
+//                Uri uri = data.getData();
+//                if (uri != null) {
+//                    // Use the URI to access the image
+//                    selectedImageIV.setImageURI(uri);
+//                    processImageUri(uri);
+//                } else {
+//                    Toast.makeText(requireContext(), "Failed to get the image", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        }
+//    }
+
+    // Process the image URI (e.g., display it or upload it)
+//    private void processImageUri(Uri uri) {
+//        try {
+//            ContentResolver resolver = context.getContentResolver();
+//            InputStream inputStream = resolver.openInputStream(uri);
+//            // Process the input stream as needed
+//            Toast.makeText(requireContext(), "Image selected successfully!", Toast.LENGTH_SHORT).show();
+//        } catch (Exception e) {
+//            Toast.makeText(requireContext(), "Failed to process image", Toast.LENGTH_SHORT).show();
+//        }
+//    }
+
+    // Handle permission result
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//        if (requestCode == 101) {
+//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                openImagePicker();
+//            } else {
+//                Toast.makeText(requireContext(), "Permission denied! Cannot access images.", Toast.LENGTH_SHORT).show();
+//            }
+//        }
+//    }
+
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -318,12 +399,12 @@ public class RegisterFragment extends Fragment {
                                 }
                             }
                             Log.d(LOG_TAG, "Email " + emailToCheck + " does not exist in db");
-                            if (selectedImageUri != null && selectedImageUri.getPath() != null) {
-//                                addUser(nameET.getText().toString(), emailET.getText().toString(), passwordET.getText().toString());
-                                sentCreateShopRequest(new File(getFilePath()));
-                            } else {
-                                Toast.makeText(requireContext(), "Please select an image", Toast.LENGTH_SHORT).show();
-                            }
+                            sentCreateShopRequest();
+//                            if (selectedImageUri != null && selectedImageUri.getPath() != null) {
+////                                addUser(nameET.getText().toString(), emailET.getText().toString(), passwordET.getText().toString());
+//                            } else {
+//                                Toast.makeText(requireContext(), "Please select an image", Toast.LENGTH_SHORT).show();
+//                            }
                         } else {
                             Log.e(LOG_TAG, "Email addresses is not a list");
                         }
@@ -348,17 +429,17 @@ public class RegisterFragment extends Fragment {
         return jsonData;
     }
 
-    private void sentCreateShopRequest(File imageFile) {
+    private void sentCreateShopRequest() {
         showRegistrationStatusBtmView();
-        RequestBody requestFile = RequestBody.create(imageFile, MediaType.parse("image/jpeg"));
-        MultipartBody.Part body = MultipartBody.Part.createFormData("image", imageFile.getName(), requestFile);
+//        RequestBody requestFile = RequestBody.create(imageFile, MediaType.parse("image/jpeg"));
+//        MultipartBody.Part body = MultipartBody.Part.createFormData("image", imageFile.getName(), requestFile);
 
         // Prepare JSON data
         JsonObject jsonData = getRegistrationData();
         RequestBody registrationData = RequestBody.create(jsonData.toString(), MediaType.parse("application/json"));
 
         APIService apiService = ApiServiceGenerator.getApiService(requireContext());
-        Call<JsonObject> call = apiService.registerUser(body, registrationData);
+        Call<JsonObject> call = apiService.registerUser(registrationData);
 
         call.enqueue(new Callback<>() {
             @Override
@@ -438,7 +519,7 @@ public class RegisterFragment extends Fragment {
         registrationStatusBtmDialog.show();
     }
 
-    private String getRealPathFromURI(Uri contentUri) {
+    private String getRealPathFromURI(@NonNull Uri contentUri) {
         String path = null;
         if (Objects.requireNonNull(contentUri.getPath()).startsWith("/storage")) {
             path = contentUri.getPath();
@@ -493,24 +574,6 @@ public class RegisterFragment extends Fragment {
 
 
     @NonNull
-    private Map<String, Object> getStringObjectMap(FirebaseUser user) {
-        String manufacturer = Build.MANUFACTURER;
-        String model = Build.MODEL;
-        String androidVersion = Build.VERSION.RELEASE;
-        int apiLevel = Build.VERSION.SDK_INT;
-
-        // Create a map to store the device information
-        Map<String, Object> deviceInfo = new HashMap<>();
-        deviceInfo.put("manufacturer", manufacturer);
-        deviceInfo.put("user_id", user.getUid());
-        deviceInfo.put("registered_email", user.getEmail());
-        deviceInfo.put("model", model);
-        deviceInfo.put("androidVersion", androidVersion);
-        deviceInfo.put("apiLevel", apiLevel);
-        deviceInfo.put("reg_timestamp", FieldValue.serverTimestamp());
-        return deviceInfo;
-    }
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();

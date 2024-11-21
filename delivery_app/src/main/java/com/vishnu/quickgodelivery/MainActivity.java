@@ -234,7 +234,7 @@ public class MainActivity extends AppCompatActivity {
             userIdTV.setText("");
         }
         // Update the realtime location to DB
-        locationUpdater = new LocationUpdater(this, user.getUid());
+        locationUpdater = new LocationUpdater(this, user.getUid(), preferences);
         locationUpdater.startLocationUpdates();
 
     }

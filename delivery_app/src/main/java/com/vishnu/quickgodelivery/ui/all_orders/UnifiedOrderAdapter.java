@@ -58,7 +58,7 @@ public class UnifiedOrderAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public UnifiedOrderAdapter(ViewGroup root, Context context,
                                SharedPreferences preferences, List<AllOrdersModel> orderList) {
         this.context = context;
-        this.preferences = preferences;
+        UnifiedOrderAdapter.preferences = preferences;
         this.orderList = orderList;
         this.root = root;
         callIntent = new Intent(Intent.ACTION_CALL);
@@ -206,6 +206,7 @@ public class UnifiedOrderAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private final CardView orderListCardView;
         private final ImageView orderSavedIV;
         private final TextView orderIDTV;
+        private final TextView shopIDTV;
         private final TextView selectedViewTV;
         private final TextView orderType;
 
@@ -220,6 +221,7 @@ public class UnifiedOrderAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             TIDTV = itemView.findViewById(R.id.srvObvOrderTid_textView);
             orderListCardView = itemView.findViewById(R.id.obvOrderItem_cardView);
             orderSavedIV = itemView.findViewById(R.id.srvObvOrderKeepItView_imageView);
+            shopIDTV = itemView.findViewById(R.id.srvObvOrderShopID_textView);
             selectedViewTV = itemView.findViewById(R.id.srvObvCurrentSelectedOrderView_textView);
         }
 
@@ -237,7 +239,8 @@ public class UnifiedOrderAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
             orderType.setText(obvOrder.getOrder_type());
             TIDTV.setText(MessageFormat.format("TIME: {0}", obvOrder.getOrder_time()));
-            shopNameTV.setText(R.string.purchase_by_store_preference);
+            shopNameTV.setText(obvOrder.getShop_name().toUpperCase());
+            shopIDTV.setText(obvOrder.getShop_id());
 
             if ("order_saved".equals(obvOrder.getOrder_saved_status())) {
                 orderSavedIV.setVisibility(View.VISIBLE);
@@ -296,6 +299,7 @@ public class UnifiedOrderAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         intent.putExtra("order_id", listModel.getOrder_id());
         intent.putExtra("user_phno", listModel.getUser_phno());
         intent.putExtra("shop_id", listModel.getShop_id());
+        intent.putExtra("shop_name", listModel.getShop_name());
         intent.putExtra("order_by_voice_type", listModel.getOrder_type());
         intent.putExtra("order_by_voice_doc_id", listModel.getOrder_by_voice_doc_id());
         intent.putExtra("order_by_voice_audio_ref_id", listModel.getOrder_by_voice_audio_ref_id());

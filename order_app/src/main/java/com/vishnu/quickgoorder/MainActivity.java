@@ -414,6 +414,10 @@ public class MainActivity extends AppCompatActivity {
                 emailIdTV.setText(mAuth.getCurrentUser().getEmail());
                 userIdTV.setText(mAuth.getCurrentUser().getUid());
             }
+
+            if (mAuth.getCurrentUser().getEmail() != null && mAuth.getCurrentUser().getEmail().isEmpty()) {
+                emailIdTV.setText(mAuth.getCurrentUser().getPhoneNumber());
+            }
         } else {
             emailIdTV.setText("");
             userIdTV.setText("");

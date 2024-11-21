@@ -1,6 +1,5 @@
 package com.vishnu.quickgoorder;
 
-import static android.content.ContentValues.TAG;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,7 +22,7 @@ public class GreetingActivity extends AppCompatActivity {
         Button getStatedBtn = findViewById(R.id.getStarted_button);
 
         getStatedBtn.setOnClickListener(view -> {
-            Intent SignInActivityIntent = new Intent(GreetingActivity.this, AuthenticationActivity.class);
+            Intent SignInActivityIntent = new Intent(GreetingActivity.this, PhoneAuthActivity.class);
             startActivity(SignInActivityIntent);
         });
 
