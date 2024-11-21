@@ -503,14 +503,14 @@ public class HomeRecommendationFragment extends Fragment {
 
         Animation rotateAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.rotate);
 
-        if (isLocationNotEnabled(requireContext())) {
-            enableLocView.setVisibility(View.VISIBLE);
-            setDelToCrntLoc.setVisibility(View.GONE);
-
-        } else {
-            enableLocView.setVisibility(View.GONE);
-            setDelToCrntLoc.setVisibility(View.VISIBLE);
-        }
+//        if (isLocationNotEnabled(requireContext())) {
+//            enableLocView.setVisibility(View.VISIBLE);
+//            setDelToCrntLoc.setVisibility(View.GONE);
+//
+//        } else {
+//            enableLocView.setVisibility(View.GONE);
+//            setDelToCrntLoc.setVisibility(View.VISIBLE);
+//        }
 
         savedAddressList = new ArrayList<>();
         savedAddressAdapter = new SavedAddressAdapter(binding, preferences, settingsPreferences,

@@ -405,7 +405,7 @@ public class OBVOrderInformationFragment extends Fragment {
                     preferences.edit().putBoolean("isOrderDelivered", false).apply();
 
                     sendOrderEnrouteRequest(user.getUid(), userID, orderKey, orderEnrouteBtn,
-                            allDeliveryOptionsBtmView, allActionStatusTV, allActionsStatusPB);
+                            allDeliveryOptionsBtmView, allActionStatusTV, allActionsStatusPB, amountEditText.getText().toString());
                 }
             } else {
                 Toast.makeText(requireContext(), "No internet connection.", Toast.LENGTH_SHORT).show();
@@ -626,10 +626,10 @@ public class OBVOrderInformationFragment extends Fragment {
     private void sendOrderEnrouteRequest(String dpID, String userID, String orderID,
                                          Button orderPickupBtn,
                                          BottomSheetDialog allDeliveryOptionsBtmView,
-                                         TextView allActionStatusTV, ProgressBar allActionsStatusPB) {
+                                         TextView allActionStatusTV, ProgressBar allActionsStatusPB, String totalAmount) {
 
         APIService apiService = ApiServiceGenerator.getApiService(requireContext());
-        Call<JsonObject> call3480 = apiService.orderEnroute(dpID, userID, orderID);
+        Call<JsonObject> call3480 = apiService.orderEnroute(dpID, userID, orderID, totalAmount);
 
         call3480.enqueue(new Callback<>() {
             @Override

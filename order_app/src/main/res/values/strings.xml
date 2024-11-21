@@ -247,7 +247,7 @@
     <string name="track_order">Track Order</string>
     <string name="order_accepted">Order accepted</string>
     <string name="decrypt_amp_send"><![CDATA[Decrypt & Send]]></string>
-    <string name="order_status"><u>ORDER STATUS</u></string>
+    <string name="order_status">ORDER STATUS</string>
     <string name="order_id">$(order_id)</string>
     <string name="unknown">Unknown</string>
     <string name="_connected">connected</string>

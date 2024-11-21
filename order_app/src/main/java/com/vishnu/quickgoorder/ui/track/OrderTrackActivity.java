@@ -118,6 +118,7 @@ public class OrderTrackActivity extends AppCompatActivity implements GoogleMap.O
     private RecyclerView orderStatusRecyclerView;
     private TextView chatViewStatusTV;
     private TextView sseViewTV;
+    private TextView totalAmountTV;
     private OrderStatusAdapter orderStatusAdapter;
     private SSEClient sseClient;
     private List<Map<String, String>> statusList = new ArrayList<>();
@@ -129,6 +130,7 @@ public class OrderTrackActivity extends AppCompatActivity implements GoogleMap.O
     private boolean isOrderStatusCardViewExpanded = false;
     private boolean isDeliveryPartnerAssigned = false;
     private GoogleMap mMap;
+    CardView amountCardView;
     private Marker orderMarker;
     private Marker deliveryHomeMarker;
     private double device_lat;
@@ -150,16 +152,20 @@ public class OrderTrackActivity extends AppCompatActivity implements GoogleMap.O
         orderTimeTV = findViewById(R.id.orderTrackOrderTimeView_textView);
         updatedTimeTV = findViewById(R.id.orderTrackOrderUpdatedTimeView_textView);
         deliveryAddressTV = findViewById(R.id.orderTrackDeliveryAddress_textView);
+        totalAmountTV = findViewById(R.id.totalAmount_textView);
         chatFab = findViewById(R.id.chat_floatingActionButton);
         sseViewTV = findViewById(R.id.sseView_textView);
         orderDetailsCardView = findViewById(R.id.trackOrderDetails_cardView);
         orderStatusUpdateLayout = findViewById(R.id.orderStatusUpdate_linearLayout);
         orderStatusTV = findViewById(R.id.trackOrderStatusTV_textView);
         orderStatusRecyclerView = findViewById(R.id.orderStatusUpdate_recycleView);
+        amountCardView = findViewById(R.id.amountReady_cardView);
         dropDownIV = findViewById(R.id.dropDownView_textView);
         ConstraintLayout mainLayout = findViewById(R.id.orderTrackMain_Layout_constraintLayout);
         mapView = findViewById(R.id.mapView);
         mapView.setVisibility(View.GONE);
+
+        amountCardView.setVisibility(View.GONE);
 
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
@@ -565,7 +571,7 @@ public class OrderTrackActivity extends AppCompatActivity implements GoogleMap.O
                 }
 
                 if (data.getOrder_id() != null) {
-                    orderIDTV.setText(MessageFormat.format(getText(R.string.order_ID) + ": {0}", data.getOrder_id().substring(6)));
+                    orderIDTV.setText(MessageFormat.format(getText(R.string.order_ID) + ": {0}", data.getOrder_id().substring(30)));
                 }
                 if (data.getOrder_time() != null) {
                     orderTimeTV.setText(data.getOrder_time());
@@ -589,6 +595,11 @@ public class OrderTrackActivity extends AppCompatActivity implements GoogleMap.O
                     animateOrderStatus(data.getOrder_status_no(), isPartnerAssigned);
                     orderStatusNo = data.getOrder_status_no();
                     isAnimationShown = true;
+                }
+
+                if (data.getTotal_amount() != -1 && data.isIs_partner_assigned()) {
+                    amountCardView.setVisibility(View.VISIBLE);
+                    totalAmountTV.setText(MessageFormat.format("₹: {0} /-", data.getTotal_amount()));
                 }
 
                 // Update order status in RecyclerView

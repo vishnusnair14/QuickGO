@@ -8,18 +8,17 @@
 
     <ImageView
         android:id="@+id/app_logo"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="300dp"
+        android:layout_height="250dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="212dp"
-        android:background="#043359 "
+        android:layout_marginTop="200dp"
         android:elevation="2dp"
         android:hapticFeedbackEnabled="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_launcher_delivery_app_icon_foreground" />
+        app:srcCompat="@drawable/voigo_logo" />
 
     <TextView
         android:id="@+id/app_slogan"
@@ -29,7 +28,7 @@
         android:layout_alignParentEnd="true"
         android:layout_marginTop="55dp"
         android:fontFamily="@font/montserrat"
-        android:text="Just say it and get it"
+        android:text="Just say anything you need!"
         android:textAlignment="center"
         android:textSize="18sp"
         android:textStyle="bold"

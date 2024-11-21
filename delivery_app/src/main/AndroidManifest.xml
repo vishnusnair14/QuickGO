@@ -33,10 +33,10 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher_deliveryapp_icon"
+        android:icon="@drawable/voigo_logo"
         android:label="@string/app_name"
         android:requestLegacyExternalStorage="true"
-        android:roundIcon="@mipmap/ic_launcher_deliveryapp_icon_round"
+        android:roundIcon="@drawable/voigo_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.QuickGO"
         android:usesCleartextTraffic="true">

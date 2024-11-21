@@ -12,6 +12,7 @@ public class SSEModel {
     private String dp_name;
     private String delivery_lat;
     private String dp_lat;
+    private double total_amount;
     private String dp_lon;
     private String delivery_lon;
     private String delivery_address;
@@ -29,6 +30,14 @@ public class SSEModel {
 
     public void setOrder_status_label(String order_status_label) {
         this.order_status_label = order_status_label;
+    }
+
+    public double getTotal_amount() {
+        return total_amount;
+    }
+
+    public void setTotal_amount(double total_amount) {
+        this.total_amount = total_amount;
     }
 
     public String getDp_name() {

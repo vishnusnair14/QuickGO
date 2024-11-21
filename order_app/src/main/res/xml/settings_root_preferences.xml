@@ -44,7 +44,7 @@
         <SwitchPreferenceCompat
 
             android:defaultValue="false"
-            app:enabled="false"
+            app:enabled="true"
             app:key="use_test_server"
             app:summary="When enabled, the application will route all requests to the test server, Requires restart."
             app:title="Use test server" />

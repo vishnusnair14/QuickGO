@@ -106,7 +106,7 @@ public class HomeOrderByVoiceFragment extends Fragment {
     CollectionReference placedOrderDataRef;
     Button setDeliveryToCurrentLocBtn;
     TextView savedAddressStatusTV;
-    FloatingActionButton trackOrderFab;
+    Button trackOrderFab;
     List<AllOrdersModel> placedOrdersList;
     ImageButton recordBtn;
     private List<SavedAddressModel> savedAddressList;
