@@ -358,5 +358,7 @@
     <string name="failed_to_fetch_data_try_again">Failed to fetch data, try again!</string>
     <string name="no_address_found_add_new">No address found, add new!</string>
     <string name="location_is_outside_deliverable_area">Location is outside deliverable area</string>
+    <string name="you_need_to_record_your_order_before_placing_it_tap_the_mic_and_tell_us_what_you_need"><![CDATA[You need to record your order before placing it. Tap the mic and tell us what you need!]]></string>
+    <string name="your_cart_is_empty">Your Cart is Empty!</string>
 
 </resources>

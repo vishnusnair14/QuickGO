@@ -65,7 +65,7 @@ public class VoiceCartFragment extends Fragment {
     private boolean fromHomeOrderByVoiceFragment = false;
     private String orderByVoiceAudioRefID;
     private String orderByVoiceDocID;
-
+    JsonArray voiceOrdersData;
 
     public VoiceCartFragment() {
 
@@ -134,7 +134,7 @@ public class VoiceCartFragment extends Fragment {
         if (fromHomeRecommendationFragment) {
             // from RECOMMENDATION-SHOP-FRAGMENT
             voiceOrdersAdapter = new VoiceOrdersAdapter(user, requireContext(), "obs", voiceOrderItemList,
-                    orderByVoiceDocID, orderByVoiceAudioRefID, shopID, statusTV);
+                    orderByVoiceDocID, orderByVoiceAudioRefID, shopID, statusTV, preferences);
             voiceOrderRecycleView.setAdapter(voiceOrdersAdapter);
 
             refreshVoiceCartBtn.setEnabled(true);
@@ -173,7 +173,7 @@ public class VoiceCartFragment extends Fragment {
             clearVoiceCartBtn.setEnabled(true);
 
             voiceOrdersAdapter = new VoiceOrdersAdapter(user, requireContext(), "obv", voiceOrderItemList,
-                    orderByVoiceDocID, orderByVoiceAudioRefID, null, statusTV);
+                    orderByVoiceDocID, orderByVoiceAudioRefID, null, statusTV, preferences);
             voiceOrderRecycleView.setAdapter(voiceOrdersAdapter);
 
             bundle.putString("order_by_voice_type", "obv");
@@ -202,11 +202,28 @@ public class VoiceCartFragment extends Fragment {
 
 
         checkoutCartButton.setOnClickListener(v -> {
-            Utils.vibrate(requireContext(), 50, 2);
-            NavHostFragment.findNavController(this)
-                    .navigate(R.id.action_nav_mcart_to_checkoutSummaryFragment, bundle);
+            if (preferences.getBoolean("isVoiceCartClear", true)) {
+                showNoVoiceOrdersRecorded();
+            } else {
+                Utils.vibrate(requireContext(), 50, 2);
+                NavHostFragment.findNavController(this)
+                        .navigate(R.id.action_nav_mcart_to_checkoutSummaryFragment, bundle);
+            }
         });
         return root;
+    }
+
+    private void showNoVoiceOrdersRecorded() {
+        // Create BottomSheetDialog
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(requireContext());
+
+        // Inflate custom layout
+        View bottomSheetView = getLayoutInflater().inflate(R.layout.bottomview_no_voice_orders_recorded, null);
+        bottomSheetDialog.setContentView(bottomSheetView);
+        bottomSheetDialog.setCanceledOnTouchOutside(true);
+
+        // Show the dialog
+        bottomSheetDialog.show();
     }
 
     private void showClearVoiceCartConfirmBtmView(ViewGroup root, String shopID) {
@@ -241,6 +258,7 @@ public class VoiceCartFragment extends Fragment {
             VoiceOrdersModel data = new Gson().fromJson(element, VoiceOrdersModel.class);
             voiceOrderItemList.add(data);
         }
+        preferences.edit().putBoolean("isVoiceCartClear", false).apply();
         voiceOrdersAdapter.notifyDataSetChanged();
 
         progressBar.setVisibility(View.GONE);
@@ -278,6 +296,7 @@ public class VoiceCartFragment extends Fragment {
         if (jsonElement.isJsonArray() && !jsonElement.getAsJsonArray().isEmpty()) {
             updateRecyclerView(jsonElement.getAsJsonArray(), progressBar);
         } else {
+            preferences.edit().putBoolean("isVoiceCartClear", true).apply();
             statusTV.setText(R.string.no_voice_orders_recorded_yet);
             progressBar.setVisibility(View.GONE);
         }
@@ -331,12 +350,13 @@ public class VoiceCartFragment extends Fragment {
                     JsonObject responseBody = response.body();
 
                     if (responseBody.has("voice_orders_data")) {
-                        JsonArray voiceOrdersData = responseBody.getAsJsonArray(
+                        voiceOrdersData = responseBody.getAsJsonArray(
                                 "voice_orders_data");
 
                         if (voiceOrdersData.isEmpty()) {
                             if (isAdded()) {
                                 saveVoiceOrderDataToFile(orderByVoiceDocID, shopID, voiceOrdersData);
+                                preferences.edit().putBoolean("isVoiceCartClear", true).apply();
                                 statusTV.setText(R.string.no_voice_orders_recorded_yet);
                                 Log.d(LOG_TAG, "Voice order data is empty");
                             }
@@ -350,6 +370,7 @@ public class VoiceCartFragment extends Fragment {
                             }
 
 //                            Utils.vibrate(requireContext(), 0, VibrationEffect.DEFAULT_AMPLITUDE);
+                            preferences.edit().putBoolean("isVoiceCartClear", false).apply();
                             voiceOrdersAdapter.notifyDataSetChanged();
 
                             if (isAdded()) {

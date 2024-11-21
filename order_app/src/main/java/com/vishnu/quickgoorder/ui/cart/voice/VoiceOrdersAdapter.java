@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -55,12 +56,13 @@ public class VoiceOrdersAdapter extends RecyclerView.Adapter<VoiceOrdersAdapter.
     private boolean isPaused = false;
     private final String from;
     private String shopID;
+    private SharedPreferences preferences;
     public static MediaPlayer mediaPlayer = new MediaPlayer();
 
     public VoiceOrdersAdapter(FirebaseUser user, Context context, String from,
                               List<VoiceOrdersModel> voiceOrdersViewModel,
                               String orderByVoiceDocID, String orderByVoiceAudioRefID,
-                              String shopID, TextView statusTV) {
+                              String shopID, TextView statusTV, SharedPreferences preferences) {
         this.user = user;
         this.context = context;
         this.from = from;
@@ -69,6 +71,7 @@ public class VoiceOrdersAdapter extends RecyclerView.Adapter<VoiceOrdersAdapter.
         this.orderByVoiceAudioRefID = orderByVoiceAudioRefID;
         this.shopID = shopID;
         this.statusTV = statusTV;
+        this.preferences = preferences;
         SoundManager.initialize(context);
     }
 
@@ -180,6 +183,7 @@ public class VoiceOrdersAdapter extends RecyclerView.Adapter<VoiceOrdersAdapter.
                         }
 
                         if (voiceOrdersViewModel.isEmpty()) {
+                            preferences.edit().putBoolean("isVoiceCartClear", true).apply();
                             statusTV.setText(R.string.no_voice_orders_recorded_yet);
                         }
 

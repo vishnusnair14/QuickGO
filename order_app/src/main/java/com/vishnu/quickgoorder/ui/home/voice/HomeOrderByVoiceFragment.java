@@ -174,9 +174,9 @@ public class HomeOrderByVoiceFragment extends Fragment {
         viewPager = binding.textBannerViewPager;
 
         List<BannerItem> bannerItems = new ArrayList<>();
-        bannerItems.add(new BannerItem("Welcome to voigo", Color.parseColor("#043359"), Color.parseColor("#FFC519")));
-        bannerItems.add(new BannerItem("The era of new shopping experience", Color.parseColor("#043359"), Color.parseColor("#FFC519")));
-        bannerItems.add(new BannerItem("Fast, Free Delivery", Color.parseColor("#043359"), Color.parseColor("#FFC519")));
+        bannerItems.add(new BannerItem("Welcome to voigo", Color.parseColor("#043359"), Color.parseColor("#FFFFFF")));
+        bannerItems.add(new BannerItem("The era of new shopping experience", Color.parseColor("#043359"), Color.parseColor("#FFFFFF")));
+        bannerItems.add(new BannerItem("Fast, Free Delivery", Color.parseColor("#043359"), Color.parseColor("#FFFFFF")));
 
         bannerAdapter = new BannerAdapter(bannerItems);
         viewPager.setAdapter(bannerAdapter);
@@ -221,37 +221,6 @@ public class HomeOrderByVoiceFragment extends Fragment {
             }
         });
 
-//        recordBtn.setOnTouchListener((v, event) -> {
-//            switch (event.getAction()) {
-//                case MotionEvent.ACTION_DOWN -> {
-//                    isButtonHeld = true;
-//                    recIcon.setVisibility(View.VISIBLE);
-//                    recIcon.setAnimation(blinkAnimation);
-//
-//                    onButtonHoldRunnable.run();
-//                    return true;
-//                }
-//                case MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-//                    isButtonHeld = false;
-//                    handler.removeCallbacks(onButtonHoldRunnable);
-//                    stopChronometer();
-//                    recordingStatusTV.setText("");
-//                    pressAndRecMainTV.setText(R.string.send_your_voice_orders);
-//                    pressAndRecMainTV.setTextColor(requireActivity().getColor(R.color.default_textview));
-//                    recIcon.setVisibility(View.INVISIBLE);
-//                    recIcon.setAnimation(null);
-//
-//                    if (!isButtonHeld) {
-//                        performOnButtonRelease();
-//
-//                    }
-//
-//                    return true;
-//                }
-//            }
-//            return false;
-//        });
-        
         recordBtn.setOnClickListener(v -> {
             if (!isRecording) {
                 // Start recording
@@ -272,6 +241,7 @@ public class HomeOrderByVoiceFragment extends Fragment {
                 recordingStatusTV.setText("");
 //                pressAndRecMainTV.setText(R.string.send_your_voice_orders);
 //                pressAndRecMainTV.setTextColor(requireActivity().getColor(R.color.default_textview));
+                binding.homeOrderByVoiceGotoCartButton.setEnabled(false);
                 stopRecording(requireContext());
             }
         });
@@ -334,14 +304,14 @@ public class HomeOrderByVoiceFragment extends Fragment {
             @Override
             public void run() {
                 if (bannerAdapter.getItemCount() > 0) {
-                    currentItem = (currentItem + 1) % bannerAdapter.getItemCount(); // Loop back to 0 after the last item
-                    viewPager.setCurrentItem(currentItem, true); // Smooth scroll to the item
-                    handler.postDelayed(this, 3500); // Adjust delay as needed
+                    currentItem = (currentItem + 1) % bannerAdapter.getItemCount();
+                    viewPager.setCurrentItem(currentItem, true);
+                    handler.postDelayed(this, 5000);
                 }
             }
         };
 
-        handler.postDelayed(scrollRunnable, 3000);
+        handler.postDelayed(scrollRunnable, 5000);
     }
 
 
@@ -671,6 +641,7 @@ public class HomeOrderByVoiceFragment extends Fragment {
     }
 
     private void startRecording(@NonNull File AppAudioDir) {
+        binding.homeOrderByVoiceGotoCartButton.setEnabled(false);
         if (!AppAudioDir.exists()) {
             if (AppAudioDir.mkdirs()) {
                 Log.d(ContentValues.TAG, "AppAudioDir: dir created successful");
@@ -698,6 +669,7 @@ public class HomeOrderByVoiceFragment extends Fragment {
             mediaRecorder.start();
         } catch (IOException e) {
             Log.e(LOG_TAG, e.toString());
+            binding.homeOrderByVoiceGotoCartButton.setEnabled(true);
         }
     }
 
@@ -715,6 +687,7 @@ public class HomeOrderByVoiceFragment extends Fragment {
                 // uploads order-voice audio file to storage
                 uploadAudioToStorageRec(requireContext(), String.valueOf(AppAudioDir));
             } catch (Exception e) {
+                binding.homeOrderByVoiceGotoCartButton.setEnabled(true);
                 Log.e(LOG_TAG, e.toString());
                 Toast.makeText(context, "error!", Toast.LENGTH_SHORT).show();
             }
@@ -837,6 +810,7 @@ public class HomeOrderByVoiceFragment extends Fragment {
                         sentVoiceOrderRequest(orderID, audioRefID, key, downloadURL, Utils.generateTimestamp());
                         recordBtn.setEnabled(true);
                         recordingStatusTV.setText(R.string.captured_successfully);
+                        binding.homeOrderByVoiceGotoCartButton.setEnabled(true);
 //                        Toast.makeText(context, "Upload success", Toast.LENGTH_SHORT).show();
 
                         new Handler().postDelayed(() -> {
@@ -845,10 +819,12 @@ public class HomeOrderByVoiceFragment extends Fragment {
                     } else {
                         // Handle getting download URL failure
                         recordBtn.setEnabled(true);
+                        binding.homeOrderByVoiceGotoCartButton.setEnabled(true);
                         Toast.makeText(context, "download URL failure occurred!", Toast.LENGTH_SHORT).show();
                     }
                 });
             } else {
+                binding.homeOrderByVoiceGotoCartButton.setEnabled(true);
                 recordBtn.setEnabled(true);
                 Toast.makeText(context, "server upload failed!", Toast.LENGTH_SHORT).show();
 

@@ -91,9 +91,9 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="color" value="f3ecec" />
-                                                <entry key="fontFamily" value="Arial" />
-                                                <entry key="scalingPercent" value="106" />
-                                                <entry key="text" value="VoiGO" />
+                                                <entry key="fontFamily" value="SansSerif" />
+                                                <entry key="scalingPercent" value="111" />
+                                                <entry key="text" value="voigo" />
                                                 <entry key="trimmed" value="true" />
                                               </map>
                                             </option>
@@ -106,9 +106,9 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="color" value="f3ecec" />
-                                                <entry key="fontFamily" value="Arial" />
-                                                <entry key="scalingPercent" value="106" />
-                                                <entry key="text" value="VoiGO" />
+                                                <entry key="fontFamily" value="SansSerif" />
+                                                <entry key="scalingPercent" value="111" />
+                                                <entry key="text" value="voigo" />
                                                 <entry key="trimmed" value="true" />
                                               </map>
                                             </option>
@@ -120,9 +120,9 @@
                                   <option name="values">
                                     <map>
                                       <entry key="backgroundAssetType" value="COLOR" />
-                                      <entry key="backgroundColor" value="cb6f03" />
+                                      <entry key="backgroundColor" value="043359" />
                                       <entry key="foregroundAssetType" value="TEXT" />
-                                      <entry key="outputName" value="ic_launcher_delivery_app_icon" />
+                                      <entry key="outputName" value="ic_launcher_order_app_icon" />
                                     </map>
                                   </option>
                                 </PersistentState>

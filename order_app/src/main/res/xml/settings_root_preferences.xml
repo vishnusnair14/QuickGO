@@ -3,7 +3,7 @@
 
     <PreferenceCategory android:title="Store Preferences">
         <Preference
-            app:enabled="true"
+            app:enabled="false"
             app:icon="@drawable/round_room_preferences_24"
             app:iconSpaceReserved="true"
             app:isPreferenceVisible="true"
@@ -44,6 +44,7 @@
         <SwitchPreferenceCompat
 
             android:defaultValue="false"
+            app:enabled="false"
             app:key="use_test_server"
             app:summary="When enabled, the application will route all requests to the test server, Requires restart."
             app:title="Use test server" />

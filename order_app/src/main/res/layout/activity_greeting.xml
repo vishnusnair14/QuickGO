@@ -12,7 +12,7 @@
         android:layout_height="150dp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="212dp"
-        android:background="#042992"
+        android:background="#043359 "
         android:elevation="2dp"
         android:hapticFeedbackEnabled="true"
         app:layout_constraintEnd_toEndOf="parent"
@@ -39,7 +39,6 @@
 
     <Button
         android:id="@+id/getStarted_button"
-        style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="64dp"

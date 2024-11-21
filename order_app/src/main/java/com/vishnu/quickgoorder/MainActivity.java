@@ -547,6 +547,7 @@ public class MainActivity extends AppCompatActivity {
                 preferences.edit().putString("selectedDeliveryAddressKey", "").apply();
                 preferences.edit().putString("selectedDeliveryAddressLat", "").apply();
                 preferences.edit().putString("selectedDeliveryAddressLon", "").apply();
+                preferences.edit().putBoolean("isVoiceCartClear", true).apply();
                 preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_TYPE, "Select an address").apply();
                 preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_STREET_ADDRESS, "").apply();
                 preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_FULL_ADDRESS, "").apply();
@@ -604,6 +605,7 @@ public class MainActivity extends AppCompatActivity {
         preferences.edit().putString("selectedDeliveryAddressLat", "").apply();
         preferences.edit().putString("selectedDeliveryAddressLon", "").apply();
         settingsPref.edit().putInt("orderModeSelectedTabIndex", 0).apply();
+        preferences.edit().putBoolean("isVoiceCartClear", true).apply();
         preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_TYPE, "Select an address").apply();
         preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_STREET_ADDRESS, "Tap on a delivery address to make it as default").apply();
         preferences.edit().putString(PreferenceKeys.HOME_RECOMMENDATION_SELECTED_ADDRESS_FULL_ADDRESS, "Tap on a delivery address to make it as default").apply();
